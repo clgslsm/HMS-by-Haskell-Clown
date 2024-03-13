@@ -41,6 +41,3 @@ java -jar target/firebase-spring-boot-crud-0.0.1-SNAPSHOT.jar
 ```
 http://localhost:9090/sunspot/swagger-ui.html
 ```
-=======
-# HMS-by-Haskell-Clown
->>>>>>> 77e2ffac5851a20a001fa822962c77dfe55c36de
