@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+
+/sunspot-private-key.json
