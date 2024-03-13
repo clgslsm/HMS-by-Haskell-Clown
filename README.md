@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## Firestore database with Java Spring-boot
 ### A Small Movie-management-system
 #### The application exposes REST API endpoints to perform CRUD operations on the below mentioned documents
