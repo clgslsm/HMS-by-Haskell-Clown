@@ -1,7 +1,6 @@
 ## Firestore database with Java Spring-boot
 ### A Small Movie-management-system
 #### The application exposes REST API endpoints to perform CRUD operations on the below mentioned documents
-#### [Sample Running Application](https://sunspot-firebase-spring.herokuapp.com/sunspot/swagger-ui.html)
 ---
 ## Documents and corresponding fields in the application
 * **directors**
@@ -25,7 +24,7 @@
 ```
 ---
 ## Setup and Requirements
-* Java 16 and Maven are required. Recommended to download it from [sdkman](https://sdkman.io)
+* Java 21.0.2 and Maven 3.9.6 are required. 
 * Create a [new firebase project](https://firebase.google.com)
 * Create a new firestore database in test mode
 * Go to Project Settings -> Service Account -> Generate new private key and paste the contents of the downloaded .json file in sunspot-private-key.json present in the applications root directory.
