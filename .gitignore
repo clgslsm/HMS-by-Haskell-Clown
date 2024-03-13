@@ -1,9 +1,10 @@
 HELP.md
+sunspot-private-key.json
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-sunspot-private-key.json
+
 ### STS ###
 .apt_generated
 .classpath
