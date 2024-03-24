@@ -66,5 +66,55 @@
             }
         }
 
+
+        List<Map<String, Object>> docdata = new ArrayList<>();
+        String[] departmentList = new String[]{
+                "medicine", "surgery", "gynaecology", "obstetrics", "paediatrics", "eye", "ENT", "dental",
+                "orthopaedics", "neurology", "cardiology", "psychiatry", "skin", "V.D.", "plastic surgery",
+                "nuclear medicine", "infectious disease"
+        };
+
+        // Adding department information
+        for (String departmentName : departmentList) {
+            HashMap<String, Object> departmentData = new HashMap<>();
+            departmentData.put("name", departmentName);
+            docdata.add(departmentData);
+        }
+
+        // Adding doctors information with randomized names and departments
+        String[] doctorFirstNames = {"Dr. John", "Dr. Emily", "Dr. Michael", "Dr. Sarah", "Dr. David"};
+        String[] doctorLastNames = {"Smith", "Johnson", "Williams", "Brown", "Jones"};
+
+        Random rand = new Random();
+
+        for (int i = 1; i <= 20; i++) {
+            String firstName = doctorFirstNames[rand.nextInt(doctorFirstNames.length)];
+            String lastName = doctorLastNames[rand.nextInt(doctorLastNames.length)];
+            String department = departmentList[rand.nextInt(departmentList.length)];
+
+            HashMap<String, Object> doctorData = new HashMap<>();
+            doctorData.put("name", firstName + " " + lastName);
+            doctorData.put("job", "Doctor");
+            doctorData.put("department", department);
+            docdata.add(doctorData);
+        }
+
+        // Adding documents to Firestore
+        for (Map<String, Object> data : docdata) {
+            ApiFuture<DocumentReference> docRef = db.collection("Staffs").add(data);
+            // Print the document reference
+            System.out.println("Added document with ID: " + docRef.get().getId());
+        }
+
+    private static String getRandomName() {
+        String[] firstNames = {"John", "Emily", "Michael", "Sarah", "David", "Lisa", "Matthew", "Jessica", "Daniel", "Nicole"};
+        String[] lastNames = {"Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"};
+
+        Random rand = new Random();
+        String firstName = firstNames[rand.nextInt(firstNames.length)];
+        String lastName = lastNames[rand.nextInt(lastNames.length)];
+
+        return firstName + " " + lastName;
+    }
 Hệ thống status của medicalRecord, machine, medicine
 Hệ thống xếp lịch

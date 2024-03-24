@@ -1,6 +1,11 @@
 package com.javafirebasetest;
 
+import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Query;
+import com.google.cloud.firestore.QuerySnapshot;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
@@ -8,6 +13,8 @@ import com.google.firebase.cloud.FirestoreClient;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 //SINGLETON DESIGN PATTERN
 
@@ -45,8 +52,15 @@ public class DBManager {
         return instance;
     }
 
-    public void populateData(){
-        System.out.println("Populating data...");
+    public void populateData() throws ExecutionException, InterruptedException {
+    }
+
+    // Method to generate a random purchase date
+    private static Date generateRandomDate() {
+        Random rand = new Random();
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(rand.nextInt(10) + 2010, rand.nextInt(12), rand.nextInt(28) + 1); // Random date between 2010 and current year
+        return calendar.getTime();
     }
 
 }
