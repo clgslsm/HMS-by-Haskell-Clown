@@ -1,0 +1,70 @@
+        ///////////////Populate Departments
+        List<Map<String, Object>> docdata = new ArrayList<Map<String, Object>>();
+        String[] departmentList = new String[]{
+                "medicine",
+                "surgery",
+                "gynaecology",
+                "obstetrics",
+                "paediatrics",
+                "eye",
+                "ENT",
+                "dental",
+                "orthopaedics",
+                "neurology",
+                "cardiology",
+                "psychiatry",
+                "skin",
+                "V.D.",
+                "plastic surgery",
+                "nuclear medicine",
+                "infectious disease"
+        };
+
+        for (String departmentName : departmentList){
+            HashMap<String, Object> newHashmap = (new HashMap<String, Object>());
+            newHashmap.put("name", departmentName);
+            docdata.add(newHashmap);
+        }
+
+        for (Map<String, Object> docdatum : docdata) {
+            ApiFuture<DocumentReference> docRef = db.collection("Departments").add(docdatum);
+            System.out.println(docRef.get());
+        }
+
+
+        ///////PATIENTS///////
+
+        List<Map<String, Object>> patientData = new ArrayList<>();
+        String[] names = {"John Doe", "Jane Smith", "Michael Johnson", "Emily Brown", "David Davis", "Sarah Wilson"};
+        String[] bloodTypes = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+        Random random = new Random();
+
+        for (int i = 0; i < 20; i++) { // Assuming 20 patients
+            HashMap<String, Object> patientMap = new HashMap<>();
+            String name = names[random.nextInt(names.length)];
+            int age = random.nextInt(80) + 18; // Random age between 18 and 97
+            String phoneNumber = generateRandomPhoneNumber();
+            String address = "Address " + (i + 1); // Example address, can be randomized too
+            String bloodType = bloodTypes[random.nextInt(bloodTypes.length)];
+
+            patientMap.put("name", name);
+            patientMap.put("age", age);
+            patientMap.put("phoneNumber", phoneNumber);
+            patientMap.put("address", address);
+            patientMap.put("bloodType", bloodType);
+
+            patientData.add(patientMap);
+        }
+
+        // Add patients to Firestore collection
+        for (Map<String, Object> patient : patientData) {
+            ApiFuture<DocumentReference> docRef = db.collection("Patients").add(patient);
+            try {
+                System.out.println("Added patient with ID: " + docRef.get().getId());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+Hệ thống status của medicalRecord, machine, medicine
+Hệ thống xếp lịch
