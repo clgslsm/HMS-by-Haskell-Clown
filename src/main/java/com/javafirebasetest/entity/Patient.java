@@ -50,9 +50,9 @@ public class Patient {
         this.bloodGroup = bloodGroup;
     }
 
-    public Patient(Map<String, Object> patient) {
+    public Patient(String patientId, Map<String, Object> patient) {
         super();
-        this.patientId = (String) patient.get("ID");
+        this.patientId = patientId;
         this.name = (String) patient.get("name");
         this.birthDate = LocalDate.parse((String) patient.get("birthDate")); // Assuming birthDate is stored as String in the map
         this.gender = Gender.fromValue((String) patient.get("gender")); // Assuming gender is stored as String in the map
@@ -61,16 +61,6 @@ public class Patient {
         this.bloodGroup = BloodGroup.fromValue((String) patient.get("bloodGroup")); // Assuming bloodGroup is stored as String in the map
     }
 
-//    public static Patient getInstancePatient() {
-//        if (instancePatient == null) instancePatient = new Patient();
-//        return instancePatient;
-//    }
-//    public static Patient getInstancePatient(String patientId, String name, LocalDate birthDate, Gender gender,
-//                                             String address, String emailID, String phoneNumber, BloodGroup bloodGroup) {
-//        if (instancePatient == null)
-//            instancePatient = new Patient(patientId, name, birthDate, gender, address, emailID, phoneNumber, bloodGroup);
-//        return instancePatient;
-//    }
     public void setPatientId(String patientId) {this.patientId = patientId;}
     public void setName(String name) {this.name = name;}
     public void setBirthDate(LocalDate birthDate) {this.birthDate = birthDate;}

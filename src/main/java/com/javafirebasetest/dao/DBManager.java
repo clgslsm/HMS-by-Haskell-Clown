@@ -6,6 +6,7 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.remoteconfig.Template;
 import com.javafirebasetest.entity.Patient;
 
 import java.io.FileInputStream;
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 
 //SINGLETON DESIGN PATTERN
 
@@ -62,6 +62,7 @@ public class DBManager {
     }
 
     // Get a document by document ID
+
     public Map<String, Object> getDocumentById(String collectionPath, String documentId) throws
             ExecutionException, InterruptedException {
         DocumentReference docRef = db.collection(collectionPath).document(documentId);
@@ -75,17 +76,21 @@ public class DBManager {
     }
 
     // Query documents based on certain conditions
-    public ArrayList<Patient> getDocumentsByConditions(String collectionPath, Filter filter) throws
+    public QuerySnapshot getDocumentsByConditions(String collectionPath, Filter ... filters) throws
             ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> future = db.collection(collectionPath).where(filter).get();
+        ApiFuture<QuerySnapshot> future = db.collection(collectionPath).where(makeFilter(filters)).get();
         QuerySnapshot querySnapshot = future.get();
 
-        ArrayList<Patient> res = new ArrayList<>();
+        return querySnapshot;
+    }
 
-        for (QueryDocumentSnapshot document : querySnapshot) {
-            res.add(new Patient(document.getData()));
-        }
-        return res;
+    // Query all document
+    public QuerySnapshot getAllDocuments(String collectionPath) throws
+            ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> future = db.collection(collectionPath).get();
+        QuerySnapshot querySnapshot = future.get();
+
+        return querySnapshot;
     }
 
     // Update a document
