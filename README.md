@@ -1,1 +1,0 @@
-# HMS-by-Haskell-Clown
