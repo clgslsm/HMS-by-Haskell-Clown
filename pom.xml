@@ -26,6 +26,12 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.32</version> <!-- or whatever version you're using -->
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

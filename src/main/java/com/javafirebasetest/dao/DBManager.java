@@ -6,8 +6,6 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
-import com.google.firebase.remoteconfig.Template;
-import com.javafirebasetest.entity.Patient;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,6 +19,20 @@ import java.util.concurrent.ExecutionException;
 public class DBManager {
     private static DBManager instance;
     final public Firestore db;
+
+    public enum CollectionPath {
+        PATIENT("Patients"), STAFF("Staffs"), MEDICAL_RECORD("MedicalRecords");
+        private final String value;
+        CollectionPath(String value) {
+            this.value = value;
+        }
+        public String getValue() {return value;}
+        public static CollectionPath fromValue(String value) {
+            for (CollectionPath cp : CollectionPath.values())
+                if (cp.value.equalsIgnoreCase(value)) return cp;
+            throw new IllegalArgumentException("Invalid Collection path: " + value);
+        }
+    }
 
     private DBManager() {
         FileInputStream serviceAccount;
@@ -53,55 +65,55 @@ public class DBManager {
         return instance;
     }
 
-    public void populateData() throws ExecutionException, InterruptedException {
+    public void populateData() {
     }
 
     // Add a document to a collection
-    public void addDocument(String collectionPath, Map<String, Object> data) {
-        db.collection(collectionPath).add(data);
+    public void addDocument(CollectionPath collectionPath, Map<String, Object> data) {
+        db.collection(collectionPath.getValue()).add(data);
     }
 
     // Get a document by document ID
 
-    public Map<String, Object> getDocumentById(String collectionPath, String documentId) throws
+    public DocumentSnapshot getDocumentById(CollectionPath collectionPath, String documentId) throws
             ExecutionException, InterruptedException {
-        DocumentReference docRef = db.collection(collectionPath).document(documentId);
+        DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
         ApiFuture<DocumentSnapshot> future = docRef.get();
         DocumentSnapshot document = future.get();
         if (document.exists()) {
-            return document.getData();
+            return document;
         } else {
             return null;
         }
     }
 
     // Query documents based on certain conditions
-    public QuerySnapshot getDocumentsByConditions(String collectionPath, Filter ... filters) throws
+    public List<QueryDocumentSnapshot> getDocumentsByConditions(CollectionPath collectionPath, Filter ... filters) throws
             ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> future = db.collection(collectionPath).where(makeFilter(filters)).get();
+        ApiFuture<QuerySnapshot> future = db.collection(collectionPath.getValue()).where(makeFilter(filters)).get();
         QuerySnapshot querySnapshot = future.get();
 
-        return querySnapshot;
+        return querySnapshot.getDocuments();
     }
 
     // Query all document
-    public QuerySnapshot getAllDocuments(String collectionPath) throws
+    public List<QueryDocumentSnapshot> getAllDocuments(CollectionPath collectionPath) throws
             ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> future = db.collection(collectionPath).get();
+        ApiFuture<QuerySnapshot> future = db.collection(collectionPath.getValue()).get();
         QuerySnapshot querySnapshot = future.get();
 
-        return querySnapshot;
+        return querySnapshot.getDocuments();
     }
 
     // Update a document
-    public void updateDocument(String collectionPath, String documentId, Map<String, Object> newData) {
-        DocumentReference docRef = db.collection(collectionPath).document(documentId);
+    public void updateDocument(CollectionPath collectionPath, String documentId, Map<String, Object> newData) {
+        DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
         docRef.update(newData);
     }
 
     // Delete a document
-    public void deleteDocument(String collectionPath, String documentId) {
-        DocumentReference docRef = db.collection(collectionPath).document(documentId);
+    public void deleteDocument(CollectionPath collectionPath, String documentId) {
+        DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
         docRef.delete();
     }
 
@@ -124,7 +136,7 @@ public class DBManager {
     }
 
     private static LocalDate generateRandomBirthDate() {
-        // Generating random birth date within the range of 1950 and 2003
+        // Generating random birthdate within the range of 1950 and 2003
         int year = 1950 + new Random().nextInt(54); // 1950 + random between 0 and 53
         int month = 1 + new Random().nextInt(12); // Random month between 1 and 12
         int day = 1 + new Random().nextInt(28); // Random day between 1 and 28 (assuming February)
