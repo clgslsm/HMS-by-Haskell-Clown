@@ -5,6 +5,9 @@ import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 class PatientInfo {
@@ -23,17 +26,23 @@ class PatientInfo {
         this.ID = ID;
         this.name = name;
         this.gender = gender;
-        this.age = 0;
         this.phone = phone;
         this.address = address;
         this.bloodGroup = bloodGroup;
         this.dateOfBirth = dateOfBirth;
         this.height = height;
         this.weight = weight;
+        this.age = calculateAge();
     }
 
     public void printInfo() {
         System.out.printf("Patient no.%s {Name: %s - Phone: %s - Blood type: %s}\n", this.ID, this.name,this.phone,this.bloodGroup );
+    }
+
+    public int calculateAge(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate birthDay = LocalDate.parse(this.dateOfBirth, formatter);
+        return Period.between(birthDay, LocalDate.now()).getYears();
     }
 }
 class PatientPanel extends JPanel {
