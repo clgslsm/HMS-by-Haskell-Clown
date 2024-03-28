@@ -5,9 +5,6 @@ import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 class PatientInfo {
@@ -26,23 +23,17 @@ class PatientInfo {
         this.ID = ID;
         this.name = name;
         this.gender = gender;
+        this.age = 0;
         this.phone = phone;
         this.address = address;
         this.bloodGroup = bloodGroup;
         this.dateOfBirth = dateOfBirth;
         this.height = height;
         this.weight = weight;
-        this.age = calculateAge();
     }
 
     public void printInfo() {
         System.out.printf("Patient no.%s {Name: %s - Phone: %s - Blood type: %s}\n", this.ID, this.name,this.phone,this.bloodGroup );
-    }
-
-    public int calculateAge(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate birthDay = LocalDate.parse(this.dateOfBirth, formatter);
-        return Period.between(birthDay, LocalDate.now()).getYears();
     }
 }
 class PatientPanel extends JPanel {
@@ -56,7 +47,7 @@ class PatientPanel extends JPanel {
         defaultPage = new DefaultPage();
 
         // When we click "Add patient" => change to Patient Registration Page
-        defaultPage.createPatientBtn.addActionListener(e -> {
+        defaultPage.addPatientBtn.addActionListener(e -> {
             // Create Patient Registration Page
             AddNewPatientPage addPatientPage = new AddNewPatientPage();
             this.add(addPatientPage, "add-patient-page");
@@ -103,7 +94,7 @@ class PatientPanel extends JPanel {
     }
 }
 class DefaultPage extends JLabel {
-    CreatePatientButton createPatientBtn = new CreatePatientButton();
+    JButton addPatientBtn = AddPatientButton();
     CustomTableModel model;
     JTable patientList;
     DefaultPage() {
@@ -117,7 +108,7 @@ class DefaultPage extends JLabel {
         title.setFont(title.getFont().deriveFont(20F));
         header.setBackground(Color.white);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-        header.add(createPatientBtn);
+        header.add(addPatientBtn);
         header.add(Box.createHorizontalGlue());
         header.add(title);
 
@@ -149,7 +140,6 @@ class DefaultPage extends JLabel {
         Object[] rowData = {patient.ID, patient.name, Integer.toString(patient.age), patient.gender, patient.bloodGroup, patient.phone, viewButton};
         model.addRow(rowData);
     }
-
     public JButton View() {
         JButton viewButton = new JButton("View");
         viewButton.setBackground(Color.green);
@@ -157,6 +147,15 @@ class DefaultPage extends JLabel {
         viewButton.setPreferredSize(new Dimension(70,30));
         viewButton.setFont(new Font("Courier",Font.PLAIN,12));
         return viewButton;
+    }
+
+    public JButton AddPatientButton(){
+        JButton addPatientButton = new JButton("  + Add patient  ");
+        addPatientButton.setForeground(Color.white);
+        addPatientButton.setBackground(new Color(0x3497F9));
+        addPatientButton.setMaximumSize(new Dimension(125,30));
+        addPatientButton.setBorder(BorderFactory.createEmptyBorder());
+        return addPatientButton;
     }
 }
 class AddNewPatientPage extends JPanel {
@@ -322,15 +321,6 @@ class PatientForm extends JPanel{
             System.exit(-1);
         }
         return formatter;
-    }
-}
-class CreatePatientButton extends JButton {
-    CreatePatientButton(){
-        this.setText("  + Add patient  ");
-        this.setForeground(Color.white);
-        this.setBackground(new Color(0x3497F9));
-        this.setMaximumSize(new Dimension(125,30));
-        this.setBorder(BorderFactory.createEmptyBorder());
     }
 }
 class CustomTableModel extends AbstractTableModel {
