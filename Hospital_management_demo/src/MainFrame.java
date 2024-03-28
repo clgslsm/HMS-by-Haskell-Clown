@@ -221,21 +221,23 @@ public class MainFrame extends JFrame{
 
     private JPanel CreateControlPanel() {
         JPanel controlPanel = new JPanel();
-        controlPanel.setPreferredSize(new Dimension(200, this.getHeight())); // Đặt kích thước cho panel
+        controlPanel.setPreferredSize(new Dimension(screenSize.width * 4261 / 27320, this.getHeight())); // Đặt kích thước cho panel
+        controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
         controlPanel.setBackground(Color.WHITE); // Đặt màu nền cho panel
 
         // Thêm nội dung vào control panel
         JLabel label = new JLabel("ABC HOSPITAL");
-        label.setIcon(new ImageIcon("src/img/logo.jpg"));
+        label.setIcon(new ImageIcon(new ImageIcon("src/img/logo.jpg").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
         label.setFont(new Font("Ubuntu", Font.BOLD, 20));
         label.setVerticalTextPosition(JLabel.CENTER);
         label.setForeground(new Color(0x3497F9));
-        label.setBorder(new EmptyBorder(50, 0, 100, 0));
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setBorder(new EmptyBorder(40, 0, 40, 0));
 
         // Thêm các điều hướng
-        CustomButton option1Button = new CustomButton("Bệnh nhân");
-        CustomButton option2Button = new CustomButton("Bác sĩ");
-        CustomButton option3Button = new CustomButton("Lịch hẹn");
+        CustomButton option1Button = new CustomButton("Patients");
+        CustomButton option2Button = new CustomButton("Doctors");
+        CustomButton option3Button = new CustomButton("Appointments");
         option1Button.setSelected(true);
         option2Button.setSelected(false);
         option3Button.setSelected(false);
@@ -268,22 +270,23 @@ public class MainFrame extends JFrame{
         controlPanel.add(label);
 
         JPanel cPanel = new JPanel();
-        cPanel.setPreferredSize(new Dimension(200, this.getHeight()));
+//        cPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        cPanel.setMaximumSize(new Dimension(this.getWidth(), this.getHeight() * 257/384));
         cPanel.setBackground(Color.WHITE);
         cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 
         cPanel.add(option1Button);
         option1Button.setAlignmentX(Component.CENTER_ALIGNMENT);
         option1Button.setMaximumSize(new Dimension(Integer.MAX_VALUE, option1Button.getPreferredSize().height));
-        cPanel.add(Box.createVerticalStrut(50));
+        cPanel.add(Box.createVerticalStrut(10));
         cPanel.add(option2Button);
         option2Button.setAlignmentX(Component.CENTER_ALIGNMENT);
         option2Button.setMaximumSize(new Dimension(Integer.MAX_VALUE, option2Button.getPreferredSize().height));
-        cPanel.add(Box.createVerticalStrut(50));
+        cPanel.add(Box.createVerticalStrut(10));
         cPanel.add(option3Button);
         option3Button.setAlignmentX(Component.CENTER_ALIGNMENT);
         option3Button.setMaximumSize(new Dimension(Integer.MAX_VALUE, option3Button.getPreferredSize().height));
-        cPanel.add(Box.createVerticalStrut(50));
+        cPanel.add(Box.createVerticalStrut(10));
 
         controlPanel.add(cPanel);
         return controlPanel;
@@ -306,10 +309,10 @@ class CustomButton extends JButton {
         setContentAreaFilled(false); // Loại bỏ nền của nút
         setOpaque(true); // Cho phép vẽ nền của nút
         setFocusable(false);
-        setFont(new Font("Noto Sans CJK HK", Font.PLAIN, 18));
+        setFont(new Font("Verdana", Font.PLAIN, 16));
         Border border = BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 10, 0, 0, Color.white), // Tạo viền màu xanh chỉ ở phía trái
-                BorderFactory.createEmptyBorder(0, 10, 0, 0) // Tạo khoảng cách trống phía bên trái viền
+                BorderFactory.createMatteBorder(0, 5, 0, 0, Color.white), // Tạo viền màu xanh chỉ ở phía trái
+                BorderFactory.createEmptyBorder(0, 5, 0, 0) // Tạo khoảng cách trống phía bên trái viền
         );
         setBorder(border);
     }
@@ -323,8 +326,8 @@ class CustomButton extends JButton {
             setForeground(new Color(0x3497F9));
             setBorderPainted(true);
             Border border = BorderFactory.createCompoundBorder(
-                    BorderFactory.createMatteBorder(0, 10, 0, 0, new Color(0x3497F9)), // Tạo viền màu xanh chỉ ở phía trái
-                    BorderFactory.createEmptyBorder(0, 10, 0, 0) // Tạo khoảng cách trống phía bên trái viền
+                    BorderFactory.createMatteBorder(0, 5, 0, 0, new Color(0x3497F9)), // Tạo viền màu xanh chỉ ở phía trái
+                    BorderFactory.createEmptyBorder(0, 5, 0, 0) // Tạo khoảng cách trống phía bên trái viền
             );
             setBorder(border);
         } else {
