@@ -3,8 +3,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 class PatientInfo {
@@ -23,17 +24,23 @@ class PatientInfo {
         this.ID = ID;
         this.name = name;
         this.gender = gender;
-        this.age = 0;
         this.phone = phone;
         this.address = address;
         this.bloodGroup = bloodGroup;
         this.dateOfBirth = dateOfBirth;
+        this.age = calculateAge();
         this.height = height;
         this.weight = weight;
     }
 
     public void printInfo() {
         System.out.printf("Patient no.%s {Name: %s - Phone: %s - Blood type: %s}\n", this.ID, this.name,this.phone,this.bloodGroup );
+    }
+
+    public int calculateAge(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate birthDay = LocalDate.parse(this.dateOfBirth, formatter);
+        return Period.between(birthDay, LocalDate.now()).getYears();
     }
 }
 class PatientPanel extends JPanel {
@@ -241,7 +248,7 @@ class PatientForm extends JPanel{
         // Date of birth (DOB)
         JLabel DOBLabel = new JLabel("Date of birth");
         DOBLabel.setBounds(100,110,100,20);
-        DOBInput = new JFormattedTextField(createFormatter("##-##-####"));
+        DOBInput = new JFormattedTextField(createFormatter());
         DOBInput.setText("01-01-1908");
         DOBInput.setBounds(185, 110, 75, 20);
 
@@ -303,10 +310,10 @@ class PatientForm extends JPanel{
         return form;
     }
 
-    protected MaskFormatter createFormatter(String s) {
+    protected MaskFormatter createFormatter() {
         MaskFormatter formatter = null;
         try {
-            formatter = new MaskFormatter(s);
+            formatter = new MaskFormatter("##-##-####");
         } catch (java.text.ParseException exc) {
             System.err.println("formatter is bad: " + exc.getMessage());
             System.exit(-1);
@@ -319,11 +326,11 @@ class CustomTableModel extends AbstractTableModel {
     private Object[][] data = {};
 
     // Column names
-    private String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","User Action"};
+    private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","User Action"};
 
     // Data types for each column
     @SuppressWarnings("rawtypes")
-    private Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,String.class,JButton.class};
+    private final Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,String.class,JButton.class};
 
     @Override
     public int getRowCount() {
@@ -359,9 +366,7 @@ class CustomTableModel extends AbstractTableModel {
     // Method to add a new row to the table
     public void addRow(Object[] rowData) {
         Object[][] newData = new Object[data.length + 1][getColumnCount()];
-        for (int i = 0; i < data.length; i++) {
-            newData[i] = data[i];
-        }
+        System.arraycopy(data, 0, newData, 0, data.length);
         newData[data.length] = rowData;
         data = newData;
         fireTableRowsInserted(data.length - 1, data.length - 1); // Notify the table that rows have been inserted
@@ -376,13 +381,8 @@ class ButtonRenderer extends JButton implements TableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
                                                    boolean isSelected, boolean hasFocus, int row, int column) {
-        if (isSelected) {
-            setForeground(Color.white);
-            setBackground(Color.green);
-        } else {
-            setForeground(Color.white);
-            setBackground(Color.green);
-        }
+        setForeground(Color.white);
+        setBackground(Color.green);
         setText("View");
         return this;
     }
@@ -397,24 +397,14 @@ class ButtonEditor extends DefaultCellEditor {
         super(checkBox);
         button = new JButton();
         button.setOpaque(true);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                fireEditingStopped();
-            }
-        });
+        button.addActionListener(e -> fireEditingStopped());
     }
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected, int row, int column) {
-        if (isSelected) {
-            button.setForeground(Color.white);
-            button.setBackground(Color.green);
-        } else {
-            button.setForeground(Color.white);
-            button.setBackground(Color.green);
-        }
+        button.setForeground(Color.white);
+        button.setBackground(Color.green);
         button.setText("View");
         isPushed = true;
         return button;
@@ -422,9 +412,6 @@ class ButtonEditor extends DefaultCellEditor {
 
     @Override
     public Object getCellEditorValue() {
-        if (isPushed) {
-//            JOptionPane.showMessageDialog(button, label + ": Ouch!");
-        }
         isPushed = false;
         return label;
     }
