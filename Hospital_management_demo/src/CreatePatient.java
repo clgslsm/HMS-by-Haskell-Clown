@@ -136,17 +136,8 @@ class DefaultPage extends JLabel {
         this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
     }
     void addPatientToTable (PatientInfo patient){
-        JButton viewButton = View();
-        Object[] rowData = {patient.ID, patient.name, Integer.toString(patient.age), patient.gender, patient.bloodGroup, patient.phone, viewButton};
+        Object[] rowData = {patient.ID, patient.name, Integer.toString(patient.age), patient.gender, patient.bloodGroup, patient.phone, new ButtonRenderer()};
         model.addRow(rowData);
-    }
-    public JButton View() {
-        JButton viewButton = new JButton("View");
-        viewButton.setBackground(Color.green);
-        viewButton.setForeground(Color.white);
-        viewButton.setPreferredSize(new Dimension(70,30));
-        viewButton.setFont(new Font("Courier",Font.PLAIN,12));
-        return viewButton;
     }
 
     public JButton AddPatientButton(){
@@ -424,7 +415,6 @@ class ButtonEditor extends DefaultCellEditor {
             button.setForeground(Color.white);
             button.setBackground(Color.green);
         }
-//        label = (value == null) ? "" : value.toString();
         button.setText("View");
         isPushed = true;
         return button;
