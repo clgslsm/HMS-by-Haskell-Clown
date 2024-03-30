@@ -13,10 +13,11 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import com.javafirebasetest.dao.receptionist.PatientDAO;
-
+import com.javafirebasetest.entity.*;
 class PatientPanel extends JPanel {
     ArrayList<Patient> data = new ArrayList<>();
     DefaultPage defaultPage;
@@ -76,7 +77,7 @@ class PatientPanel extends JPanel {
                     throw new RuntimeException(ex);
                 }
                 defaultPage.addPatientToTable(newPatient);
-                System.out.println(data);
+//                System.out.println(data);
 
                 currentPage.removeLayoutComponent(addPatientPage);
                 currentPage.show(this,"default-page");
@@ -115,6 +116,10 @@ class DefaultPage extends JLabel {
         body.setBackground(Color.white);
 
         model = new CustomTableModel();
+        List<Patient> allPatients = PatientDAO.getAllPatients();
+        for (Patient p : allPatients) {
+            addPatientToTable(p);
+        }
         patientList = new JTable(model); // UI for patient list
         patientList.setRowHeight(30);
         patientList.setGridColor(Color.gray);
