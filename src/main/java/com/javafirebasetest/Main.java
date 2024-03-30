@@ -1,38 +1,28 @@
-package com.javafirebasetest;
+import com.google.api.core.ApiFuture;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.Firestore;
 
-import com.javafirebasetest.dao.receptionist.PatientDAO;
-import com.javafirebasetest.entity.Patient;
+import com.google.cloud.firestore.WriteResult;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.cloud.FirestoreClient;
+import com.javafirebasetest.dao.DBManager;
 
-import java.time.LocalDate;
-
-public class Main {
-    public static void main(String[] args) {
-        //GET PATIENTDAO DEMO
-//        ArrayList<Map<String, Object>> staffs = ();
-//        for (Map<String, Object> staff : staffs) {
-//            System.out.print(staff);
-//            System.out.println('\n');
-//        }
-//        List<Patient> patient = GetPatientDAO.getPatientsByName("Emily Brown");
-//        System.out.println(patient);
-
-//        Patient patient = GetPatientDAO.getPatientByID("4oBtE8CC0HDeTL5wtjgG");
-//        System.out.println(patient);
-
-//        DBManager.getInstance().populateData();
-
-        Patient patient = new Patient(
-                null,
-                "Tai",
-                LocalDate.of(2004, 5, 15),
-                Patient.Gender.MALE,
-                "VN",
-                "123456",
-                Patient.BloodGroup.O_POSITIVE
-        );
-
-        PatientDAO.addPatient(patient);
-    }
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 
+public void main() throws IOException, ExecutionException, InterruptedException {
+    DBManager db = DBManager.getInstance();
+    Map<String, Object> data = new HashMap<>();
+    data.put("first", "tranyhala");
+    data.put("last", "tnun");
+    data.put("born", 2016);
+    db.addDocument(DBManager.CollectionPath.PATIENT, data);
 }

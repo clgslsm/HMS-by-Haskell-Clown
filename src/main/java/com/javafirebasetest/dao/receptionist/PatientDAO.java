@@ -96,7 +96,7 @@ public class PatientDAO {
     }
 
     //ADD METHODS
-    public static void addPatient(Patient patient){
+    public static void addPatient(Patient patient) throws ExecutionException, InterruptedException {
 
         dbManager.addDocument(DBManager.CollectionPath.PATIENT, patient.toMap());
     }
