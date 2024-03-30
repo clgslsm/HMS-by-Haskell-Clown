@@ -16,6 +16,10 @@ public class Patient {
     private String phoneNumber;
     private BloodGroup bloodGroup;
 
+    public String getPatientID() {
+        return patientId;
+    }
+
     public enum Gender {
         MALE("Male"), FEMALE("Female"), OTHER("Other");
         private final String value;

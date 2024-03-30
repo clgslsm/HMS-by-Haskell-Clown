@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import com.javafirebasetest.dao.receptionist.PatientDAO;
 
 class PatientPanel extends JPanel {
     ArrayList<Patient> data = new ArrayList<>();
@@ -67,11 +68,12 @@ class PatientPanel extends JPanel {
                 patientInfo.put("Weight", weight);
                 Patient newPatient = new Patient(ID, patientInfo);
                 data.add(newPatient);
-                DBManager db = DBManager.getInstance();
                 try {
-                    db.addDocument(DBManager.CollectionPath.PATIENT, patientInfo);
-                } catch (ExecutionException | InterruptedException er) {
-                    throw new RuntimeException(er);
+                    PatientDAO.addPatient(newPatient);
+                } catch (ExecutionException ex) {
+                    throw new RuntimeException(ex);
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
                 }
                 defaultPage.addPatientToTable(newPatient);
                 System.out.println(data);
@@ -131,9 +133,8 @@ class DefaultPage extends JLabel {
         this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
     }
     void addPatientToTable (Patient patient){
-        Map<String, Object> patientMap = patient.toMap();
         ButtonRenderer buttonRenderer = new ButtonRenderer();
-        Object[] rowData = new Object[]{patientMap, buttonRenderer};
+        Object[] rowData = new Object[]{patient.getPatientID(), patient.getName(), patient.getAge(), patient.getGender(), patient.getBloodGroup(), patient.getPhoneNumber(), buttonRenderer};
         model.addRow(rowData);
     }
 
