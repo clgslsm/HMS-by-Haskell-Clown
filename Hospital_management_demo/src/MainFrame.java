@@ -302,12 +302,13 @@ public class MainFrame extends JFrame{
 class CustomButton extends JButton {
     public CustomButton(String text) {
         super(text);
-        setPreferredSize(new Dimension(200, 50)); // Thiết lập kích thước tùy chỉnh cho nút
-        setForeground(new Color(0x7F8F98)); // Đặt màu chữ
-        setBackground(Color.WHITE); // Đặt màu nền
-        setFocusPainted(false); // Tắt viền xung quanh khi nút được chọn
-        setContentAreaFilled(false); // Loại bỏ nền của nút
-        setOpaque(true); // Cho phép vẽ nền của nút
+        setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        setAlignmentX(Component.CENTER_ALIGNMENT);
+        setForeground(new Color(0x7F8F98));
+        setBackground(Color.WHITE);
+        setFocusPainted(false);
+        setContentAreaFilled(false);
+        setOpaque(true);
         setFocusable(false);
         setFont(new Font("Verdana", Font.PLAIN, 16));
         Border border = BorderFactory.createCompoundBorder(
@@ -317,12 +318,12 @@ class CustomButton extends JButton {
         setBorder(border);
     }
 
-    // Override phương thức setSelected để điều chỉnh màu nền khi nút được chọn
+    // Adjust button's background when selected
     @Override
     public void setSelected(boolean selected) {
         super.setSelected(selected);
         if (selected) {
-            setBackground(new Color(0xE7F3FE)); // 0xĐổi màu nền sang xanh khi được chọn
+            setBackground(new Color(0xE7F3FE));
             setForeground(new Color(0x3497F9));
             setBorderPainted(true);
             Border border = BorderFactory.createCompoundBorder(

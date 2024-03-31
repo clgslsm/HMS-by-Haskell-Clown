@@ -12,15 +12,13 @@ class PatientInfo {
     String ID;
     String name;
     String gender;
-    int age;
+    int age;    // not necessarily saved in database
     String phone;
     String address;
     String bloodGroup;
     String dateOfBirth;
-    int height;
-    int weight;
 
-    PatientInfo(String ID, String name, String gender, String dateOfBirth, String phone, String address, String bloodGroup, int height, int weight){
+    PatientInfo(String ID, String name, String gender, String dateOfBirth, String phone, String address, String bloodGroup){
         this.ID = ID;
         this.name = name;
         this.gender = gender;
@@ -29,8 +27,6 @@ class PatientInfo {
         this.bloodGroup = bloodGroup;
         this.dateOfBirth = dateOfBirth;
         this.age = calculateAge();
-        this.height = height;
-        this.weight = weight;
     }
 
     public void printInfo() {
@@ -46,6 +42,7 @@ class PatientInfo {
 class PatientPanel extends JPanel {
     ArrayList<PatientInfo> data = new ArrayList<>();
     DefaultPage defaultPage;
+    ViewPatientInfoPage viewPatientInfoPage;
     PatientPanel() {
         CardLayout currentPage = new CardLayout();
         this.setLayout(currentPage);
@@ -79,10 +76,8 @@ class PatientPanel extends JPanel {
                 String address = addPatientPage.form.addressInput.getText();
                 String bloodGroup = addPatientPage.form.bloodGroupInput.getText();
                 String dateOfBirth = addPatientPage.form.DOBInput.getText();
-                int height = addPatientPage.form.heightInput.getText().isEmpty() ? 0 : Integer.parseInt(addPatientPage.form.heightInput.getText());
-                int weight = addPatientPage.form.heightInput.getText().isEmpty() ? 0 : Integer.parseInt(addPatientPage.form.heightInput.getText());
 
-                PatientInfo newPatient = new PatientInfo(ID, name, gender, dateOfBirth, phone, address, bloodGroup, height, weight);
+                PatientInfo newPatient = new PatientInfo(ID, name, gender, dateOfBirth, phone, address, bloodGroup);
                 data.add(newPatient);
                 defaultPage.addPatientToTable(newPatient);
                 System.out.println(data);
@@ -95,6 +90,32 @@ class PatientPanel extends JPanel {
             currentPage.show(this, "add-patient-page");
         });
 
+        PatientPanel parentPanel = this;
+        defaultPage.patientList.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int column = defaultPage.patientList.getColumnModel().getColumnIndexAtX(evt.getX());
+                int row = evt.getY() / defaultPage.patientList.getRowHeight();
+
+                if (row < defaultPage.patientList.getRowCount() && row >= 0 && column < defaultPage.patientList.getColumnCount() && column >= 0) {
+                    Object value = defaultPage.patientList.getValueAt(row, column);
+                    if (value instanceof JButton) {
+                        // Instead of simulating button click, print to terminal
+                        System.out.println("Button clicked for row: " + row);
+                        viewPatientInfoPage = defaultPage.viewPage(row);
+                        parentPanel.add(viewPatientInfoPage, "view-page");
+                        currentPage.show(parentPanel, "view-page");
+
+                        viewPatientInfoPage.backButton.addActionListener(mouseClicked->{
+                            currentPage.removeLayoutComponent(viewPatientInfoPage);
+                            currentPage.show(parentPanel,"default-page");
+                        });
+                    }
+                }
+            }
+        });
+
         // Always show default page
         this.add(defaultPage, "default-page");
         currentPage.show(this, "default-page");
@@ -105,13 +126,13 @@ class DefaultPage extends JLabel {
     CustomTableModel model;
     JTable patientList;
     DefaultPage() {
-        this.setMaximumSize(new Dimension(1300,600));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 75));
+        this.setMaximumSize(new Dimension(1300, Toolkit.getDefaultToolkit().getScreenSize().height));
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 100));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Header container
         JPanel header = new JPanel();
-        JLabel title = new JLabel("Patient Info");
+        JLabel title = new JLabel("PATIENT INFO");
         title.setFont(title.getFont().deriveFont(20F));
         header.setBackground(Color.white);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
@@ -155,17 +176,133 @@ class DefaultPage extends JLabel {
         addPatientButton.setBorder(BorderFactory.createEmptyBorder());
         return addPatientButton;
     }
+
+    public ViewPatientInfoPage viewPage(int row){
+        ViewPatientInfoPage viewPage = new ViewPatientInfoPage();
+        viewPage.form.IDInput.setText(patientList.getValueAt(row,0).toString());
+        viewPage.form.IDInput.setEditable(false);
+        viewPage.form.nameInput.setText(patientList.getValueAt(row,1).toString());
+        viewPage.form.nameInput.setEditable(false);
+        viewPage.form.phoneInput.setText(patientList.getValueAt(row,5).toString());
+        viewPage.form.phoneInput.setEditable(false);
+        viewPage.form.bloodGroupInput.setText(patientList.getValueAt(row,4).toString());
+        viewPage.form.bloodGroupInput.setEditable(false);
+        return viewPage;
+    }
+
+    class CustomTableModel extends AbstractTableModel {
+        // Data for each column
+        private Object[][] data = {};
+
+        // Column names
+        private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","User Action"};
+
+        // Data types for each column
+        @SuppressWarnings("rawtypes")
+        private final Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,String.class,JButton.class};
+
+        @Override
+        public int getRowCount() {
+            return data.length;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return data[rowIndex][columnIndex];
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnNames[column];
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            return columnTypes[columnIndex];
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            // Make all cells non-editable
+            return columnIndex == 6;
+        }
+
+        // Method to add a new row to the table
+        public void addRow(Object[] rowData) {
+            Object[][] newData = new Object[data.length + 1][getColumnCount()];
+            System.arraycopy(data, 0, newData, 0, data.length);
+            newData[data.length] = rowData;
+            data = newData;
+            fireTableRowsInserted(data.length - 1, data.length - 1); // Notify the table that rows have been inserted
+        }
+    }
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+
+        public ButtonRenderer() {
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
+            setBackground(Color.green);
+            setIcon(new ImageIcon(new ImageIcon("src/img/view-icon.png").getImage().getScaledInstance(15,15*143/256, Image.SCALE_SMOOTH)));
+            setSize(25,25);
+            return this;
+        }
+    }
+    class ButtonEditor extends DefaultCellEditor {
+
+        protected JButton button;
+        private String label;
+        private boolean isPushed;
+
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(e -> fireEditingStopped());
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                                                     boolean isSelected, int row, int column) {
+            button.setIcon(new ImageIcon(new ImageIcon("src/img/view-icon.png").getImage().getScaledInstance(15,15*143/256,Image.SCALE_SMOOTH)));
+            button.setForeground(Color.black);
+            button.setBackground(Color.green);
+            isPushed = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            isPushed = false;
+            return label;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
+        }
+
+    }
 }
 class AddNewPatientPage extends JPanel {
-    JButton backButton = BackwardButton();
+    BackButton backButton = new BackButton();
     PatientForm form = new PatientForm();
     AddNewPatientPage() {
-        JLabel title = new JLabel("Patient Registration Form");
+        JLabel title = new JLabel("PATIENT REGISTRATION FORM");
         title.setFont(title.getFont().deriveFont(20.0F));
 
         this.setBackground(Color.white);
         this.setMaximumSize(new Dimension(1300,600));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 75));
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 100));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JPanel pageHeader = new JPanel();
@@ -173,21 +310,49 @@ class AddNewPatientPage extends JPanel {
         pageHeader.setLayout(new BoxLayout(pageHeader, BoxLayout.X_AXIS));
         pageHeader.add(backButton);
         backButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        backButton.setAlignmentY(0);
         pageHeader.add(Box.createHorizontalGlue());
         pageHeader.add(title);
         title.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        title.setAlignmentY(Component.TOP_ALIGNMENT);
 
         this.add(pageHeader);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
+        this.add(new Box.Filler(new Dimension(100,15), new Dimension(100,15), new Dimension(100,15)));
         this.add(form); // Registration form
     }
 
     public JButton BackwardButton (){
-        JButton backButton = new JButton("Back");
-        backButton.setMaximumSize(new Dimension(80,25));
+        JButton backButton = new JButton();
+        backButton.setBackground(Color.white);
+        backButton.setBorder(BorderFactory.createEmptyBorder());
+        backButton.setIcon(new ImageIcon(new ImageIcon("src/img/back-icon.png").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
+        backButton.setMaximumSize(new Dimension(30,30));
         return backButton;
+    }
+}
+class ViewPatientInfoPage extends JPanel {
+    BackButton backButton = new BackButton();
+    PatientForm form = new PatientForm();
+
+    ViewPatientInfoPage(){
+        JLabel title = new JLabel("PATIENT INFO");
+        title.setFont(title.getFont().deriveFont(20.0F));
+
+        this.setBackground(Color.white);
+        this.setMaximumSize(new Dimension(1300,600));
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 100));
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        JPanel pageHeader = new JPanel();
+        pageHeader.setBackground(Color.white);
+        pageHeader.setLayout(new BoxLayout(pageHeader, BoxLayout.X_AXIS));
+        pageHeader.add(backButton);
+        backButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        pageHeader.add(Box.createHorizontalGlue());
+        pageHeader.add(title);
+        title.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+        this.add(pageHeader);
+        this.add(new Box.Filler(new Dimension(100,15), new Dimension(100,15), new Dimension(100,15)));
+        this.add(form); // Registration form
     }
 }
 class PatientForm extends JPanel{
@@ -201,12 +366,11 @@ class PatientForm extends JPanel{
     ButtonGroup gender;
     JFormattedTextField DOBInput;
     JTextArea addressInput;
-    JTextField heightInput;
-    JTextField weightInput;
     JTextField bloodGroupInput;
     PatientForm() {
         JPanel form = Form();
         setLayout(new BorderLayout());
+        setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
         setSize(700,400);
         add(form);
         setVisible(true);
@@ -214,32 +378,35 @@ class PatientForm extends JPanel{
 
     public JPanel Form (){
         // Patient's ID
-        JLabel IDLabel = new JLabel("Patient ID");
-        IDLabel.setBounds(600,20,100,20);
+        JLabel IDLabel = new JLabel("Medical ID");
+        IDLabel.setBounds(300,20 + 20,95,20);
         IDInput = new JTextField();
-        IDInput.setBounds(670,22,100,20);
+        IDInput.setBounds(385,20 + 20,100,20);
 
         // Patient's name
         JLabel nameLabel = new JLabel("Name");
-        nameLabel.setBounds(100,20,100,20);
+        nameLabel.setBounds(300,50+ 20,95,20);
         nameInput = new JTextField();
-        nameInput.setBounds(185,22,150,20);
+        nameInput.setBounds(385,50+ 20,200,20);
 
         //  Patient's phone number
         JLabel phoneLabel = new JLabel("Phone");
-        phoneLabel.setBounds(100,50,100,20);
+        phoneLabel.setBounds(300,80+ 20,95,20);
         phoneInput = new JTextField();
-        phoneInput.setBounds(185,52,150,20);
+        phoneInput.setBounds(385,80+ 20,200,20);
 
         // Patient's gender
         JLabel genderLabel = new JLabel("Gender");
-        genderLabel.setBounds(100,80,100,20);
+        genderLabel.setBounds(300,110+ 20,95,20);
         male = new JRadioButton("Male");
-        male.setBounds(180,80,60,20);
+        male.setBounds(380,110+ 20,60,20);
+        male.setBackground(Color.white);
         female = new JRadioButton("Female");
-        female.setBounds(240,80,70,20);
+        female.setBounds(440,110+ 20,70,20);
+        female.setBackground(Color.white);
         otherGender = new JRadioButton("Other");
-        otherGender.setBounds(315,80,70,20);
+        otherGender.setBounds(515,110+ 20,70,20);
+        otherGender.setBackground(Color.white);
         gender = new ButtonGroup();
         gender.add(male);
         gender.add(female);
@@ -247,43 +414,33 @@ class PatientForm extends JPanel{
 
         // Date of birth (DOB)
         JLabel DOBLabel = new JLabel("Date of birth");
-        DOBLabel.setBounds(100,110,100,20);
+        DOBLabel.setBounds(300,140+ 20,100,20);
         DOBInput = new JFormattedTextField(createFormatter());
-        DOBInput.setText("01-01-1908");
-        DOBInput.setBounds(185, 110, 75, 20);
+        DOBInput.setText("01-01-1980");
+        DOBInput.setBounds(385, 140+ 20, 70, 20);
 
         // Address
         JLabel addressLabel = new JLabel("Address");
-        addressLabel.setBounds(100,140,100,20);
+        addressLabel.setBounds(300,170+ 20,100,20);
         addressInput = new JTextArea();
-        addressInput.setBounds(185, 140, 150, 80);
+        addressInput.setBounds(385, 170+ 20, 200, 80);
+        addressInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         addressInput.setLineWrap(true);
-
-        // Patient's Height
-        JLabel heightLabel = new JLabel("Height (cm)");
-        heightLabel.setBounds(100,250,100,20);
-        heightInput = new JTextField();
-        heightInput.setBounds(185,250,40,20);
-
-        // Patient's weight
-        JLabel weightLabel = new JLabel("Weight (kg)");
-        weightLabel.setBounds(240,250,100,20);
-        weightInput = new JTextField();
-        weightInput.setBounds(325,250,40,20);
 
         // Patient's blood group
         JLabel bloodGroupLabel = new JLabel("Blood type");
-        bloodGroupLabel.setBounds(100,280,100,20);
+        bloodGroupLabel.setBounds(300,270+ 20,100,20);
         bloodGroupInput = new JTextField();
-        bloodGroupInput.setBounds(185,280,100,20);
+        bloodGroupInput.setBounds(385,270+ 20,70,20);
 
         // Create button
-        createBtn = new JButton("Create");
+        createBtn = new JButton("CREATE");
         createBtn.setBackground(new Color(0x3497F9));
         createBtn.setForeground(Color.white);
-        createBtn.setBounds(430,380,100,30);
+        createBtn.setBounds(400,380-10,100,30);
 
         JPanel form = new JPanel();
+        form.setBackground(Color.white);
         form.setLayout(null);
         form.add(nameLabel);
         form.add(nameInput);
@@ -299,10 +456,6 @@ class PatientForm extends JPanel{
         form.add(addressInput);
         form.add(IDLabel);
         form.add(IDInput);
-        form.add(heightLabel);
-        form.add(heightInput);
-        form.add(weightLabel);
-        form.add(weightInput);
         form.add(bloodGroupLabel);
         form.add(bloodGroupInput);
         form.add(createBtn);
@@ -321,104 +474,11 @@ class PatientForm extends JPanel{
         return formatter;
     }
 }
-class CustomTableModel extends AbstractTableModel {
-    // Data for each column
-    private Object[][] data = {};
-
-    // Column names
-    private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","User Action"};
-
-    // Data types for each column
-    @SuppressWarnings("rawtypes")
-    private final Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,String.class,JButton.class};
-
-    @Override
-    public int getRowCount() {
-        return data.length;
-    }
-
-    @Override
-    public int getColumnCount() {
-        return columnNames.length;
-    }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        return data[rowIndex][columnIndex];
-    }
-
-    @Override
-    public String getColumnName(int column) {
-        return columnNames[column];
-    }
-
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        return columnTypes[columnIndex];
-    }
-
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        // Make all cells non-editable
-        return columnIndex == 6;
-    }
-
-    // Method to add a new row to the table
-    public void addRow(Object[] rowData) {
-        Object[][] newData = new Object[data.length + 1][getColumnCount()];
-        System.arraycopy(data, 0, newData, 0, data.length);
-        newData[data.length] = rowData;
-        data = newData;
-        fireTableRowsInserted(data.length - 1, data.length - 1); // Notify the table that rows have been inserted
-    }
-}
-class ButtonRenderer extends JButton implements TableCellRenderer {
-
-    public ButtonRenderer() {
-        setOpaque(true);
-    }
-
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value,
-                                                   boolean isSelected, boolean hasFocus, int row, int column) {
-        setForeground(Color.white);
-        setBackground(Color.green);
-        setText("View");
-        return this;
-    }
-}
-class ButtonEditor extends DefaultCellEditor {
-
-    protected JButton button;
-    private String label;
-    private boolean isPushed;
-
-    public ButtonEditor(JCheckBox checkBox) {
-        super(checkBox);
-        button = new JButton();
-        button.setOpaque(true);
-        button.addActionListener(e -> fireEditingStopped());
-    }
-
-    @Override
-    public Component getTableCellEditorComponent(JTable table, Object value,
-                                                 boolean isSelected, int row, int column) {
-        button.setForeground(Color.white);
-        button.setBackground(Color.green);
-        button.setText("View");
-        isPushed = true;
-        return button;
-    }
-
-    @Override
-    public Object getCellEditorValue() {
-        isPushed = false;
-        return label;
-    }
-
-    @Override
-    public boolean stopCellEditing() {
-        isPushed = false;
-        return super.stopCellEditing();
+class BackButton extends JButton {
+    BackButton(){
+        setBackground(Color.white);
+        setBorder(BorderFactory.createEmptyBorder());
+        setIcon(new ImageIcon(new ImageIcon("src/img/back-icon.png").getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH)));
+        setSize(new Dimension(20,20));
     }
 }
