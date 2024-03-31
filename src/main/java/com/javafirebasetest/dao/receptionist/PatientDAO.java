@@ -14,7 +14,19 @@ import java.util.concurrent.ExecutionException;
 public class PatientDAO {
     private static final DBManager dbManager = DBManager.getInstance();
 
-    //GET METHODS
+    //CRUD
+
+    //CREATE METHODS
+    public static void addPatient(Patient patient) {
+        if (patient.getPatientId() == null) {
+            dbManager.addDocument(DBManager.CollectionPath.PATIENT, patient.toMap());
+        } else {
+            dbManager.updateDocument(DBManager.CollectionPath.PATIENT, patient.getPatientId(), patient.toMap());
+        }
+
+    }
+
+    //READ METHODS
     public static Patient getPatientByID(String patientID) throws ExecutionException, InterruptedException {
         Map<String, Object> patientData = dbManager.getDocumentById(DBManager.CollectionPath.PATIENT, patientID).getData();
 
@@ -32,13 +44,13 @@ public class PatientDAO {
             throw new RuntimeException(e);
         }
 
-        List<Patient> patientData = new ArrayList<>();
+        List<Patient> patientList = new ArrayList<>();
 
         for (QueryDocumentSnapshot qds : querySnapshot) {
-            patientData.add(new Patient(qds.getId(), qds.getData()));
+            patientList.add(new Patient(qds.getId(), qds.getData()));
         }
 
-        return patientData;
+        return patientList;
     }
     public static List<Patient> getPatientsByPhone(String phoneNumber) {
         List<QueryDocumentSnapshot> querySnapshot;
@@ -95,9 +107,21 @@ public class PatientDAO {
         return patientData;
     }
 
-    //ADD METHODS
-    public static void addPatient(Patient patient){
+    //UPDATE METHODS
+    public static void updatePatient(String patientID, Object... fieldsAndValues) {
+        Map<String, Object> newData = new HashMap<>();
+        for (int i = 0; i < fieldsAndValues.length; i += 2) {
+            newData.put((String) fieldsAndValues[i], fieldsAndValues[i + 1]);
+        }
+        dbManager.updateDocument(DBManager.CollectionPath.PATIENT, patientID, newData);
+    }
 
-        dbManager.addDocument(DBManager.CollectionPath.PATIENT, patient.toMap());
+    //DELETE METHODS
+    public  static void deletePatient(String patientID){
+        try {
+            dbManager.deleteDocument(DBManager.CollectionPath.PATIENT, patientID);
+        } catch (Exception e) {
+            throw new RuntimeException("Delete failed: Patient doesnt exist/" + e.toString());
+        }
     }
 }
