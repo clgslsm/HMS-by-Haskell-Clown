@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 //SINGLETON DESIGN PATTERN
 
@@ -138,14 +139,32 @@ public class DBManager {
     }
 
     // Update a document
-    public void updateDocument(CollectionPath collectionPath, String documentId, Map<String, Object> newData) {
-        DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
-        docRef.update(newData);
+    public void updateDocument(CollectionPath collectionPath, String documentId, Map<String, Object> newData){
+        try {
+            //TO ADD DOCUMENT WITH CUSTOM ID
+            if (! db.collection(collectionPath.getValue()).document(documentId).get().get().exists()){
+                //SET new document with given id and blank data
+                db.collection(collectionPath.getValue()).document(documentId).set(newData);
+            }
+            //SIMPLE UPDATE TO EXISTING DOCUMENT
+            else{
+                DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
+                docRef.update(newData);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            System.out.println("This is not supposed to happen :/" + e.toString());
+        }
+
     }
 
     // Delete a document
     public void deleteDocument(CollectionPath collectionPath, String documentId) {
         DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
+        try{
+            docRef.get().get();
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         docRef.delete();
     }
 
