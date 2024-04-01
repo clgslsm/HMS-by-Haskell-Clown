@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class Patient {
     private String patientId;
     private String name;
@@ -14,6 +15,10 @@ public class Patient {
     private String address;
     private String phoneNumber;
     private BloodGroup bloodGroup;
+
+    public String getPatientID() {
+        return patientId;
+    }
 
     public enum Gender {
         MALE("Male"), FEMALE("Female"), OTHER("Other");

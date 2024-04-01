@@ -106,7 +106,6 @@ public class PatientDAO {
 
         return patientData;
     }
-
     //UPDATE METHODS
     public static void updatePatient(String patientID, Object... fieldsAndValues) {
         Map<String, Object> newData = new HashMap<>();
@@ -115,7 +114,6 @@ public class PatientDAO {
         }
         dbManager.updateDocument(DBManager.CollectionPath.PATIENT, patientID, newData);
     }
-
     //DELETE METHODS
     public  static void deletePatient(String patientID){
         try {

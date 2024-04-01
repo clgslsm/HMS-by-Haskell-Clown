@@ -32,6 +32,7 @@ public class MedicalRecord {
         }
     }
     public MedicalRecord() {}
+//    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
     public MedicalRecord(String medicalRecordId, String patient, DeptType department, String doctorId, LocalDateTime checkIn,
                          LocalDateTime checkOut, String observation, Status status, String serviceReview, String prescription) {
         this.MedicalRecordId = medicalRecordId;

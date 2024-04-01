@@ -21,6 +21,8 @@ public class DBManager {
     private static DBManager instance;
     final public Firestore db;
 
+
+
     public enum CollectionPath {
         PATIENT("Patients"), STAFF("Staffs"), MEDICAL_RECORD("MedicalRecords");
         private final String value;
@@ -47,8 +49,8 @@ public class DBManager {
         try {
             options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl("https://ltnc-48c50-default-rtdb.asia-southeast1.firebasedatabase.app")
                     .build();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -67,13 +69,43 @@ public class DBManager {
     }
 
     public void populateData() {
+
+    }
+
+    public void setUp() throws ExecutionException, InterruptedException {
+        DocumentReference docRef = db.collection("users").document("idk");
+        Map<String, Object> data = new HashMap<>();
+        data.put("first", "clgslsm");
+        data.put("age", "15");
+        data.put("born", 1815);
+        ApiFuture<WriteResult> result = docRef.set(data);
+        System.out.println("Update time : " + result.get().getUpdateTime());
     }
 
     // Add a document to a collection
-    public void addDocument(CollectionPath collectionPath, Map<String, Object> data) {
-        db.collection(collectionPath.getValue()).add(data);
+    public void addDocument(CollectionPath collectionPath, Map<String, Object> data) throws ExecutionException, InterruptedException {
+        CollectionReference docRef = db.collection(collectionPath.getValue());
+        ApiFuture<DocumentReference> result = docRef.add(data);
+        DocumentReference addedDocRef = result.get();
     }
 
+    public void get() throws ExecutionException, InterruptedException {
+        // asynchronously retrieve all users
+        ApiFuture<QuerySnapshot> query = db.collection("users").get();
+// ...
+// query.get() blocks on response
+        QuerySnapshot querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
+        for (QueryDocumentSnapshot document : documents) {
+            System.out.println("User: " + document.getId());
+            System.out.println("First: " + document.getString("first"));
+            if (document.contains("middle")) {
+                System.out.println("Middle: " + document.getString("middle"));
+            }
+            System.out.println("Last: " + document.getString("last"));
+            System.out.println("Born: " + document.getLong("born"));
+        }
+    }
     // Get a document by document ID
 
     public DocumentSnapshot getDocumentById(CollectionPath collectionPath, String documentId) throws

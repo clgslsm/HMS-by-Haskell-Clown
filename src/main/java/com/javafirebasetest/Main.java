@@ -66,6 +66,3 @@ public class Main {
 //        PatientDAO.deletePatient("CO1027");
 //        System.out.println("Deleted");
     }
-
-
-}
