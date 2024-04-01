@@ -16,23 +16,30 @@ public class MedicalRecord {
     public Status status;
     public String serviceReview;
     public String prescription;
+
     public enum Status {
         PENDING("Pending"), CHECKED("Checked"), CHECKEDOUT("CheckedOut");
         private final String value;
+
         Status(String value) {
             this.value = value;
         }
+
         public String getValue() {
             return value;
         }
+
         public static MedicalRecord.Status fromValue(String value) {
             for (MedicalRecord.Status bg : MedicalRecord.Status.values())
                 if (bg.value.equalsIgnoreCase(value)) return bg;
             throw new IllegalArgumentException("Invalid blood group: " + value);
         }
     }
-    public MedicalRecord() {}
-//    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
+
+    public MedicalRecord() {
+    }
+
+    //    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
     public MedicalRecord(String medicalRecordId, String patient, DeptType department, String doctorId, LocalDateTime checkIn,
                          LocalDateTime checkOut, String observation, Status status, String serviceReview, String prescription) {
         this.MedicalRecordId = medicalRecordId;
@@ -46,7 +53,8 @@ public class MedicalRecord {
         this.serviceReview = serviceReview;
         this.prescription = prescription;
     }
-//    public String getMedicalRecordId() {return MedicalRecordId;}
+
+    //    public String getMedicalRecordId() {return MedicalRecordId;}
 //    public void setID(String medicalRecordId) {this.MedicalRecordId = medicalRecordId;}
 //    public String getPatientId() {return patientId;}
 //    public void setPatientId(String patientId) {this.patientId = patientId;}
@@ -70,10 +78,12 @@ public class MedicalRecord {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         return sdf.format(checkIn);
     }
+
     public String getformattedCheckOut() { // Hiển thị ngày tháng theo định dạng "dd/mm/yyyy"
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         return sdf.format(checkOut);
     }
+
     @Override
     public String toString() {
         return "MedicalRecord [MedicalRecordId=" + MedicalRecordId + ", patientId=" + patientId + ", department=" +

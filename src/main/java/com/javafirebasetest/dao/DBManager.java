@@ -83,10 +83,9 @@ public class DBManager {
     }
 
     // Add a document to a collection
-    public void addDocument(CollectionPath collectionPath, Map<String, Object> data) throws ExecutionException, InterruptedException {
+    public void addDocument(CollectionPath collectionPath, Map<String, Object> data) {
         CollectionReference docRef = db.collection(collectionPath.getValue());
         ApiFuture<DocumentReference> result = docRef.add(data);
-        DocumentReference addedDocRef = result.get();
     }
 
     public void get() throws ExecutionException, InterruptedException {
