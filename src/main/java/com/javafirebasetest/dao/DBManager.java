@@ -83,10 +83,9 @@ public class DBManager {
     }
 
     // Add a document to a collection
-    public void addDocument(CollectionPath collectionPath, Map<String, Object> data) throws ExecutionException, InterruptedException {
+    public void addDocument(CollectionPath collectionPath, Map<String, Object> data) {
         CollectionReference docRef = db.collection(collectionPath.getValue());
         ApiFuture<DocumentReference> result = docRef.add(data);
-        DocumentReference addedDocRef = result.get();
     }
 
     public void get() throws ExecutionException, InterruptedException {
@@ -130,10 +129,15 @@ public class DBManager {
     }
 
     // Query all document
-    public List<QueryDocumentSnapshot> getAllDocuments(CollectionPath collectionPath) throws
-            ExecutionException, InterruptedException {
+    public List<QueryDocumentSnapshot> getAllDocuments(CollectionPath collectionPath) {
         ApiFuture<QuerySnapshot> future = db.collection(collectionPath.getValue()).get();
-        QuerySnapshot querySnapshot = future.get();
+
+        QuerySnapshot querySnapshot = null;
+        try {
+            querySnapshot = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("No document in " + collectionPath.getValue());
+        }
 
         return querySnapshot.getDocuments();
     }

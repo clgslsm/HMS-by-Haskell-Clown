@@ -116,5 +116,52 @@
 
         return firstName + " " + lastName;
     }
+
+        //MEDREC
+
+            List<Patient> allPatients = PatientDAO.getAllPatients();
+            List<Map<String, Object>> doctorList = new ArrayList<>();
+            try {
+                for (QueryDocumentSnapshot qds : DBManager.getInstance().getDocumentsByConditions(DBManager.CollectionPath.STAFF, Filter.equalTo("job", "Doctor"))) {
+                    Map<String, Object> newMap = qds.getData();
+                    newMap.put("doctorID", qds.getId());
+                    doctorList.add(newMap);
+                }
+            } catch (ExecutionException | InterruptedException e) {
+                System.out.println("Error retrieving doctor IDs");
+            }
+
+            Random random = new Random();
+            for (int i = 0; i < 20; i++) {
+                Map<String, Object> chosenDoc = doctorList.get(random.nextInt(doctorList.size()));
+
+                String medicalRecordId = "medrec" + i; // Unique ID for each medical record
+                String patientId = allPatients.get(random.nextInt(allPatients.size())).getPatientId(); // Random patient ID
+                DeptType deptType = DeptType.fromValue((String) chosenDoc.get("department")); // Random department type
+                String assignedDoctorId = (String) chosenDoc.get("doctorID"); // Random doctor ID
+                Timestamp creationTimestamp = Timestamp.now(); // Current timestamp
+                Timestamp completionTimestamp = null; // Completion timestamp initially null
+                String diagnosis = null; // Initial diagnosis null
+                String treatment = null; // Initial treatment null
+                MedicalRecord.Status status = MedicalRecord.Status.PENDING; // Initial status PENDING
+                String comments = null; // Initial comments null
+
+                MedicalRecord newMedRec = new MedicalRecord(
+                        medicalRecordId,
+                        patientId,
+                        deptType,
+                        assignedDoctorId,
+                        creationTimestamp,
+                        completionTimestamp,
+                        diagnosis,
+                        status,
+                        treatment,
+                        comments
+                );
+
+                MedRecDAO.addMedRec(newMedRec);
+                System.out.println("Added MedRec with id medrec" + i);
+            }
+
 Hệ thống status của medicalRecord, machine, medicine
 Hệ thống xếp lịch
