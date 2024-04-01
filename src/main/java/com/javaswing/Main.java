@@ -1,37 +1,29 @@
 package com.javaswing;
-import javax.swing.*;
-import com.javafirebasetest.dao.receptionist.PatientDAO;
-import com.javafirebasetest.entity.Patient;
-import com.javafirebasetest.entity.Receptionist;
 
-import java.time.LocalDate;
+import com.google.cloud.MetadataConfig;
+import com.google.cloud.Timestamp;
+import com.google.cloud.firestore.Filter;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.javafirebasetest.dao.DBManager;
+import com.javafirebasetest.dao.receptionist.MedRecDAO;
+import com.javafirebasetest.dao.receptionist.PatientDAO;
+import com.javafirebasetest.entity.DeptType;
+import com.javafirebasetest.entity.MedicalRecord;
+import com.javafirebasetest.entity.Patient;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {
-        Patient newPatient = new Patient(
-                "CO1027",
-                "ktlt",
-                LocalDate.now(),
-                Patient.Gender.FEMALE,
-                "CT",
-                "123456",
-                Patient.BloodGroup.O_POSITIVE
-        );
+        List<MedicalRecord> medRecList = MedRecDAO.getAllMedRec();
+        System.out.println(medRecList);
 
-        PatientDAO.addPatient(newPatient);
 
-        System.out.println("ADDED");
-
-        try {
-            TimeUnit.SECONDS.sleep(10);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        SwingUtilities.invokeLater(ReceptionistUI::new);
+//        SwingUtilities.invokeLater(ReceptionistUI::new);
     }
 }
 
