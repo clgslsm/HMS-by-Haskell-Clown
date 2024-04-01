@@ -4,7 +4,6 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.dao.DBManager;
 import com.javafirebasetest.entity.MedicalRecord;
-import com.javafirebasetest.entity.Patient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,7 +95,7 @@ public class MedRecDAO {
         dbManager.updateDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRecID, newData);
     }
     //DELETE METHODS
-    public  static void deleteMedRec(String medRecID){
+    public  static void deleteMedRecById(String medRecID){
         try {
             dbManager.deleteDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRecID);
         } catch (Exception e) {

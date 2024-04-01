@@ -3,15 +3,14 @@ package com.javafirebasetest.entity;
 import com.google.cloud.Timestamp;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MedicalRecord {
     public String medicalRecordID;
-    public String patientID;
+    public String patientId;
     public DeptType department;
-    public String doctorID;
+    public String doctorId;
 
     public Timestamp checkIn;
 
@@ -44,12 +43,12 @@ public class MedicalRecord {
     }
 
     //    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
-    public MedicalRecord(String medicalRecordID, String patientID, DeptType department, String doctorID, Timestamp checkIn,
+    public MedicalRecord(String medicalRecordID, String patientId, DeptType department, String doctorId, Timestamp checkIn,
                          Timestamp checkOut, String observation, Status status, String serviceReview, String prescription) {
         this.medicalRecordID = medicalRecordID;
-        this.patientID = patientID;
+        this.patientId = patientId;
         this.department = department;
-        this.doctorID = doctorID;
+        this.doctorId = doctorId;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.observation = observation;
@@ -61,10 +60,9 @@ public class MedicalRecord {
     public MedicalRecord(String medRecId, Map<String, Object> medRec) {
         super();
         this.medicalRecordID = medRecId;
-        this.patientID = (String) medRec.get("patientId");
-        System.out.println(medRec.get("department"));
+        this.patientId = (String) medRec.get("patientId");
         this.department = DeptType.fromValue((String) medRec.get("department"));
-        this.doctorID = (String) medRec.get("doctorId");
+        this.doctorId = (String) medRec.get("doctorId");
         this.checkIn = (Timestamp) medRec.get("checkIn");
         this.checkOut = (Timestamp) medRec.get("checkOut");
         this.observation = (String) medRec.get("observation");
@@ -81,12 +79,12 @@ public class MedicalRecord {
         this.medicalRecordID = medicalRecordId;
     }
 
-    public String getPatientID() {
-        return patientID;
+    public String getPatientId() {
+        return patientId;
     }
 
-    public void setPatientID(String patientID) {
-        this.patientID = patientID;
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public DeptType getDepartment() {
@@ -97,12 +95,12 @@ public class MedicalRecord {
         this.department = department;
     }
 
-    public String getDoctorID() {
-        return doctorID;
+    public String getDoctorId() {
+        return doctorId;
     }
 
     public void setDid(String doctorId) {
-        this.doctorID = doctorId;
+        this.doctorId = doctorId;
     }
 
     public Timestamp getCheckIn() {
@@ -156,19 +154,27 @@ public class MedicalRecord {
 
     public String getformattedCheckIn() { // Hiển thị ngày tháng theo định dạng "dd/mm/yyyy"
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        return sdf.format(checkIn.toDate());
+        try {
+            return sdf.format(checkIn.toDate());
+        } catch (Exception e) {
+            return "null";
+        }
     }
 
     public String getformattedCheckOut() { // Hiển thị ngày tháng theo định dạng "dd/mm/yyyy"
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        return sdf.format(checkOut.toDate());
+        try {
+            return sdf.format(checkOut.toDate());
+        } catch (Exception e) {
+            return "null";
+        }
     }
 
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
-        map.put("patientId", getPatientID());
+        map.put("patientId", getPatientId());
         map.put("department", getDepartment().getValue());
-        map.put("doctorId", getDoctorID());
+        map.put("doctorId", getDoctorId());
         map.put("checkIn", getCheckIn());
         map.put("checkOut", getCheckOut());
         map.put("observation", getObservation());
@@ -181,8 +187,8 @@ public class MedicalRecord {
 
     @Override
     public String toString() {
-        return "MedicalRecord [medicalRecordId=" + medicalRecordID + ", patientId=" + patientID + ", department=" +
-                department.getValue() + ", doctorId=" + doctorID + ", checkIn=" + getformattedCheckIn() + ", checkOut=" +
+        return "MedicalRecord [medicalRecordId=" + medicalRecordID + ", patientId=" + patientId + ", department=" +
+                department.getValue() + ", doctorId=" + doctorId + ", checkIn=" + getformattedCheckIn() + ", checkOut=" +
                 getformattedCheckOut() + ", observation=" + observation + ", status=" + status.getValue() +
                 ", serviceReview=" + serviceReview + ", prescription=" + prescription + "]";
     }
