@@ -17,7 +17,7 @@ public class PatientDAO {
     //CRUD
 
     //CREATE METHODS
-    public static void addPatient(Patient patient) {
+    public static void addPatient(Patient patient) throws ExecutionException, InterruptedException {
         if (patient.getPatientId() == null) {
             dbManager.addDocument(DBManager.CollectionPath.PATIENT, patient.toMap());
         } else {
