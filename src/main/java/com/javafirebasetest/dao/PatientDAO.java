@@ -1,4 +1,4 @@
-package com.javafirebasetest.dao.receptionist;
+package com.javafirebasetest.dao;
 
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;

@@ -1,4 +1,4 @@
-package com.javafirebasetest.dao.technician;
+package com.javafirebasetest.dao;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.dao.DBManager;

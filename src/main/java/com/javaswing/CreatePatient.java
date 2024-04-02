@@ -1,6 +1,6 @@
 package com.javaswing;
 
-import com.javafirebasetest.dao.receptionist.PatientDAO;
+import com.javafirebasetest.dao.PatientDAO;
 import com.javafirebasetest.entity.Patient;
 
 import javax.swing.*;

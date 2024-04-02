@@ -1,10 +1,7 @@
 package com.javaswing;
 
 import com.google.cloud.Timestamp;
-import com.javafirebasetest.dao.receptionist.MedRecDAO;
-import com.javafirebasetest.entity.MedicalRecord;
-
-import java.util.List;
+import com.javafirebasetest.dao.MedRecDAO;
 
 public class Main {
     public static void main(String[] args) {
