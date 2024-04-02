@@ -82,10 +82,18 @@ public class MachineDAO {
     public static void addMachine(Machine machine) {
         dbManager.addDocument(DBManager.CollectionPath.MACHINE, machine.toMap());
     }
-    public static void removeMachine(Machine machine) {
-        dbManager.deleteDocument(DBManager.CollectionPath.MACHINE, machine.getMachineId());
+    public static void deleteMachine(String machineId) {
+        try {
+            dbManager.deleteDocument(DBManager.CollectionPath.MACHINE, machineId);
+        } catch (Exception e) {
+            throw new RuntimeException("Delete failed: Machine doesn't exist/" + e.toString());
+        }
     }
-    public static void updateMachine(Machine machine) {
-        dbManager.updateDocument(DBManager.CollectionPath.MACHINE, machine.getMachineId(), machine.toMap());
+    public static void updateMachine(String machineId, Object... fieldsAndValues) {
+        Map<String, Object> newData = new HashMap<>();
+        for (int i = 0; i < fieldsAndValues.length; i += 2) {
+            newData.put((String) fieldsAndValues[i], fieldsAndValues[i + 1]);
+        }
+        dbManager.updateDocument(DBManager.CollectionPath.MACHINE, machineId, newData);
     }
 }
