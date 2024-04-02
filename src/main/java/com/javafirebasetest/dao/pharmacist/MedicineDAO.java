@@ -51,11 +51,7 @@ public class MedicineDAO {
     }
     public static List<Medicine> getAllMedicine() {
         List<QueryDocumentSnapshot> querySnapshot;
-        try {
-            querySnapshot = dbManager.getAllDocuments(DBManager.CollectionPath.MEDICINE);
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        querySnapshot = dbManager.getAllDocuments(DBManager.CollectionPath.MEDICINE);
         List<Medicine> medicineData = new ArrayList<>();
         for (QueryDocumentSnapshot qds : querySnapshot) {
             medicineData.add(new Medicine(qds.getId(), qds.getData()));

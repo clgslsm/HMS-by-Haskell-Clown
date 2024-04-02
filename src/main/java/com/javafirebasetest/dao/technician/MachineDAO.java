@@ -16,7 +16,7 @@ public class MachineDAO {
         assert machineData != null;
         return new Machine(machineId, machineData);
     }
-    public static List<Machine> getMachineByname(String machineName) {
+    public static List<Machine> getMachineByName(String machineName) {
         List<QueryDocumentSnapshot> querySnapshot;
         try {
             querySnapshot = dbManager.getDocumentsByConditions(
