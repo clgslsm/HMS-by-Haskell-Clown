@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import com.javafirebasetest.dao.receptionist.PatientDAO;
+import com.javafirebasetest.dao.PatientDAO;
 class PatientPanel extends JPanel {
     ArrayList<Patient> data = new ArrayList<>();
     DefaultPage defaultPage;
@@ -166,7 +166,7 @@ class DefaultPage extends JLabel {
     public ViewPatientInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
         ViewPatientInfoPage viewPage = new ViewPatientInfoPage();
         // call patient ID
-        Patient patient = PatientDAO.getPatientByID(patientList.getValueAt(row,0).toString());
+        Patient patient = PatientDAO.getPatientById(patientList.getValueAt(row,0).toString());
         viewPage.title.setText(STR."#\{patient.getPatientId()}");
         viewPage.form.name.setText(patient.getName());
         viewPage.form.phone.setText(patient.getPhoneNumber());
