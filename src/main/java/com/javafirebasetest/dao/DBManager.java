@@ -24,7 +24,7 @@ public class DBManager {
 
 
     public enum CollectionPath {
-        PATIENT("Patients"), STAFF("Staffs"), MEDICAL_RECORD("MedicalRecords");
+        PATIENT("Patients"), STAFF("Staffs"), MEDICAL_RECORD("MedicalRecords"), USER("User");
         private final String value;
         CollectionPath(String value) {
             this.value = value;

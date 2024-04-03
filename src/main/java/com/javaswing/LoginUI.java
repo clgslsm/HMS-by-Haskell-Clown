@@ -1,5 +1,6 @@
 package com.javaswing;
 
+import com.javafirebasetest.dao.UserDAO;
 import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
@@ -49,14 +50,16 @@ public class LoginUI extends JFrame implements ActionListener {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
 
-        // Authenticate user using User class
-        User user = new User(username, password, null); // We'll set mode to null for now
-
-        // Check if the user credentials are valid
-        if (isValidUser(user)) {
-            JOptionPane.showMessageDialog(this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
+        try {
+            User user = UserDAO.getUserByUsername(username);
+            if (UserDAO.authenticateUser(user, password)) {
+                JOptionPane.showMessageDialog(this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error while authenticating user", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
