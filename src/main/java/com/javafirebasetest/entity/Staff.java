@@ -1,8 +1,8 @@
 package com.javafirebasetest.entity;
 
 public class Staff extends User {
-    private String ID;
-    private String name;
+    protected String ID;
+    protected String name;
     //protected static Staff instanceStaff;
     public Staff() {super();}
     public Staff(String username, String password, Mode userMode, String id, String name) {

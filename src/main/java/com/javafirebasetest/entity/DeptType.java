@@ -4,7 +4,7 @@ public enum DeptType {
     MEDICINE("Medicine"), SURGERY("Surgery"), GYNAECOLOGY("Gynecology"), OBSTETRICS("Obstetrics"),
     PAEDIATRICS("Paediatrics"), EYE("Eye"), ENT("ENT"), DENTAL("Dental"), ORTHOPAEDICS("Orthopaedics"),
     NEUROLOGY("Neurology"), CARDIOLOGY("Cardiology"), PSYCHIATRY("Psychiatry"), SKIN("Skin"),
-    V_D("V.D."), PLASTIC_SURGERY("Plast surgery"), NUCLEAR_MEDICINE("Nuclear medicine"),
+    V_D("V.D."), PLASTIC_SURGERY("Plastic surgery"), NUCLEAR_MEDICINE("Nuclear medicine"),
     INFECTIOUS_DISEASE("Infectious disease");
     private final String value;
     DeptType(String value) {this.value = value;}
@@ -25,7 +25,7 @@ public enum DeptType {
     public String getValue() {return value;}
     public static DeptType fromValue(String value) {
         for (DeptType dt : DeptType.values())
-            if (dt.name().equalsIgnoreCase(value)) return dt;
+            if (dt.value.equalsIgnoreCase(value)) return dt;
         throw new IllegalArgumentException("Invalid department type: " + value);
     }
 }

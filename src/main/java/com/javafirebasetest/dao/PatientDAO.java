@@ -1,4 +1,4 @@
-package com.javafirebasetest.dao.receptionist;
+package com.javafirebasetest.dao;
 
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
@@ -31,7 +31,7 @@ public class PatientDAO {
     }
     public String getHashPassword(String password) throws NoSuchAlgorithmException {return toHexString(getSHA(password));}
     //READ METHODS
-    public static Patient getPatientByID(String patientID) throws ExecutionException, InterruptedException {
+    public static Patient getPatientById(String patientID) throws ExecutionException, InterruptedException {
         Map<String, Object> patientData = dbManager.getDocumentById(DBManager.CollectionPath.PATIENT, patientID).getData();
 
         assert patientData != null;
@@ -96,11 +96,7 @@ public class PatientDAO {
     }
     public static List<Patient> getAllPatients() {
         List<QueryDocumentSnapshot> querySnapshot;
-        try {
-            querySnapshot = dbManager.getAllDocuments(DBManager.CollectionPath.PATIENT);
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        querySnapshot = dbManager.getAllDocuments(DBManager.CollectionPath.PATIENT);
 
         List<Patient> patientData = new ArrayList<>();
 
