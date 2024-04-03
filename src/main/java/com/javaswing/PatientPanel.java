@@ -14,14 +14,14 @@ import java.util.concurrent.ExecutionException;
 import com.javafirebasetest.dao.receptionist.PatientDAO;
 class PatientPanel extends JPanel {
     ArrayList<Patient> data = new ArrayList<>();
-    DefaultPage defaultPage;
+    PatientDefaultPage defaultPage;
     ViewPatientInfoPage viewPatientInfoPage;
     PatientPanel() {
         CardLayout currentPage = new CardLayout();
         this.setLayout(currentPage);
         this.setBackground(Color.white);
 
-        defaultPage = new DefaultPage();
+        defaultPage = new PatientDefaultPage();
 
         // When we click "Add patient" => change to Patient Registration Page
         defaultPage.addPatientBtn.addActionListener(_ -> {
@@ -112,11 +112,11 @@ class PatientPanel extends JPanel {
         currentPage.show(this, "default-page");
     }
 }
-class DefaultPage extends JLabel {
+class PatientDefaultPage extends JLabel {
     JButton addPatientBtn = AddPatientButton();
     CustomTableModel model;
     JTable patientList;
-    DefaultPage() {
+    PatientDefaultPage() {
         this.setMaximumSize(new Dimension(1300,600));
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 75));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -228,6 +228,7 @@ class DefaultPage extends JLabel {
             fireTableRowsInserted(data.length - 1, data.length - 1); // Notify the table that rows have been inserted
         }
     }
+
     static class ButtonRenderer extends JButton implements TableCellRenderer {
 
         public ButtonRenderer() {
@@ -561,13 +562,5 @@ class PatientForm extends JPanel{
             e.printStackTrace();
             return null;
         }
-    }
-}
-class BackButton extends JButton {
-    BackButton(){
-        setBackground(Color.white);
-        setBorder(BorderFactory.createEmptyBorder());
-        setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/back-icon.png").getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH)));
-        setSize(new Dimension(20,20));
     }
 }

@@ -179,5 +179,11 @@ class NavButton extends JButton {
         }
     }
 }
-
-
+class BackButton extends JButton {
+    BackButton(){
+        setBackground(Color.white);
+        setBorder(BorderFactory.createEmptyBorder());
+        setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/back-icon.png").getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH)));
+        setSize(new Dimension(20,20));
+    }
+}
