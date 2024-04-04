@@ -18,13 +18,18 @@ public class UserDAO {
     private static final DBManager dbManager = DBManager.getInstance();
 
     public static void createUser(String userName, String password, User.Mode mode) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
-        // Create a map of user data
         Map<String, Object> userData = new HashMap<>();
         userData.put("userName", userName);
-        userData.put("password", getHashPassword(password)); // Store hashed password
+        userData.put("password", getHashPassword(password));
         userData.put("userMode", mode);
-
-        // Add the user to the database
+        dbManager.addDocument(DBManager.CollectionPath.USER, userData);
+    }
+    public static void createUser(String userName, String password, User.Mode mode, String staff_ID) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("userName", userName);
+        userData.put("password", getHashPassword(password));
+        userData.put("userMode", mode);
+        userData.put("staff_ID", staff_ID);
         dbManager.addDocument(DBManager.CollectionPath.USER, userData);
     }
     // READ METHODS
@@ -42,14 +47,13 @@ public class UserDAO {
         if (querySnapshot.isEmpty()) {
             return null; // User not found
         }
-
-        // Assuming username is unique, so there should be only one document in the result
         QueryDocumentSnapshot document = querySnapshot.getFirst();
         Map<String, Object> userData = document.getData();
 
         String password = (String) userData.get("password");
         User.Mode userMode = User.Mode.fromValue((String) userData.get("userMode"));
-        return new User(username, password, userMode);
+        String Staff_ID = (String) userData.get("staff_ID");
+        return new User(username, password, userMode, Staff_ID);
 
     }
 

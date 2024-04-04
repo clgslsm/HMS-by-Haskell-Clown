@@ -83,11 +83,17 @@ public class DBManager {
     }
 
     // Add a document to a collection
-    public void addDocument(CollectionPath collectionPath, Map<String, Object> data) {
+    public void addDocument(CollectionPath collectionPath, Map<String, Object> data) throws ExecutionException, InterruptedException {
         CollectionReference docRef = db.collection(collectionPath.getValue());
         ApiFuture<DocumentReference> result = docRef.add(data);
+        result.get();
     }
-
+    public String addDocumentAndGetId(CollectionPath collectionPath, Map<String, Object> data) throws ExecutionException, InterruptedException {
+        CollectionReference collectionRef = db.collection(collectionPath.getValue());
+        ApiFuture<DocumentReference> result = collectionRef.add(data);
+        DocumentReference documentRef = result.get();
+        return documentRef.getId();
+    }
     public void get() throws ExecutionException, InterruptedException {
         // asynchronously retrieve all users
         ApiFuture<QuerySnapshot> query = db.collection("users").get();

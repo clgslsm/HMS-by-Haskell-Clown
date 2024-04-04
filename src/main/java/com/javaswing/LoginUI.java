@@ -1,8 +1,10 @@
 package com.javaswing;
 
+import com.javafirebasetest.dao.DoctorDAO;
 import com.javafirebasetest.dao.UserDAO;
+import com.javafirebasetest.entity.Doctor;
 import com.javafirebasetest.entity.User;
-
+import com.javafirebasetest.AuthManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -51,31 +53,36 @@ public class LoginUI extends JFrame implements ActionListener {
         String password = new String(passwordField.getPassword());
 
         try {
-            User user = UserDAO.getUserByUsername(username);
-            if (UserDAO.authenticateUser(user, password)) {
+            // Attempt to log in the user
+            AuthManager authManager = new AuthManager(); // Assuming you have a UserDAO instance
+            User loggedInUser = authManager.login(username, password);
+
+            if (loggedInUser != null) {
+                // If login is successful
                 JOptionPane.showMessageDialog(this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                // Check user mode and open corresponding UI
+                switch (loggedInUser.getUserMode()) {
+                    case ADMIN:
+                        SwingUtilities.invokeLater(ReceptionistUI::new);
+                        break;
+                    case DOCTOR:
+                        // If the user is a doctor, print doctor information
+//                        System.out.println(loggedInUser.getID());
+                        Doctor doctor = DoctorDAO.getDoctorById(loggedInUser.getID());
+                        System.out.println(doctor.toString());
+                        break;
+                    default:
+                        // Handle other user modes if needed
+                        break;
+                }
             } else {
+                // If login fails
                 JOptionPane.showMessageDialog(this, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error while authenticating user", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // Method to validate user credentials
-    private boolean isValidUser(User user) {
-        // You can implement your logic here to check against a database or any other data source
-        // For demonstration purpose, let's assume we have a hardcoded user
-        User correctUser = new User("admin", "password", null); // Change this with your actual user data
-
-        try {
-            // Check if username matches and hashed passwords match
-            return user.getUserName().equals(correctUser.getUserName()) &&
-                    user.getHashPassword().equals(correctUser.getHashPassword());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return false;
         }
     }
 

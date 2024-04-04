@@ -18,7 +18,7 @@ public class Doctor extends Staff {
         this.ID = doctorId;
         this.name = (String) doctorData.get("name");
         this.department = DeptType.fromValue((String) doctorData.get("department"));
-        this.patientCount = (int) doctorData.get("patientCount");
+//        this.patientCount = (int) doctorData.get("patientCount");
     }
 
     public Map<String, Object> toMap() {
@@ -40,7 +40,6 @@ public class Doctor extends Staff {
     }
     @Override
     public String toString() {
-        return "doctor [ID=" + getID() + ", name=" + getName() +
-                ", department=" + department.getValue() + ", patientCount=" + patientCount + "]";
+        return STR."doctor [ID=\{getID()}, name=\{getName()}, department=\{department.getValue()}, patientCount=\{patientCount}]";
     }
 }
