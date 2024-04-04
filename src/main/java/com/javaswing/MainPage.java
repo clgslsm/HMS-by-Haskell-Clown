@@ -5,27 +5,26 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class ReceptionistUI extends JFrame {
-    ReceptionistUI(){
+public class MainPage extends JFrame {
+    MainPage(){
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("ABC Hospital @Receptionist");
         this.getContentPane().setBackground(new Color(0xF1F8FF));
         this.setLayout(new BorderLayout());
         this.setVisible(true);
-        this.add(new ReceptionistUIContainer());
+        this.add(new MainPageUIContainer());
         this.pack();
     }
 }
 
-class ReceptionistUIContainer extends JPanel {
+class MainPageUIContainer extends JPanel {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     CardLayout containerLayout = new CardLayout();
     JPanel navContainer = NavigationContainer();
     JPanel mainPageContainer = MainPageContainer();
-    ReceptionistUIContainer(){
+    MainPageUIContainer(){
         this.setLayout(new BorderLayout());
         this.setSize(new Dimension(screenSize.width, screenSize.height));
-
 
         this.add(navContainer, BorderLayout.WEST);
         this.add(mainPageContainer);
@@ -48,16 +47,20 @@ class ReceptionistUIContainer extends JPanel {
         // Thêm các điều hướng
         NavButton patientSection = new NavButton("Patients");
         NavButton doctorSection = new NavButton("Doctors");
-        NavButton appointmentSection = new NavButton("Appointments");
+        NavButton medicineSection = new NavButton("Medicine");
+        NavButton machineSection = new NavButton("Machine");
+
         patientSection.setSelected(true);
         doctorSection.setSelected(false);
-        appointmentSection.setSelected(false);
+        medicineSection.setSelected(false);
+        machineSection.setSelected(false);
 
         patientSection.addActionListener(e -> {
             System.out.println("Lua chon 1");
             patientSection.setSelected(true);
             doctorSection.setSelected(false);
-            appointmentSection.setSelected(false);
+            medicineSection.setSelected(false);
+            machineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"patient-panel");
         });
 
@@ -65,16 +68,27 @@ class ReceptionistUIContainer extends JPanel {
             System.out.println("Lua chon 2");
             patientSection.setSelected(false);
             doctorSection.setSelected(true);
-            appointmentSection.setSelected(false);
-//            containerLayout.show(this, "2");
+            medicineSection.setSelected(false);
+            machineSection.setSelected(false);
+            containerLayout.show(mainPageContainer, "doctor-panel");
         });
 
-        appointmentSection.addActionListener(e -> {
+        medicineSection.addActionListener(e -> {
             System.out.println("Lua chon 3");
             patientSection.setSelected(false);
             doctorSection.setSelected(false);
-            appointmentSection.setSelected(true);
-            containerLayout.show(mainPageContainer,"appointment-panel");
+            medicineSection.setSelected(true);
+            machineSection.setSelected(false);
+            containerLayout.show(mainPageContainer,"medicine-panel");
+        });
+
+        machineSection.addActionListener(e -> {
+            System.out.println("Lua chon 3");
+            patientSection.setSelected(false);
+            doctorSection.setSelected(false);
+            medicineSection.setSelected(false);
+            machineSection.setSelected(true);
+            containerLayout.show(mainPageContainer,"machine-panel");
         });
 
         navigationContainer.add(label);
@@ -89,7 +103,17 @@ class ReceptionistUIContainer extends JPanel {
 
         cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(appointmentSection);
+        cPanel.add(doctorSection);
+        cPanel.add(Box.createVerticalStrut(10));
+
+        cPanel.add(Box.createVerticalStrut(10));
+
+        cPanel.add(medicineSection);
+        cPanel.add(Box.createVerticalStrut(10));
+
+        cPanel.add(Box.createVerticalStrut(10));
+
+        cPanel.add(machineSection);
         cPanel.add(Box.createVerticalStrut(10));
 
         navigationContainer.add(cPanel);
@@ -101,11 +125,14 @@ class ReceptionistUIContainer extends JPanel {
         container.setPreferredSize(new Dimension(screenSize.width * 23059 / 27320, screenSize.height));
 
         JPanel patientPanel = new PatientPanel();
-        JPanel appointmentPanel = new PageSection();
-
+        JPanel doctorPanel = new DoctorPanel();
+        JPanel medicinePanel = new MedicinePanel();
+        JPanel machinePanel = new MachinePanel();
 
         container.add(patientPanel, "patient-panel");
-        container.add(appointmentPanel, "appointment-panel");
+        container.add(doctorPanel, "doctor-panel");
+        container.add(medicinePanel, "medicine-panel");
+        container.add(machinePanel, "machine-panel");
 
         containerLayout.show(container, "patient-panel");
 
@@ -152,10 +179,11 @@ class NavButton extends JButton {
         }
     }
 }
-
-class PageSection extends JPanel {
-    PageSection(){
-        setBackground(new Color(0xF1F8FF));
+class BackButton extends JButton {
+    BackButton(){
+        setBackground(Color.white);
+        setBorder(BorderFactory.createEmptyBorder());
+        setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/back-icon.png").getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH)));
+        setSize(new Dimension(20,20));
     }
 }
-
