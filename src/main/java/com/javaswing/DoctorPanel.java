@@ -147,8 +147,8 @@ class DoctorDefaultPage extends JLabel {
         doctorList.setSelectionBackground(new Color(0xfdf7e7));
         doctorList.setFont(new Font("Courier",Font.PLAIN,13));
         doctorList.setPreferredScrollableViewportSize(new Dimension(850,500));
-        doctorList.getColumn("User Action").setCellRenderer(new ButtonRenderer());
-        doctorList.getColumn("User Action").setCellEditor(new ButtonEditor(new JCheckBox()));
+        //doctorList.getColumn("User Action").setCellRenderer(new ButtonRenderer());
+        //doctorList.getColumn("User Action").setCellEditor(new ButtonEditor(new JCheckBox()));
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(doctorList);
         body.add(scrollPane);
@@ -182,7 +182,7 @@ class DoctorDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","User Action"};
+        private final String[] columnNames = {"ID","Name","Age","Gender","Phone Number"};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
@@ -216,7 +216,7 @@ class DoctorDefaultPage extends JLabel {
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             // Make all cells non-editable
-            return columnIndex == 6;
+            return columnIndex == 4;
         }
 
         // Method to add a new row to the table
