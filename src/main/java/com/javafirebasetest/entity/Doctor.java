@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Doctor extends Staff {
     private DeptType department;
-    private int patientCount;
+    private Long patientCount;
     protected static Doctor instanceDoctor;
     private Doctor() {super();}
     private Doctor(String username, String password, String id, String name, DeptType department) {
@@ -18,7 +18,7 @@ public class Doctor extends Staff {
         this.ID = doctorId;
         this.name = (String) doctorData.get("name");
         this.department = DeptType.fromValue((String) doctorData.get("department"));
-        this.patientCount = (int) doctorData.get("patientCount");
+        this.patientCount = (Long) doctorData.get("patientCount");
     }
 
     public Map<String, Object> toMap() {
