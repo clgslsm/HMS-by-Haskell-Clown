@@ -1,24 +1,63 @@
 package com.javafirebasetest.entity;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class Doctor extends Staff {
     private DeptType department;
-    private int patientCount;
-    protected static Doctor instanceDoctor;
-    private Doctor() {super();}
-    private Doctor(String username, String password, String id, String name, DeptType department) {
-        super(username, password, User.Mode.DOCTOR, id, name);
+    private Long patientCount;
+
+    public Doctor() {
+        super();
+    }
+
+    public Doctor(String doctorId, String name, DeptType department) {
+        super(doctorId, name, User.Mode.DOCTOR);
+        this.department = department;
+        this.patientCount = 0L;
+    }
+
+    public Doctor(String doctorId, Map<String, Object> doctorData) {
+        super(doctorId, (String) doctorData.get("name"), User.Mode.DOCTOR);
+        this.staffId = doctorId;
+        this.name = (String) doctorData.get("name");
+        this.department = DeptType.fromValue((String) doctorData.get("department"));
+        this.patientCount = (Long) doctorData.get("patientCount");
+    }
+
+    public DeptType getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(DeptType department) {
         this.department = department;
     }
-    public static Doctor getInstanceDoctor() {
-        if (instanceDoctor == null) instanceDoctor = new Doctor();
-        return instanceDoctor;
+
+    public Long getPatientCount() {
+        return patientCount;
     }
-    public static Doctor getInstanceDoctor(String username, String password, String id, String name, DeptType department) {
-        if (instanceDoctor == null) instanceDoctor = new Doctor(username, password, id, name, department);
-        return instanceDoctor;
+
+    public void setPatientCount(Long patientCount) {
+        this.patientCount = patientCount;
     }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", name);
+        map.put("userMode", userMode.getValue());
+        map.put("department", department.getValue());
+        map.put("patientCount", patientCount);
+        return map;
+    }
+
     @Override
     public String toString() {
-        return "doctor [ID=" + getID() + ", name=" + getName() +
-                ", department=" + department.getValue() + ", patientCount=" + patientCount + "]";
+        return "Doctor{" +
+                "department=" + department +
+                ", patientCount=" + patientCount +
+                ", ID='" + staffId + '\'' +
+                ", name='" + name + '\'' +
+                ", userMode=" + userMode +
+                '}';
     }
 }

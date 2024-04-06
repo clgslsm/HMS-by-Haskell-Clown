@@ -2,6 +2,8 @@ package com.javafirebasetest.entity;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Machine {
 
@@ -10,6 +12,7 @@ public class Machine {
     private LocalDate purchaseDate;
     private Status machineStatus;
     private String usageHistory;
+
     public enum Status {
         AVAILABLE("Available"), BORROWED("Borrowed"), OUT_OF_ORDER("Out of order"),;
         private final String value;
@@ -18,7 +21,7 @@ public class Machine {
         public static Machine.Status fromValue(String value) {
             for (Machine.Status bg : Machine.Status.values())
                 if (bg.value.equalsIgnoreCase(value)) return bg;
-            throw new IllegalArgumentException("Invalid blood group: " + value);
+            throw new IllegalArgumentException("Invalid machine status: " + value);
         }
     }
     public Machine() {}
@@ -28,6 +31,14 @@ public class Machine {
         this.purchaseDate = purchaseDate;
         this.machineStatus = machineStatus;
         this.usageHistory = usageHistory;
+    }
+    public Machine(String machineId, Map<String, Object> machine) {
+        super();
+        this.machineId = machineId;
+        this.machineName = (String) machine.get("machineName");
+        this.purchaseDate = LocalDate.parse((String) machine.get("purchaseDate"));
+        this.machineStatus = Machine.Status.fromValue((String) machine.get("machineStatus"));
+        this.usageHistory = (String) machine.get("usageHistory");
     }
     public void setMachineId(String machineId) {this.machineId = machineId;}
     public void setName(String machineName) {this.machineName = machineName;}
@@ -42,6 +53,14 @@ public class Machine {
     public String getformattedDate() { // Hiển thị ngày tháng theo định dạng "dd/mm/yyyy"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return purchaseDate.format(formatter);
+    }
+    public Map<String, Object> toMap() {
+        Map<String, Object> machineData = new HashMap<>();
+        machineData.put("machineName", machineName);
+        machineData.put("purchaseDate", purchaseDate.toString());
+        machineData.put("machineStatus", machineStatus.getValue());
+        machineData.put("usageHistory", usageHistory);
+        return machineData;
     }
     @Override
     public String toString() {

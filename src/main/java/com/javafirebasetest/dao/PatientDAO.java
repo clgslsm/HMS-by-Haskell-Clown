@@ -1,15 +1,18 @@
-package com.javafirebasetest.dao.receptionist;
+package com.javafirebasetest.dao;
 
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.javafirebasetest.dao.DBManager;
 import com.javafirebasetest.entity.Patient;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import static com.javafirebasetest.entity.HashPassword.getSHA;
+import static com.javafirebasetest.entity.HashPassword.toHexString;
 
 public class PatientDAO {
     private static final DBManager dbManager = DBManager.getInstance();
@@ -17,95 +20,82 @@ public class PatientDAO {
     //CRUD
 
     //CREATE METHODS
-    public static void addPatient(Patient patient) throws ExecutionException, InterruptedException {
+    public static String addPatient(Patient patient) {
         if (patient.getPatientId() == null) {
-            dbManager.addDocument(DBManager.CollectionPath.PATIENT, patient.toMap());
+            return dbManager.addDocument(DBManager.CollectionPath.PATIENT, patient.toMap());
         } else {
             dbManager.updateDocument(DBManager.CollectionPath.PATIENT, patient.getPatientId(), patient.toMap());
+            return patient.getPatientId();
         }
+    }
 
+    public String getHashPassword(String password) throws NoSuchAlgorithmException {
+        return toHexString(getSHA(password));
     }
 
     //READ METHODS
-    public static Patient getPatientByID(String patientID) throws ExecutionException, InterruptedException {
+    public static Patient getPatientById(String patientID) throws ExecutionException, InterruptedException {
         Map<String, Object> patientData = dbManager.getDocumentById(DBManager.CollectionPath.PATIENT, patientID).getData();
 
         assert patientData != null;
         return new Patient(patientID, patientData);
     }
+
     public static List<Patient> getPatientsByName(String name) {
         List<QueryDocumentSnapshot> querySnapshot;
-        try {
-            querySnapshot = dbManager.getDocumentsByConditions(
-                    DBManager.CollectionPath.PATIENT,
-                    Filter.equalTo("name", name)
-            );
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.PATIENT,
+                Filter.equalTo("name", name)
+        );
 
         List<Patient> patientList = new ArrayList<>();
-
         for (QueryDocumentSnapshot qds : querySnapshot) {
             patientList.add(new Patient(qds.getId(), qds.getData()));
         }
-
         return patientList;
     }
+
     public static List<Patient> getPatientsByPhone(String phoneNumber) {
         List<QueryDocumentSnapshot> querySnapshot;
-        try {
-            querySnapshot = dbManager.getDocumentsByConditions(
-                    DBManager.CollectionPath.PATIENT,
-                    Filter.equalTo("phoneNumber", phoneNumber)
-            );
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.PATIENT,
+                Filter.equalTo("phoneNumber", phoneNumber)
+        );
 
         List<Patient> patientData = new ArrayList<>();
-
         for (QueryDocumentSnapshot qds : querySnapshot) {
             patientData.add(new Patient(qds.getId(), qds.getData()));
         }
-
         return patientData;
     }
+
     public static List<Patient> getPatientsByBloodGroup(Patient.BloodGroup bloodGroup) {
         List<QueryDocumentSnapshot> querySnapshot;
-        try {
-            querySnapshot = dbManager.getDocumentsByConditions(
-                    DBManager.CollectionPath.PATIENT,
-                    Filter.equalTo("bloodGroup", bloodGroup.getValue())
-            );
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.PATIENT,
+                Filter.equalTo("bloodGroup", bloodGroup.getValue())
+        );
 
         List<Patient> patientData = new ArrayList<>();
-
         for (QueryDocumentSnapshot qds : querySnapshot) {
             patientData.add(new Patient(qds.getId(), qds.getData()));
         }
 
         return patientData;
     }
+
     public static List<Patient> getAllPatients() {
         List<QueryDocumentSnapshot> querySnapshot;
-        try {
-            querySnapshot = dbManager.getAllDocuments(DBManager.CollectionPath.PATIENT);
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        querySnapshot = dbManager.getAllDocuments(DBManager.CollectionPath.PATIENT);
 
         List<Patient> patientData = new ArrayList<>();
-
         for (QueryDocumentSnapshot qds : querySnapshot) {
             patientData.add(new Patient(qds.getId(), qds.getData()));
         }
 
         return patientData;
     }
+
     //UPDATE METHODS
     public static void updatePatient(String patientID, Object... fieldsAndValues) {
         Map<String, Object> newData = new HashMap<>();
@@ -114,12 +104,9 @@ public class PatientDAO {
         }
         dbManager.updateDocument(DBManager.CollectionPath.PATIENT, patientID, newData);
     }
+
     //DELETE METHODS
-    public  static void deletePatient(String patientID){
-        try {
-            dbManager.deleteDocument(DBManager.CollectionPath.PATIENT, patientID);
-        } catch (Exception e) {
-            throw new RuntimeException("Delete failed: Patient doesnt exist/" + e.toString());
-        }
+    public static void deletePatient(String patientID) {
+        dbManager.deleteDocument(DBManager.CollectionPath.PATIENT, patientID);
     }
 }
