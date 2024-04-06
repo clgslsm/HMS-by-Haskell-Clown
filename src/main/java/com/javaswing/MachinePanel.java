@@ -2,6 +2,7 @@ package com.javaswing;
 import com.javafirebasetest.entity.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.MaskFormatter;
@@ -11,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import com.javafirebasetest.dao.receptionist.PatientDAO;
 class MachinePanel extends JPanel {
     ArrayList<Machine> data = new ArrayList<>();
     MachineDefaultPage defaultPage;
@@ -124,12 +124,15 @@ class MachineDefaultPage extends JLabel {
         // Header container
         JPanel header = new JPanel();
         JLabel title = new JLabel("Machine Info");
-        title.setFont(title.getFont().deriveFont(20F));
-        header.setBackground(Color.white);
+        title.setFont(title.getFont().deriveFont(25F));
+        title.setForeground(new Color(0x3497F9));
+        header.setBackground(new Color(0xF1F8FF));
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-        header.add(addMachineBtn);
-        header.add(Box.createHorizontalGlue());
+
+
         header.add(title);
+        header.add(Box.createHorizontalGlue());
+        header.add(addMachineBtn);
 
         //Table
         JPanel body = new JPanel();
@@ -142,21 +145,32 @@ class MachineDefaultPage extends JLabel {
 //            addMachineToTable(p);
 //        }
         machineList = new JTable(model); // UI for patient list
-        machineList.setRowHeight(30);
-        machineList.setGridColor(Color.gray);
-        machineList.setSelectionBackground(new Color(0xfdf7e7));
+
+        machineList.getTableHeader().setPreferredSize(new Dimension(machineList.getTableHeader().getWidth(), 40));
+        machineList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
+        machineList.getTableHeader().setOpaque(false);
+        machineList.getTableHeader().setBackground(new Color(32, 136, 203));
+        machineList.getTableHeader().setForeground(new Color(255,255,255));
+
+        machineList.setFocusable(false);
+        machineList.setIntercellSpacing(new java.awt.Dimension(0, 0));
+        machineList.setSelectionBackground(new java.awt.Color(232, 57, 95));
+        machineList.setShowVerticalLines(false);
+        machineList.getTableHeader().setReorderingAllowed(false);
         machineList.setFont(new Font("Courier",Font.PLAIN,13));
-        machineList.setPreferredScrollableViewportSize(new Dimension(850,500));
-        machineList.getColumn("User Action").setCellRenderer(new ButtonRenderer());
-        machineList.getColumn("User Action").setCellEditor(new ButtonEditor(new JCheckBox()));
+        //machineList.getColumn("View").setCellRenderer(new ButtonRenderer());
+        //machineList.getColumn("View").setCellEditor(new ButtonEditor(new JCheckBox()));
+        machineList.setRowHeight(40);
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(machineList);
         body.add(scrollPane);
 
         this.add(header);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
+        JPanel space = new JPanel();
+        space.setBackground(new Color(0xF1F8FF));
+        space.setSize(new Dimension(40, 40));
+        this.add(space);
         this.add(body);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
     }
     void addMachineToTable (Machine machine){
 //        ButtonRenderer buttonRenderer = new ButtonRenderer();
@@ -281,11 +295,13 @@ class MachineDefaultPage extends JLabel {
     }
 
     public JButton AddMachineButton(){
-        JButton addMachineButton = new JButton("  + Add machine  ");
-        addMachineButton.setForeground(Color.white);
+        JButton addMachineButton = new RoundedButton("  + Add machine  ");
+        addMachineButton.setFont(new Font("Courier", Font.PLAIN,13));
+        addMachineButton.setFocusable(false);
+        addMachineButton.setForeground(Color.WHITE);
         addMachineButton.setBackground(new Color(0x3497F9));
-        addMachineButton.setMaximumSize(new Dimension(125,30));
-        addMachineButton.setBorder(BorderFactory.createEmptyBorder());
+        addMachineButton.setBounds(100, 100, 125, 60);
+        addMachineButton.setBorder(new EmptyBorder(10,10,10,10));
         return addMachineButton;
     }
 }

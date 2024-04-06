@@ -2,6 +2,7 @@ package com.javaswing;
 import com.javafirebasetest.entity.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.MaskFormatter;
@@ -11,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import com.javafirebasetest.dao.receptionist.PatientDAO;
+
 class DoctorPanel extends JPanel {
     ArrayList<Doctor> data = new ArrayList<>();
     DoctorDefaultPage defaultPage;
@@ -124,12 +125,15 @@ class DoctorDefaultPage extends JLabel {
         // Header container
         JPanel header = new JPanel();
         JLabel title = new JLabel("Doctor Info");
-        title.setFont(title.getFont().deriveFont(20F));
-        header.setBackground(Color.white);
+        title.setFont(title.getFont().deriveFont(25F));
+        title.setForeground(new Color(0x3497F9));
+        header.setBackground(new Color(0xF1F8FF));
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-        header.add(addDoctorBtn);
-        header.add(Box.createHorizontalGlue());
+
+
         header.add(title);
+        header.add(Box.createHorizontalGlue());
+        header.add(addDoctorBtn);
 
         //Table
         JPanel body = new JPanel();
@@ -142,21 +146,34 @@ class DoctorDefaultPage extends JLabel {
 //            addDoctorToTable(p);
 //        }
         doctorList = new JTable(model); // UI for patient list
-        doctorList.setRowHeight(30);
-        doctorList.setGridColor(Color.gray);
-        doctorList.setSelectionBackground(new Color(0xfdf7e7));
+
+        doctorList.getTableHeader().setPreferredSize(new Dimension(doctorList.getTableHeader().getWidth(), 40));
+        doctorList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
+        doctorList.getTableHeader().setOpaque(false);
+        doctorList.getTableHeader().setBackground(new Color(32, 136, 203));
+        doctorList.getTableHeader().setForeground(new Color(255,255,255));
+
+        doctorList.setFocusable(false);
+        doctorList.setIntercellSpacing(new java.awt.Dimension(0, 0));
+        doctorList.setSelectionBackground(new java.awt.Color(232, 57, 95));
+        doctorList.setShowVerticalLines(false);
+        doctorList.getTableHeader().setReorderingAllowed(false);
         doctorList.setFont(new Font("Courier",Font.PLAIN,13));
-        doctorList.setPreferredScrollableViewportSize(new Dimension(850,500));
-        //doctorList.getColumn("User Action").setCellRenderer(new ButtonRenderer());
-        //doctorList.getColumn("User Action").setCellEditor(new ButtonEditor(new JCheckBox()));
+        //doctorList.getColumn("View").setCellRenderer(new PatientDefaultPage.ButtonRenderer());
+        //doctorList.getColumn("View").setCellEditor(new PatientDefaultPage.ButtonEditor(new JCheckBox()));
+        doctorList.setRowHeight(40);
+
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(doctorList);
         body.add(scrollPane);
 
         this.add(header);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
+        JPanel space = new JPanel();
+        space.setBackground(new Color(0xF1F8FF));
+        space.setSize(new Dimension(40, 40));
+        this.add(space);
         this.add(body);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
+        //this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
     }
     void addDoctorToTable (Doctor dortor){
 //        ButtonRenderer buttonRenderer = new ButtonRenderer();
@@ -182,7 +199,7 @@ class DoctorDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name","Age","Gender","Phone Number"};
+        private final String[] columnNames = {"ID","Department","Job","Name","Number of Patient"};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
@@ -281,11 +298,14 @@ class DoctorDefaultPage extends JLabel {
     }
 
     public JButton AddDoctorButton(){
-        JButton addDoctorButton = new JButton("  + Add doctor  ");
-        addDoctorButton.setForeground(Color.white);
+        JButton addDoctorButton = new RoundedButton("  + Add doctor  ");
+        addDoctorButton.setFont(new Font("Courier",Font.PLAIN,13));
+        addDoctorButton.setFocusable(false);
+        addDoctorButton.setForeground(Color.WHITE);
         addDoctorButton.setBackground(new Color(0x3497F9));
-        addDoctorButton.setMaximumSize(new Dimension(125,30));
-        addDoctorButton.setBorder(BorderFactory.createEmptyBorder());
+        addDoctorButton.setBounds(100, 100, 125, 60);
+        addDoctorButton.setBorder(new EmptyBorder(10,10,10,10));
+
         return addDoctorButton;
     }
 }

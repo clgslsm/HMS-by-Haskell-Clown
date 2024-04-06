@@ -64,7 +64,7 @@ public class LoginUI extends JFrame implements ActionListener {
                 // Check user mode and open corresponding UI
                 switch (loggedInUser.getUserMode()) {
                     case ADMIN:
-                        SwingUtilities.invokeLater(ReceptionistUI::new);
+                        SwingUtilities.invokeLater(MainPage::new);
                         break;
                     case DOCTOR:
                         // If the user is a doctor, print doctor information

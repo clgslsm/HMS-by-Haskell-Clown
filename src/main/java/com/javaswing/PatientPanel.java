@@ -2,10 +2,13 @@ package com.javaswing;
 import com.javafirebasetest.entity.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
+import java.awt.image.ImageObserver;
+import java.text.AttributedCharacterIterator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -117,19 +120,22 @@ class PatientDefaultPage extends JLabel {
     CustomTableModel model;
     JTable patientList;
     PatientDefaultPage() {
-        this.setMaximumSize(new Dimension(1300,600));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 75));
+        //this.setMaximumSize(new Dimension(1300,600));
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Header container
         JPanel header = new JPanel();
-        JLabel title = new JLabel("Patient Info");
-        title.setFont(title.getFont().deriveFont(20F));
-        header.setBackground(Color.white);
+        JLabel title = new JLabel("Patient Information");
+        title.setFont(title.getFont().deriveFont(25F));
+        title.setForeground(new Color(0x3497F9));
+        header.setBackground(new Color(0xF1F8FF));
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-        header.add(addPatientBtn);
-        header.add(Box.createHorizontalGlue());
+
+
         header.add(title);
+        header.add(Box.createHorizontalGlue());
+        header.add(addPatientBtn);
 
         //Table
         JPanel body = new JPanel();
@@ -141,22 +147,38 @@ class PatientDefaultPage extends JLabel {
         for (Patient p : allPatients) {
             addPatientToTable(p);
         }
+
         patientList = new JTable(model); // UI for patient list
-        patientList.setRowHeight(30);
-        patientList.setGridColor(Color.gray);
-        patientList.setSelectionBackground(new Color(0xfdf7e7));
+
+        patientList.getTableHeader().setPreferredSize(new Dimension(patientList.getTableHeader().getWidth(), 40));
+        patientList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
+        patientList.getTableHeader().setOpaque(false);
+        patientList.getTableHeader().setBackground(new Color(32, 136, 203));
+        patientList.getTableHeader().setForeground(new Color(255,255,255));
+
+        patientList.setFocusable(false);
+        patientList.setIntercellSpacing(new java.awt.Dimension(0, 0));
+        patientList.setSelectionBackground(new java.awt.Color(232, 57, 95));
+        patientList.setShowVerticalLines(false);
+        patientList.getTableHeader().setReorderingAllowed(false);
         patientList.setFont(new Font("Courier",Font.PLAIN,13));
-        patientList.setPreferredScrollableViewportSize(new Dimension(850,500));
-        patientList.getColumn("User Action").setCellRenderer(new ButtonRenderer());
-        patientList.getColumn("User Action").setCellEditor(new ButtonEditor(new JCheckBox()));
+        patientList.getColumn("View").setCellRenderer(new ButtonRenderer());
+        patientList.getColumn("View").setCellEditor(new ButtonEditor(new JCheckBox()));
+        patientList.setRowHeight(40);
+        
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(patientList);
         body.add(scrollPane);
 
         this.add(header);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
+        JPanel space = new JPanel();
+        space.setBackground(new Color(0xF1F8FF));
+        space.setSize(new Dimension(40, 40));
+        this.add(space);
+
+        //this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
         this.add(body);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
+        //this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
     }
     void addPatientToTable (Patient patient){
         ButtonRenderer buttonRenderer = new ButtonRenderer();
@@ -182,7 +204,7 @@ class PatientDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","User Action"};
+        private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","View"};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
@@ -238,7 +260,8 @@ class PatientDefaultPage extends JLabel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            setBackground(Color.green);
+            setBackground(Color.white);
+            setForeground(Color.BLUE);
             setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/view-icon.png").getImage().getScaledInstance(15,15*143/256, Image.SCALE_SMOOTH)));
             setSize(25,25);
             return this;
@@ -255,6 +278,8 @@ class PatientDefaultPage extends JLabel {
             button = new JButton();
             button.setOpaque(true);
             button.addActionListener(_ -> fireEditingStopped());
+            button.setBackground(Color.white);
+            button.setForeground(Color.BLUE);
         }
 
         @Override
@@ -281,11 +306,15 @@ class PatientDefaultPage extends JLabel {
     }
 
     public JButton AddPatientButton(){
-        JButton addPatientButton = new JButton("  + Add patient  ");
-        addPatientButton.setForeground(Color.white);
+        JButton addPatientButton = new RoundedButton("  + Add patient  ");
+
+        addPatientButton.setFont(new Font("Courier",Font.PLAIN,13));
+        addPatientButton.setFocusable(false);
+        addPatientButton.setForeground(Color.WHITE);
         addPatientButton.setBackground(new Color(0x3497F9));
-        addPatientButton.setMaximumSize(new Dimension(125,30));
-        addPatientButton.setBorder(BorderFactory.createEmptyBorder());
+        addPatientButton.setBounds(100, 100, 125, 60);
+        addPatientButton.setBorder(new EmptyBorder(10,10,10,10));
+
         return addPatientButton;
     }
 }
