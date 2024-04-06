@@ -38,7 +38,7 @@ class ReceptionistUIContainer extends JPanel {
 
         // Thêm nội dung vào control panel
         JLabel label = new JLabel("ABC HOSPITAL");
-        label.setIcon(new ImageIcon(new ImageIcon("src/img/logo.jpg").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
+        label.setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/logo.jpg").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
         label.setFont(new Font("Ubuntu", Font.BOLD, 20));
         label.setVerticalTextPosition(JLabel.CENTER);
         label.setForeground(new Color(0x3497F9));
