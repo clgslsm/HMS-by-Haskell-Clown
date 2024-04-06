@@ -2,7 +2,6 @@ package com.javaswing;
 
 import com.javafirebasetest.dao.DoctorDAO;
 import com.javafirebasetest.entity.Doctor;
-import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,12 +61,12 @@ public class LoginUI extends JFrame implements ActionListener {
                 // Check user mode and open corresponding UI
                 switch (loggedInUser.getUserMode()) {
                     case ADMIN:
-                        SwingUtilities.invokeLater(ReceptionistUI::new);
+                        SwingUtilities.invokeLater(MainPage::new);
                         break;
                     case DOCTOR:
                         // If the user is a doctor, print doctor information
 //                        System.out.println(loggedInUser.getID());
-                        Doctor doctor = DoctorDAO.getDoctorById(loggedInUser.getID());
+                        Doctor doctor = DoctorDAO.getDoctorById(loggedInUser.getStaffID());
                         System.out.println(doctor.toString());
                         break;
                     default:

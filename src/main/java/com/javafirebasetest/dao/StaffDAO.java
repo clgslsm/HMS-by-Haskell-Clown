@@ -2,9 +2,7 @@ package com.javafirebasetest.dao;
 
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.javafirebasetest.entity.MedicalRecord;
 import com.javafirebasetest.entity.Staff;
-import com.javafirebasetest.entity.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;

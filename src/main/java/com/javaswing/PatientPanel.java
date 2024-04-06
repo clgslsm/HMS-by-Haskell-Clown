@@ -160,7 +160,7 @@ class PatientDefaultPage extends JLabel {
     }
     void addPatientToTable (Patient patient){
         ButtonRenderer buttonRenderer = new ButtonRenderer();
-        Object[] rowData = new Object[]{patient.getPatientID(), patient.getName(), patient.getAge(), patient.getGender(), patient.getBloodGroup().getValue(), patient.getPhoneNumber(), buttonRenderer};
+        Object[] rowData = new Object[]{patient.getPatientId(), patient.getName(), patient.getAge(), patient.getGender(), patient.getBloodGroup().getValue(), patient.getPhoneNumber(), buttonRenderer};
         model.addRow(rowData);
     }
     public ViewPatientInfoPage viewPage(int row) throws ExecutionException, InterruptedException {

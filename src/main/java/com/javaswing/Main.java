@@ -14,6 +14,7 @@ public class Main {
                 DeptType.PSYCHIATRY
         );
 
+
         DoctorDAO.addDoctor(newDoctor);
 
         try {
