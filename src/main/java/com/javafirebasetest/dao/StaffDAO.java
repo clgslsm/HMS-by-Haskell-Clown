@@ -38,7 +38,7 @@ public class StaffDAO {
 
         querySnapshot = dbManager.getDocumentsByConditions(
                 DBManager.CollectionPath.STAFF,
-                Filter.equalTo("userMode", userMode)
+                Filter.equalTo("userMode", userMode.getValue())
         );
 
         List<Staff> staffList = new ArrayList<>();
