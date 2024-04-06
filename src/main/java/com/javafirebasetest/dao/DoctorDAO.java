@@ -57,62 +57,48 @@ public class DoctorDAO {
             throw new RuntimeException("Doctor data is null for ID: " + doctorId);
         }
     }
-
-    public static List<MedicalRecord> getMedRecByPatientId(String patientId) {
+    public static List<Doctor> getDoctorByDepartment(DeptType deptType) {
         List<QueryDocumentSnapshot> querySnapshot;
         try {
             querySnapshot = dbManager.getDocumentsByConditions(
-                    DBManager.CollectionPath.MEDICAL_RECORD,
-                    Filter.equalTo("patientId", patientId)
+                    DBManager.CollectionPath.STAFF,
+                    Filter.equalTo("department", deptType.getValue())
             );
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        List<MedicalRecord> medRecList = new ArrayList<>();
+        List<Doctor> doctorList = new ArrayList<>();
 
         for (QueryDocumentSnapshot qds : querySnapshot) {
-            medRecList.add(new MedicalRecord(qds.getId(), qds.getData()));
+            doctorList.add(new Doctor(qds.getId(), qds.getData()));
         }
-        return medRecList;
+        return doctorList;
     }
 
-    public static List<MedicalRecord> getMedRecByDoctorId(String doctorId) {
+    public static List<Doctor> getAllDoctor() {
         List<QueryDocumentSnapshot> querySnapshot;
         try {
             querySnapshot = dbManager.getDocumentsByConditions(
-                    DBManager.CollectionPath.MEDICAL_RECORD,
-                    Filter.equalTo("doctorId", doctorId)
+                    DBManager.CollectionPath.STAFF,
+                    Filter.equalTo("job", "Doctor")
             );
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-        List<MedicalRecord> medRecList = new ArrayList<>();
+        List<Doctor> doctorList = new ArrayList<>();
 
         for (QueryDocumentSnapshot qds : querySnapshot) {
-            medRecList.add(new MedicalRecord(qds.getId(), qds.getData()));
+            doctorList.add(new Doctor(qds.getId(), qds.getData()));
         }
-        return medRecList;
-    }
-
-    public static List<MedicalRecord> getAllMedRec() {
-        List<QueryDocumentSnapshot> querySnapshot;
-        querySnapshot = dbManager.getAllDocuments(DBManager.CollectionPath.MEDICAL_RECORD);
-
-        List<MedicalRecord> medRecData = new ArrayList<>();
-
-        for (QueryDocumentSnapshot qds : querySnapshot) {
-            medRecData.add(new MedicalRecord(qds.getId(), qds.getData()));
-        }
-
-        return medRecData;
+        return doctorList;
     }
     //UPDATE METHODS
-    public static void updateMedRec(String medRecID, Object... fieldsAndValues) {
+    public static void updateDoctor(String doctorId, Object... fieldsAndValues) {
         Map<String, Object> newData = new HashMap<>();
         for (int i = 0; i < fieldsAndValues.length; i += 2) {
             newData.put((String) fieldsAndValues[i], fieldsAndValues[i + 1]);
         }
-        dbManager.updateDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRecID, newData);
+        dbManager.updateDocument(DBManager.CollectionPath.STAFF, doctorId, newData);
     }
 
 }

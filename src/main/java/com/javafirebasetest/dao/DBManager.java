@@ -69,7 +69,6 @@ public class DBManager {
     }
 
     public void populateData() {
-
     }
 
     public void setUp() throws ExecutionException, InterruptedException {

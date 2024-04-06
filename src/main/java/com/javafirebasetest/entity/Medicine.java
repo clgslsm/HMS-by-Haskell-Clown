@@ -63,10 +63,9 @@ public class Medicine {
     }
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
-        map.put("medicineId", medicineId);
         map.put("medicineName", medicineName);
-        map.put("importDate", importDate);
-        map.put("expiryDate", expiryDate);
+        map.put("importDate", importDate.toString());
+        map.put("expiryDate", expiryDate.toString());
         map.put("description", description);
         map.put("amount", amount);
         map.put("unit", unit);
