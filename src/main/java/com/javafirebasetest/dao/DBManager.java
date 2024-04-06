@@ -24,7 +24,7 @@ public class DBManager {
 
 
     public enum CollectionPath {
-        PATIENT("Patients"), STAFF("Staffs"), MEDICAL_RECORD("MedicalRecords"), MACHINE("Machines"), MEDICINE("Medicines");
+        PATIENT("Patients"), STAFF("Staffs"), MEDICAL_RECORD("MedicalRecords"), MACHINE("Machines"), MEDICINE("Medicines"), USER("User");
         private final String value;
         CollectionPath(String value) {
             this.value = value;
@@ -71,15 +71,6 @@ public class DBManager {
     public void populateData() {
     }
 
-    public void setUp() throws ExecutionException, InterruptedException {
-        DocumentReference docRef = db.collection("users").document("idk");
-        Map<String, Object> data = new HashMap<>();
-        data.put("first", "clgslsm");
-        data.put("age", "15");
-        data.put("born", 1815);
-        ApiFuture<WriteResult> result = docRef.set(data);
-        System.out.println("Update time : " + result.get().getUpdateTime());
-    }
 
     // Add a document to a collection
     public void addDocument(CollectionPath collectionPath, Map<String, Object> data) {
@@ -90,24 +81,6 @@ public class DBManager {
             DocumentReference docRef = result.get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public void get() throws ExecutionException, InterruptedException {
-        // asynchronously retrieve all users
-        ApiFuture<QuerySnapshot> query = db.collection("users").get();
-// ...
-// query.get() blocks on response
-        QuerySnapshot querySnapshot = query.get();
-        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
-        for (QueryDocumentSnapshot document : documents) {
-            System.out.println("User: " + document.getId());
-            System.out.println("First: " + document.getString("first"));
-            if (document.contains("middle")) {
-                System.out.println("Middle: " + document.getString("middle"));
-            }
-            System.out.println("Last: " + document.getString("last"));
-            System.out.println("Born: " + document.getLong("born"));
         }
     }
     // Get a document by document ID

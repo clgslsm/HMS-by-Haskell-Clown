@@ -1,5 +1,3 @@
-package com.javaswing;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -14,6 +12,10 @@ public class ReceptionistUI extends JFrame {
         this.setVisible(true);
         this.add(new ReceptionistUIContainer());
         this.pack();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(ReceptionistUI::new);
     }
 }
 

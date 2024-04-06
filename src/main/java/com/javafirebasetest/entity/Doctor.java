@@ -25,6 +25,22 @@ public class Doctor extends Staff {
         this.patientCount = (Long) doctorData.get("patientCount");
     }
 
+    public DeptType getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(DeptType department) {
+        this.department = department;
+    }
+
+    public Long getPatientCount() {
+        return patientCount;
+    }
+
+    public void setPatientCount(Long patientCount) {
+        this.patientCount = patientCount;
+    }
+
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("name", name);

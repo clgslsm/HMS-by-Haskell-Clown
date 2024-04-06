@@ -1,5 +1,6 @@
 package com.javafirebasetest.dao;
 
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.entity.DeptType;
@@ -13,7 +14,6 @@ import java.util.concurrent.ExecutionException;
 
 public class DoctorDAO {
     private static final DBManager dbManager = DBManager.getInstance();
-
     //CRUD
 
     public static void addDoctor(Doctor doctor) {
@@ -26,16 +26,24 @@ public class DoctorDAO {
 
     //READ METHODS
     public static Doctor getDoctorById(String doctorId) {
-
         Map<String, Object> doctorData = null;
         try {
-            doctorData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, doctorId).getData();
+            DocumentSnapshot documentSnapshot = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, doctorId);
+
+            if (documentSnapshot.exists()) { // Check if the document exists
+                doctorData = documentSnapshot.getData();
+            } else {
+                throw new RuntimeException("Doctor with ID " + doctorId + " does not exist");
+            }
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException("Doctor Id does not exist" + e.toString());
         }
 
-        assert doctorData != null;
-        return new Doctor(doctorId, doctorData);
+        if (doctorData != null) {
+            return new Doctor(doctorId, doctorData);
+        } else {
+            throw new RuntimeException("Doctor data is null for ID: " + doctorId);
+        }
     }
 
     public static List<Doctor> getDoctorByDepartment(DeptType deptType) {

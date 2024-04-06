@@ -11,8 +11,13 @@ public class User {
     private String username;
     private String password;
     private Mode userMode;
+<<<<<<< HEAD
     private String staffId;
     protected static User instanceUser;
+=======
+    private String Staff_ID;
+    //protected static User instanceUser;
+>>>>>>> ad772331ba671cff71e9ca796461cba8af6f37ae
     public enum Mode {
         ADMIN("Admin") , DOCTOR("Doctor"), RECEPTIONIST("Receptionist"),
         TECHNICIAN("Technician"), PHARMACIST("Pharmacist");
@@ -25,8 +30,20 @@ public class User {
             throw new IllegalArgumentException("Invalid user mode: " + value);
         }
     }
+<<<<<<< HEAD
     private User() {super();}
     private User(String username, String password, Mode userMode) {
+=======
+    public User() {super();}
+    public User(String userName, String password, Mode userMode, String ID) {
+        super();
+        this.userName = userName;
+        this.password = password;
+        this.userMode = userMode;
+        this.Staff_ID = ID;
+    }
+    public User(String userName, String password, Mode userMode) {
+>>>>>>> ad772331ba671cff71e9ca796461cba8af6f37ae
         super();
         this.username = username;
         this.password = password;
@@ -51,9 +68,18 @@ public class User {
     }
 
     public void setUserMode(Mode userMode) {this.userMode = userMode;}
+<<<<<<< HEAD
     public void setStaffId(String staffId) {this.staffId = staffId;}
     public Mode getUserMode() {return userMode;}
     public String getStaffId() {return staffId;}
+=======
+    public void setID(String ID) {this.Staff_ID = ID;}
+
+    public String getUserName() {return userName;}
+    public String getPassword() {return password;}
+    public Mode getUserMode() {return userMode;}
+    public String getID() {return Staff_ID;}
+>>>>>>> ad772331ba671cff71e9ca796461cba8af6f37ae
     public String getHashPassword() throws NoSuchAlgorithmException {return toHexString(getSHA(password));}
 
     public String toString() {

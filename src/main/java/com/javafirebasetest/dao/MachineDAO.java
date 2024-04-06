@@ -79,7 +79,7 @@ public class MachineDAO {
         }
         return machineData;
     }
-    public static void addMachine(Machine machine) {
+    public static void addMachine(Machine machine) throws ExecutionException, InterruptedException {
         dbManager.addDocument(DBManager.CollectionPath.MACHINE, machine.toMap());
     }
     public static void deleteMachine(String machineId) {
