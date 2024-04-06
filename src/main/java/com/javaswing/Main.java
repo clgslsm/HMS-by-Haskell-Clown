@@ -1,23 +1,42 @@
 package com.javaswing;
 
-import com.google.cloud.Timestamp;
 import com.javafirebasetest.dao.DoctorDAO;
-import com.javafirebasetest.dao.MedRecDAO;
+import com.javafirebasetest.dao.StaffDAO;
 import com.javafirebasetest.entity.DeptType;
 import com.javafirebasetest.entity.Doctor;
+import com.javafirebasetest.entity.Staff;
+import org.checkerframework.checker.units.qual.Time;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
+import java.util.function.DoubleConsumer;
 
 public class Main {
     public static void main(String[] args) {
-//        List<Doctor> doctorList = DoctorDAO.getDoctorByDepartment(DeptType.NUCLEAR_MEDICINE);
-//        for (Doctor doc : doctorList){
-//            System.out.println(doc);
-//        }
+        Doctor newDoctor = new Doctor(
+          "lmao",
+          "Strange",
+          DeptType.PSYCHIATRY
+        );
 
-        Doctor doctor = DoctorDAO.getDoctorById("EQTOqwQ55vGsqfC7YrPS");
-        System.out.println(doctor);
+        DoctorDAO.addDoctor(newDoctor);
 
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        DoctorDAO.updateDoctor("lmao", "department", DeptType.DENTAL.getValue());
+
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        DoctorDAO.deleteDoctorById("lmao");
 //        SwingUtilities.invokeLater(ReceptionistUI::new);
     }
 }

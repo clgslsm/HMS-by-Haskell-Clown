@@ -1,9 +1,9 @@
 package com.javafirebasetest.entity;
 public class Pharmacist extends Staff {
     private Pharmacist() {super();}
-    private Pharmacist(String id, String name) {super(User.Mode.PHARMACIST, id, name);}
+    private Pharmacist(String id, String name) {super(id, name, User.Mode.PHARMACIST);}
     @Override
     public String toString() {
-        return "pharmacist [ID=" + getID() + ", name=" + getName() + "]";
+        return "pharmacist [ID=" + getStaffId() + ", name=" + getName() + "]";
     }
 }

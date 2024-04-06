@@ -4,7 +4,6 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.entity.DeptType;
 import com.javafirebasetest.entity.Doctor;
-import com.javafirebasetest.entity.Doctor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,19 +16,28 @@ public class DoctorDAO {
 
     //CRUD
 
+    public static void addDoctor(Doctor doctor) {
+        if (doctor.getStaffId() == null) {
+            dbManager.addDocument(DBManager.CollectionPath.STAFF, doctor.toMap());
+        } else {
+            dbManager.updateDocument(DBManager.CollectionPath.STAFF, doctor.getStaffId(), doctor.toMap());
+        }
+    }
+
     //READ METHODS
-    public static Doctor getDoctorById(String doctorId){
+    public static Doctor getDoctorById(String doctorId) {
 
         Map<String, Object> doctorData = null;
         try {
             doctorData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, doctorId).getData();
         } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException("Doctor Id does not exist"  + e.toString() );
+            throw new RuntimeException("Doctor Id does not exist" + e.toString());
         }
 
         assert doctorData != null;
         return new Doctor(doctorId, doctorData);
     }
+
     public static List<Doctor> getDoctorByDepartment(DeptType deptType) {
         List<QueryDocumentSnapshot> querySnapshot;
         try {
@@ -53,7 +61,7 @@ public class DoctorDAO {
         try {
             querySnapshot = dbManager.getDocumentsByConditions(
                     DBManager.CollectionPath.STAFF,
-                    Filter.equalTo("job", "Doctor")
+                    Filter.equalTo("userMode", "Doctor")
             );
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
@@ -65,6 +73,7 @@ public class DoctorDAO {
         }
         return doctorList;
     }
+
     //UPDATE METHODS
     public static void updateDoctor(String doctorId, Object... fieldsAndValues) {
         Map<String, Object> newData = new HashMap<>();
@@ -72,6 +81,14 @@ public class DoctorDAO {
             newData.put((String) fieldsAndValues[i], fieldsAndValues[i + 1]);
         }
         dbManager.updateDocument(DBManager.CollectionPath.STAFF, doctorId, newData);
+    }    //DELETE METHODS
+
+    public static void deleteDoctorById(String doctorId) {
+        try {
+            dbManager.deleteDocument(DBManager.CollectionPath.STAFF, doctorId);
+        } catch (Exception e) {
+            throw new RuntimeException("Delete failed: Doctor does not exist/" + e.toString());
+        }
     }
 
 }
