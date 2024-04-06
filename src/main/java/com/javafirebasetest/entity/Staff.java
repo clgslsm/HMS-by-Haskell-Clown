@@ -1,28 +1,23 @@
 package com.javafirebasetest.entity;
-
-public class Staff extends User {
-    protected String ID;
-    protected String name;
-    //protected static Staff instanceStaff;
+public abstract class Staff {
+    private User.Mode userMode;
+    private String ID;
+    private String name;
     public Staff() {super();}
-    public Staff(String username, String password, Mode userMode, String id, String name) {
-        super(username, password, userMode);
+    public Staff(User.Mode userMode, String id, String name) {
+        super();
+        this.userMode = userMode;
         this.ID = id;
         this.name = name;
     }
-//    public static Staff getInstanceStaff() {
-//        if (instanceStaff == null) instanceStaff = new Staff();
-//        return instanceStaff;
-//    }
-//    public static Staff getInstanceStaff(String username, String password, Mode userMode, String id, String name) {
-//        if (instanceStaff == null) instanceStaff = new Staff(username, password, userMode, id, name);
-//        return instanceStaff;
-//    }
+    public void setUserMode(User.Mode userMode) {this.userMode = userMode;}
     public void setID(String id) {this.ID = id;}
     public void setName(String name) {this.name = name;}
+    public User.Mode getUserMode() {return userMode;}
+
     public String getID() {return this.ID;}
     public String getName() {return this.name;}
     public String toString() {
-        return "Staff [ID=" + ID + ", name=" + name + "]";
+        return "Staff [userMode=" + userMode.getValue() + ", ID=" + ID + ", name=" + name + "]";
     }
 }
