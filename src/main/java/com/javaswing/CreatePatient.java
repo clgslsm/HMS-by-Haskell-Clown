@@ -132,7 +132,7 @@ class DefaultPage extends JLabel {
 
     void addPatientToTable(Patient patient) {
         ButtonRenderer buttonRenderer = new ButtonRenderer();
-        Object[] rowData = new Object[]{patient.getPatientID(), patient.getName(), patient.getAge(), patient.getGender(), patient.getBloodGroup(), patient.getPhoneNumber(), buttonRenderer};
+        Object[] rowData = new Object[]{patient.getPatientId(), patient.getName(), patient.getAge(), patient.getGender(), patient.getBloodGroup(), patient.getPhoneNumber(), buttonRenderer};
         model.addRow(rowData);
     }
 
