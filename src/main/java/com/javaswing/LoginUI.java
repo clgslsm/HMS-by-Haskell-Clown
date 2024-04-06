@@ -1,14 +1,12 @@
 package com.javaswing;
 
 import com.javafirebasetest.dao.DoctorDAO;
-import com.javafirebasetest.dao.UserDAO;
 import com.javafirebasetest.entity.Doctor;
 import com.javafirebasetest.entity.User;
-import com.javafirebasetest.AuthManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.security.NoSuchAlgorithmException;
 
 public class LoginUI extends JFrame implements ActionListener {
     // Components
