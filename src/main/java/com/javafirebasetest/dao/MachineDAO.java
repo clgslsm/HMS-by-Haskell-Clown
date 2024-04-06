@@ -3,6 +3,7 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.dao.DBManager;
 import com.javafirebasetest.entity.Machine;
+import com.javafirebasetest.entity.Patient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,21 +67,22 @@ public class MachineDAO {
     }
     public static List<Machine> getAllMachines() {
         List<QueryDocumentSnapshot> querySnapshot;
-        try {
-            querySnapshot = dbManager.getDocumentsByConditions(
-                    DBManager.CollectionPath.MACHINE
-            );
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        querySnapshot = dbManager.getAllDocuments(DBManager.CollectionPath.MACHINE);
+
         List<Machine> machineData = new ArrayList<>();
+
         for (QueryDocumentSnapshot qds : querySnapshot) {
             machineData.add(new Machine(qds.getId(), qds.getData()));
         }
+
         return machineData;
     }
-    public static void addMachine(Machine machine) throws ExecutionException, InterruptedException {
-        dbManager.addDocument(DBManager.CollectionPath.MACHINE, machine.toMap());
+    public static void addMachine(Machine machine){
+        if (machine.getMachineId() == null) {
+            dbManager.addDocument(DBManager.CollectionPath.MACHINE, machine.toMap());
+        } else {
+            dbManager.updateDocument(DBManager.CollectionPath.MACHINE, machine.getMachineId(), machine.toMap());
+        }
     }
     public static void deleteMachine(String machineId) {
         try {

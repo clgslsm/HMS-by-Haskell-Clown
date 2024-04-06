@@ -27,7 +27,6 @@ public class PatientDAO {
         } else {
             dbManager.updateDocument(DBManager.CollectionPath.PATIENT, patient.getPatientId(), patient.toMap());
         }
-
     }
     public String getHashPassword(String password) throws NoSuchAlgorithmException {return toHexString(getSHA(password));}
     //READ METHODS

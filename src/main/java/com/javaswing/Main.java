@@ -1,37 +1,21 @@
 package com.javaswing;
+import com.javafirebasetest.dao.MachineDAO;
+import com.javafirebasetest.dao.MedicineDAO;
 import com.javafirebasetest.entity.Doctor;
 import com.javafirebasetest.entity.DeptType;
 import com.javafirebasetest.dao.DoctorDAO;
+import com.javafirebasetest.entity.Machine;
+import com.javafirebasetest.entity.Medicine;
 
+import javax.swing.*;
+import java.time.LocalDate;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 
 public class Main {
     public static void main(String[] args) {
-//        Doctor newDoctor = new Doctor(
-//                "lmao",
-//                "Strange",
-//                DeptType.PSYCHIATRY
-//        );
-//
-//
-//        DoctorDAO.addDoctor(newDoctor);
-//
-//        try {
-//            TimeUnit.SECONDS.sleep(5);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        DoctorDAO.updateDoctor("lmao", "department", DeptType.DENTAL.getValue());
-//
-//        try {
-//            TimeUnit.SECONDS.sleep(5);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        DoctorDAO.deleteDoctorById("lmao");
+
     }
 }
 

@@ -85,8 +85,7 @@ public class DBManager {
     }
     // Get a document by document ID
 
-    public DocumentSnapshot getDocumentById(CollectionPath collectionPath, String documentId) throws
-            ExecutionException, InterruptedException {
+    public DocumentSnapshot getDocumentById(CollectionPath collectionPath, String documentId) throws ExecutionException, InterruptedException {
         DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
         ApiFuture<DocumentSnapshot> future = docRef.get();
         DocumentSnapshot document = future.get();
