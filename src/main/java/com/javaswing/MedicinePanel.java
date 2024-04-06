@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import com.javafirebasetest.dao.receptionist.PatientDAO;
+import com.javafirebasetest.dao.PatientDAO;
 class MedicinePanel extends JPanel {
     ArrayList<Medicine> data = new ArrayList<>();
     MedicineDefaultPage defaultPage;

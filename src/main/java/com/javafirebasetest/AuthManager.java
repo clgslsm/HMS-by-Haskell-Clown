@@ -19,7 +19,7 @@ public class AuthManager {
 
     public void printDoctorInformation(User user) {
         if (user.getUserMode() == Mode.DOCTOR) {
-            System.out.println(user.getID());
+            System.out.println(user.getStaffID());
         } else {
             System.out.println("User is not a doctor.");
         }

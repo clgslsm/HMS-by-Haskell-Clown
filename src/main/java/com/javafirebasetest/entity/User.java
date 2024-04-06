@@ -29,7 +29,7 @@ public class User {
         this.userName = userName;
         this.password = password;
         this.userMode = userMode;
-        this.Staff_ID = ID;
+        this.staffID = ID;
     }
     public User(String userName, String password, Mode userMode) {
         super();
