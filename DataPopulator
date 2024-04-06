@@ -165,3 +165,81 @@
 
 Hệ thống status của medicalRecord, machine, medicine
 Hệ thống xếp lịch
+
+        Firestore db = DBManager.getInstance().db;
+
+        List<Map<String, Object>> medicineDataList = new ArrayList<>();
+
+        // Generate 20 medicines
+        for (int i = 1; i <= 20; i++) {
+            Medicine medicine = generateRandomMedicine();
+            medicineDataList.add(medicine.toMap());
+        }
+
+        // Add medicines to the "Medicines" collection
+        for (Map<String, Object> medicineData : medicineDataList) {
+            ApiFuture<DocumentReference> docRef = db.collection("Medicines").add(medicineData);
+            System.out.println("Added medicine with ID: " + docRef.get().getId());
+        }
+        Medicine newMedicine = new Medicine(
+                        "lmao",
+                        "Thuoc an than",
+                        LocalDate.now(),
+                        LocalDate.now(),
+                        null,
+                        64L,
+                        "viên",
+                        100L
+                );
+
+                MedicineDAO.addMedicine(newMedicine);
+
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Medicine medicine;
+                try {
+                    medicine = MedicineDAO.getMedicineById("lmao");
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                System.out.println(medicine);
+
+                MedicineDAO.updateMedicine("lmao", "description", "Bla bla bla");
+
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+
+    private static Machine generateRandomMachine() {
+        Random random = new Random();
+
+        String machineId = "Machine-" + random.nextInt(1000);
+        String machineName = "Machine-" + random.nextInt(1000);
+        LocalDate purchaseDate = LocalDate.now().minusDays(random.nextInt(365)); // Random purchase date within the past year
+        Machine.Status machineStatus = Machine.Status.values()[random.nextInt(Machine.Status.values().length)];
+        String usageHistory = "Usage history for " + machineName;
+
+        return new Machine(machineId, machineName, purchaseDate, machineStatus, usageHistory);
+    }
+    private static Medicine generateRandomMedicine() {
+        Random random = new Random();
+
+        String medicineId = "Medicine-" + random.nextInt(1000);
+        String medicineName = "Medicine-" + random.nextInt(1000);
+        LocalDate importDate = LocalDate.now().minusDays(random.nextInt(365)); // Random import date within the past year
+        LocalDate expiryDate = importDate.plusDays(random.nextInt(365)); // Random expiry date within a year from import date
+        String description = "Description for " + medicineName;
+        int amount = random.nextInt(100); // Random amount
+        String unit = "Unit"; // You can randomize the unit if needed
+        int price = random.nextInt(1000); // Random price
+
+        return new Medicine(medicineId, medicineName, importDate, expiryDate, description, amount, unit, price);
+    }

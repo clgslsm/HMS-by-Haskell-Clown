@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import com.javafirebasetest.dao.DoctorDAO;
 
 class DoctorPanel extends JPanel {
     ArrayList<Doctor> data = new ArrayList<>();
@@ -141,10 +142,10 @@ class DoctorDefaultPage extends JLabel {
         body.setBackground(Color.white);
 
         model = new CustomTableModel();
-//        List<Doctor> allDoctors = DoctorDAO.getAllDoctors();
-//        for (Doctor p : allDoctors) {
-//            addDoctorToTable(p);
-//        }
+        List<Doctor> allDoctors = DoctorDAO.getAllDoctor();
+        for (Doctor p : allDoctors) {
+            addDoctorToTable(p);
+        }
         doctorList = new JTable(model); // UI for patient list
 
         doctorList.getTableHeader().setPreferredSize(new Dimension(doctorList.getTableHeader().getWidth(), 40));
@@ -175,10 +176,10 @@ class DoctorDefaultPage extends JLabel {
         this.add(body);
         //this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
     }
-    void addDoctorToTable (Doctor dortor){
-//        ButtonRenderer buttonRenderer = new ButtonRenderer();
-//        Object[] rowData = new Object[]{doctor.getDoctorID(), doctor.getName(), doctor.getAge(), doctor.getGender(), doctor.getBloodGroup().getValue(), doctor.getPhoneNumber(), buttonRenderer};
-//        model.addRow(rowData);
+    void addDoctorToTable (Doctor doctor){
+        ButtonRenderer buttonRenderer = new ButtonRenderer();
+        Object[] rowData = new Object[]{doctor.getStaffId(), doctor.getDepartment().getValue(), doctor.getName(), doctor.getPatientCount(), buttonRenderer};
+        model.addRow(rowData);
     }
     public ViewDoctorInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
         ViewDoctorInfoPage viewPage = new ViewDoctorInfoPage();
@@ -199,7 +200,7 @@ class DoctorDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Department","Job","Name","Number of Patient"};
+        private final String[] columnNames = {"ID","Department","Name","Number of Patient"};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
@@ -233,7 +234,7 @@ class DoctorDefaultPage extends JLabel {
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             // Make all cells non-editable
-            return columnIndex == 4;
+            return columnIndex == 3;
         }
 
         // Method to add a new row to the table

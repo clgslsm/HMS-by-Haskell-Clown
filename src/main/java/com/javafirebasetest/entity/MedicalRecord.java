@@ -39,8 +39,7 @@ public class MedicalRecord {
         }
     }
 
-    public MedicalRecord() {
-    }
+    public MedicalRecord() {}
 
     //    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
     public MedicalRecord(String medicalRecordID, String patientId, DeptType department, String doctorId, Timestamp checkIn,

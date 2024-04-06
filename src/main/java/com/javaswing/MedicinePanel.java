@@ -1,4 +1,5 @@
 package com.javaswing;
+import com.javafirebasetest.dao.MedicineDAO;
 import com.javafirebasetest.entity.*;
 
 import javax.swing.*;
@@ -12,6 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 class MedicinePanel extends JPanel {
     ArrayList<Medicine> data = new ArrayList<>();
@@ -141,10 +145,10 @@ class MedicineDefaultPage extends JLabel {
         body.setBackground(Color.white);
 
         model = new CustomTableModel();
-//        List<Medicin> allMedicins = MedicinDAO.getAllMedicins();
-//        for (Medicin p : allMedicins) {
-//            addMedicinToTable(p);
-//        }
+        List<Medicine> allMedicins = MedicineDAO.getAllMedicine();
+        for (Medicine p : allMedicins) {
+            addMedicineToTable(p);
+        }
         medicineList = new JTable(model); // UI for patient list
 
         medicineList.getTableHeader().setPreferredSize(new Dimension(medicineList.getTableHeader().getWidth(), 40));
@@ -162,6 +166,7 @@ class MedicineDefaultPage extends JLabel {
         //medicineList.getColumn("View").setCellRenderer(new ButtonRenderer());
         //medicineList.getColumn("View").setCellEditor(new ButtonEditor(new JCheckBox()));
         medicineList.setRowHeight(40);
+
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(medicineList);
         body.add(scrollPane);
@@ -173,10 +178,10 @@ class MedicineDefaultPage extends JLabel {
         this.add(space);
         this.add(body);
     }
-    void addMedicinToTable (Medicine medicin){
-//        ButtonRenderer buttonRenderer = new ButtonRenderer();
-//        Object[] rowData = new Object[]{medicin.getMedicinID(), medicin.getName(), medicin.getAge(), medicin.getGender(), medicin.getBloodGroup().getValue(), medicin.getPhoneNumber(), buttonRenderer};
-//        model.addRow(rowData);
+    void addMedicineToTable (Medicine medicine){
+        ButtonRenderer buttonRenderer = new ButtonRenderer();
+        Object[] rowData = new Object[]{medicine.getMedicineId(), medicine.getMedicineName(), medicine.getImportDate(), medicine.getExpiryDate(),medicine.getDescription(), medicine.getAmount(), medicine.getUnit(), medicine.getPrice(), buttonRenderer};
+        model.addRow(rowData);
     }
     public ViewMedicineInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
         ViewMedicineInfoPage viewPage = new ViewMedicineInfoPage();
@@ -197,11 +202,11 @@ class MedicineDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","User Action"};
+        private final String[] columnNames = {"ID","Name","Import Date","Expiry Date","Description", "Amount","Unit", "Price"};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
-        private final Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,String.class,JButton.class};
+        private final Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,String.class,String.class, JButton.class};
 
         @Override
         public int getRowCount() {
@@ -231,7 +236,7 @@ class MedicineDefaultPage extends JLabel {
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             // Make all cells non-editable
-            return columnIndex == 6;
+            return columnIndex == 7;
         }
 
         // Method to add a new row to the table
@@ -296,7 +301,7 @@ class MedicineDefaultPage extends JLabel {
     }
 
     public JButton AddMedicineButton(){
-        JButton addMedicinButton = new RoundedButton("  + Add medicin  ");
+        JButton addMedicinButton = new RoundedButton("  + Add medicine  ");
         addMedicinButton.setFont(new Font("Courier",Font.PLAIN,13));
         addMedicinButton.setFocusable(false);
         addMedicinButton.setForeground(Color.WHITE);

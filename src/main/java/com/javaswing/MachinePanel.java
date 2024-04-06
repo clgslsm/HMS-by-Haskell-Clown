@@ -1,4 +1,5 @@
 package com.javaswing;
+import com.javafirebasetest.dao.MachineDAO;
 import com.javafirebasetest.entity.*;
 
 import javax.swing.*;
@@ -140,10 +141,10 @@ class MachineDefaultPage extends JLabel {
         body.setBackground(Color.white);
 
         model = new CustomTableModel();
-//        List<Machine> allMachines = MachineDAO.getAllMachines();
-//        for (Machine p : allMachines) {
-//            addMachineToTable(p);
-//        }
+        List<Machine> allMachines = MachineDAO.getAllMachines();
+        for (Machine p : allMachines) {
+            addMachineToTable(p);
+        }
         machineList = new JTable(model); // UI for patient list
 
         machineList.getTableHeader().setPreferredSize(new Dimension(machineList.getTableHeader().getWidth(), 40));
@@ -173,9 +174,9 @@ class MachineDefaultPage extends JLabel {
         this.add(body);
     }
     void addMachineToTable (Machine machine){
-//        ButtonRenderer buttonRenderer = new ButtonRenderer();
-//        Object[] rowData = new Object[]{machine.getMachineID(), machine.getName(), machine.getAge(), machine.getGender(), machine.getBloodGroup().getValue(), machine.getPhoneNumber(), buttonRenderer};
-//        model.addRow(rowData);
+        ButtonRenderer buttonRenderer = new ButtonRenderer();
+        Object[] rowData = new Object[]{machine.getMachineId(), machine.getMachineName(), machine.getPurchaseDate(), machine.getMachineStatus(), machine.getUsageHistory(), buttonRenderer};
+        model.addRow(rowData);
     }
     public ViewMachineInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
         ViewMachineInfoPage viewPage = new ViewMachineInfoPage();
@@ -196,7 +197,7 @@ class MachineDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","User Action"};
+        private final String[] columnNames = {"ID","Name","Purchase Date","Status","Usage History"};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
@@ -230,7 +231,7 @@ class MachineDefaultPage extends JLabel {
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             // Make all cells non-editable
-            return columnIndex == 6;
+            return columnIndex == 5;
         }
 
         // Method to add a new row to the table
