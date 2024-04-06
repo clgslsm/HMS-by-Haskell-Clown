@@ -19,7 +19,7 @@ public class UserDAO {
     //USER SPECIAL ADD
     public static String addUser(User user) {
         if (user.getUserId() == null) {
-            if (!getUserByUsername(user.getUsername()).isEmpty())
+            if (getUserByUsername(user.getUsername()) != null)
                 throw new RuntimeException("Username already exist");
             return dbManager.addDocument(DBManager.CollectionPath.USER, user.toMap());
         } else {
@@ -35,7 +35,8 @@ public class UserDAO {
         return new User(userId, userData);
     }
 
-    public static List<User> getUserByUsername(String username) {
+    //100% unique
+    public static User getUserByUsername(String username) {
         List<QueryDocumentSnapshot> querySnapshot;
 
         querySnapshot = dbManager.getDocumentsByConditions(
@@ -48,7 +49,30 @@ public class UserDAO {
         for (QueryDocumentSnapshot qds : querySnapshot) {
             userList.add(new User(qds.getId(), qds.getData()));
         }
-        return userList;
+
+        if (userList.isEmpty()) return null;
+
+        return userList.getFirst();
+    }
+
+    public static User getUserByUsernamePassword(String username, String password) {
+        List<QueryDocumentSnapshot> querySnapshot;
+
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.USER,
+                Filter.equalTo("username", username),
+                Filter.equalTo("password", User.hashPassword(password))
+        );
+
+        List<User> userList = new ArrayList<>();
+
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            userList.add(new User(qds.getId(), qds.getData()));
+        }
+
+        if (userList.isEmpty()) return null;
+
+        return userList.getFirst();
     }
 
     public static List<User> getUserByUserMode(User.Mode userMode) {
