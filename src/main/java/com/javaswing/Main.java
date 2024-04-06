@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 
 public class Main {
     public static void main(String[] args) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
-//        SwingUtilities.invokeLater(ReceptionistUI::new);
+        SwingUtilities.invokeLater(MainPage::new);
 //        DoctorDAO.createDoctor("doctor1", "doctor","nanh", DeptType.EYE);
 //        DoctorDAO.createDoctor("doctor2", "doctor","ngoc anh", DeptType.EYE);
 //          UserDAO.createUser("admin", "admin", User.Mode.ADMIN);
