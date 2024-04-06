@@ -2,7 +2,8 @@ package com.javafirebasetest.entity;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
+import java.util.HashMap;
+import java.util.Map;
 public class Medicine {
 
     private String medicineId;
@@ -25,6 +26,17 @@ public class Medicine {
         this.unit = unit;
         this.price = price;
     }
+    public Medicine(String medicineId, Map<String, Object> medicine) {
+        this.medicineId = medicineId;
+        this.medicineName = (String) medicine.get("medicineName");
+        this.importDate = LocalDate.parse((String) medicine.get("importDate"));
+        this.expiryDate = LocalDate.parse((String) medicine.get("expiryDate"));
+        this.description = (String) medicine.get("description");
+        this.amount = ((Long) medicine.get("amount")).intValue();
+        this.unit = (String) medicine.get("unit");
+        this.price = ((Long) medicine.get("price")).intValue();
+    }
+
     public String getMedicineId() {return medicineId;}
     public void setMedicineId(String medicineId) {this.medicineId = medicineId;}
     public String getMedicineName() {return medicineName;}
@@ -48,6 +60,18 @@ public class Medicine {
     public String getformattedExpiryDate() { // Hiển thị ngày tháng theo định dạng "dd/mm/yyyy"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return expiryDate.format(formatter);
+    }
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("medicineId", medicineId);
+        map.put("medicineName", medicineName);
+        map.put("importDate", importDate);
+        map.put("expiryDate", expiryDate);
+        map.put("description", description);
+        map.put("amount", amount);
+        map.put("unit", unit);
+        map.put("price", price);
+        return map;
     }
     @Override
     public String toString() {
