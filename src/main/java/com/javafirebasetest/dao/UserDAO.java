@@ -2,74 +2,125 @@ package com.javafirebasetest.dao;
 
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.javafirebasetest.dao.DBManager;
 import com.javafirebasetest.entity.User;
 
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-import static com.javafirebasetest.entity.HashPassword.getSHA;
-import static com.javafirebasetest.entity.HashPassword.toHexString;
 
 public class UserDAO {
     private static final DBManager dbManager = DBManager.getInstance();
 
-    public static void createUser(String userName, String password, User.Mode mode) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("userName", userName);
-        userData.put("password", getHashPassword(password));
-        userData.put("userMode", mode);
-        dbManager.addDocument(DBManager.CollectionPath.USER, userData);
+    //CRUD
+
+    //CREATE METHODS
+
+    //USER SPECIAL ADD
+    public static String addUser(User user) {
+        if (user.getUserId() == null) {
+            if (getUserByUsername(user.getUsername()) != null)
+                throw new RuntimeException("Username already exist");
+            return dbManager.addDocument(DBManager.CollectionPath.USER, user.toMap());
+        } else {
+            dbManager.updateDocument(DBManager.CollectionPath.USER, user.getUserId(), user.toMap());
+            return user.getUserId();
+        }
     }
-    public static void createUser(String userName, String password, User.Mode mode, String staff_ID) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("userName", userName);
-        userData.put("password", getHashPassword(password));
-        userData.put("userMode", mode);
-        userData.put("staff_ID", staff_ID);
-        dbManager.addDocument(DBManager.CollectionPath.USER, userData);
+
+    //READ METHODS
+    public static User getUserById(String userId) {
+        Map<String, Object> userData = dbManager.getDocumentById(DBManager.CollectionPath.USER, userId).getData();
+        assert userData != null;
+        return new User(userId, userData);
     }
-    // READ METHODS
-    public static User getUserByUsername(String username) throws ExecutionException, InterruptedException {
+
+    //100% unique
+    public static User getUserByUsername(String username) {
         List<QueryDocumentSnapshot> querySnapshot;
-        try {
-            querySnapshot = dbManager.getDocumentsByConditions(
-                    DBManager.CollectionPath.USER,
-                    Filter.equalTo("userName", username)
-            );
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
+
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.USER,
+                Filter.equalTo("username", username)
+        );
+
+        List<User> userList = new ArrayList<>();
+
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            userList.add(new User(qds.getId(), qds.getData()));
         }
 
-        if (querySnapshot.isEmpty()) {
-            return null; // User not found
-        }
-        QueryDocumentSnapshot document = querySnapshot.getFirst();
-        Map<String, Object> userData = document.getData();
+        if (userList.isEmpty()) return null;
 
-        String password = (String) userData.get("password");
-        User.Mode userMode = User.Mode.fromValue((String) userData.get("userMode"));
-        String Staff_ID = (String) userData.get("staff_ID");
-        return new User(username, password, userMode, Staff_ID);
-
+        return userList.getFirst();
     }
 
-    // Method to authenticate user by comparing hashed passwords
-    public static boolean authenticateUser(User user, String enteredPassword) {
-        try {
-            String hashedEnteredPassword = getHashPassword(enteredPassword); // Hash entered password
-            System.out.println(hashedEnteredPassword);
-            return user != null && user.getPassword().equals(hashedEnteredPassword);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return false;
+    public static User getUserByUsernamePassword(String username, String password) {
+        List<QueryDocumentSnapshot> querySnapshot;
+
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.USER,
+                Filter.equalTo("username", username),
+                Filter.equalTo("password", User.hashPassword(password))
+        );
+
+        List<User> userList = new ArrayList<>();
+
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            userList.add(new User(qds.getId(), qds.getData()));
         }
+
+        if (userList.isEmpty()) return null;
+
+        return userList.getFirst();
     }
 
-    private static String getHashPassword(String enteredPassword) throws NoSuchAlgorithmException {
-        return toHexString(getSHA(enteredPassword));
+    public static List<User> getUserByUserMode(User.Mode userMode) {
+        List<QueryDocumentSnapshot> querySnapshot;
+
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.USER,
+                Filter.equalTo("userMode", userMode)
+        );
+
+        List<User> userList = new ArrayList<>();
+
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            userList.add(new User(qds.getId(), qds.getData()));
+        }
+        return userList;
+    }
+
+    public static List<User> getAllUser() {
+        List<QueryDocumentSnapshot> querySnapshot;
+        querySnapshot = dbManager.getAllDocuments(DBManager.CollectionPath.USER);
+
+        List<User> userData = new ArrayList<>();
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            userData.add(new User(qds.getId(), qds.getData()));
+        }
+
+        return userData;
+    }
+
+    //SPECIAL UPDATE TO HASH PASSWORD
+    public static void updateUser(String userId, Object... fieldsAndValues) {
+        Map<String, Object> newData = new HashMap<>();
+        for (int i = 0; i < fieldsAndValues.length; i += 2) {
+            //Forbid editting username
+            if (fieldsAndValues[i].toString().equalsIgnoreCase("username")){
+                throw new RuntimeException("Updating username is not allowed!");
+            }
+            if (fieldsAndValues[i].toString().equalsIgnoreCase("password")){
+                fieldsAndValues[i + 1] = User.hashPassword((String) fieldsAndValues[i + 1]);
+            }
+            newData.put((String) fieldsAndValues[i], fieldsAndValues[i + 1]);
+        }
+        dbManager.updateDocument(DBManager.CollectionPath.USER, userId, newData);
+    }
+
+    //DELETE METHODS
+    public static void deleteUserById(String userId) {
+        dbManager.deleteDocument(DBManager.CollectionPath.USER, userId);
     }
 }
