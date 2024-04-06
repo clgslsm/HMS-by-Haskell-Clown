@@ -58,7 +58,7 @@ public class MedicineDAO {
         }
         return medicineData;
     }
-    public static void addMedicine(Medicine medicine) {
+    public static void addMedicine(Medicine medicine) throws ExecutionException, InterruptedException {
         dbManager.addDocument(DBManager.CollectionPath.MEDICINE, medicine.toMap());
     }
 }

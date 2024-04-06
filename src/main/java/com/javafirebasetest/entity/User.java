@@ -23,8 +23,15 @@ public class User {
             throw new IllegalArgumentException("Invalid gender: " + value);
         }
     }
-    User() {super();}
-    User(String userName, String password, Mode userMode, String staffID) {
+    public User() {super();}
+    public User(String userName, String password, Mode userMode, String ID) {
+        super();
+        this.userName = userName;
+        this.password = password;
+        this.userMode = userMode;
+        this.Staff_ID = ID;
+    }
+    public User(String userName, String password, Mode userMode) {
         super();
         this.userName = userName;
         this.password = password;
@@ -47,6 +54,7 @@ public class User {
     public String getPassword() {return password;}
     public Mode getUserMode() {return userMode;}
     public String getStaffID() {return staffID;}
+
     public String getHashPassword() throws NoSuchAlgorithmException {return toHexString(getSHA(password));}
 
     public String toString() {

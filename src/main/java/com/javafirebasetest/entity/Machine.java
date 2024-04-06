@@ -60,7 +60,7 @@ public class Machine {
         Map<String, Object> machineData = new HashMap<>();
         machineData.put("machineId", machineId);
         machineData.put("machineName", machineName);
-        machineData.put("purchaseDate", purchaseDate);
+        machineData.put("purchaseDate", purchaseDate.toString());
         machineData.put("machineStatus", machineStatus.getValue());
         machineData.put("usageHistory", usageHistory);
         return machineData;

@@ -17,7 +17,7 @@ public class MedRecDAO {
     //CRUD
 
     //CREATE METHODS
-    public static void addMedRec(MedicalRecord medRec) {
+    public static void addMedRec(MedicalRecord medRec) throws ExecutionException, InterruptedException {
         if (medRec.getmedicalRecordId() == null) {
             dbManager.addDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRec.toMap());
         } else {

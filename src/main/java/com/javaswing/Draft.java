@@ -1,3 +1,5 @@
+/*******************  Old MainFrame.java ***************************/
+
 package com.javaswing;
 
 
@@ -24,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
 import com.javafirebasetest.dao.DBManager;
 
 
-public class MainFrame extends JFrame{
+public class Draft extends JFrame{
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     JPanel mainF = new JPanel();
@@ -97,7 +99,7 @@ public class MainFrame extends JFrame{
     JButton historyButton = new JButton("Lịch sử khám bệnh");
 
 
-    MainFrame() {
+    Draft() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("ABC HOSPITAL MANAGEMENT SYSTEM");
         setSize(screenSize.width, screenSize.height);

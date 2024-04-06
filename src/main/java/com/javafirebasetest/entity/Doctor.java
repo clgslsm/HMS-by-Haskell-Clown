@@ -31,7 +31,6 @@ public class Doctor extends Staff {
     }
     @Override
     public String toString() {
-        return "doctor [ID=" + getID() + ", name=" + getName() +
-                ", department=" + department.getValue() + ", patientCount=" + patientCount + "]";
+        return STR."doctor [ID=\{getID()}, name=\{getName()}, department=\{department.getValue()}, patientCount=\{patientCount}]";
     }
 }
