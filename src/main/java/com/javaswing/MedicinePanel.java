@@ -128,7 +128,7 @@ class MedicineDefaultPage extends JLabel {
 
         // Header container
         JPanel header = new JPanel();
-        JLabel title = new JLabel("Medicin Info");
+        JLabel title = new JLabel("Medicine Info");
         title.setFont(title.getFont().deriveFont(25F));
         title.setForeground(new Color(0x3497F9));
         header.setBackground(new Color(0xF1F8FF));
