@@ -651,14 +651,6 @@ class ViewPatientInfoPage extends JPanel {
                 Object[] rowData = new Object[]{medicalRecord1.getDepartment(), DoctorDAO.getDoctorById(medicalRecord1.getDoctorId()).getName(), medicalRecord1.getCheckIn(), medicalRecord1.getCheckOut(), medicalRecord1.getObservation(), medicalRecord1.getStatus(), medicalRecord1.getServiceReview()};
                 model.addRow(rowData);
             }
-//            System.out.println(patientID);
-//            medicalRecordList = MedRecDAO.getMedRecByPatientId(patientID);
-//            if (!medicalRecordList.isEmpty()) {
-//                MedicalRecord medicalRecord1 = medicalRecordList.getFirst();
-//                Object[] rowData = new Object[]{medicalRecord1.getDepartment(), DoctorDAO.getDoctorById(medicalRecord1.getDoctorId()).getName(), medicalRecord1.getCheckIn(), medicalRecord1.getCheckOut(), medicalRecord1.getObservation(), medicalRecord1.getStatus(), medicalRecord1.getServiceReview()};
-//                model.addRow(rowData);
-//            }
-
             table.setPreferredScrollableViewportSize(new Dimension(400,500));
             JScrollPane scrollPane = new JScrollPane(table);
             scrollPane.setBounds(25,60, 475,500);
