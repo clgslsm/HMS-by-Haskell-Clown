@@ -204,9 +204,9 @@ class PatientDefaultPage extends JLabel {
         model.deleteRow(row);
     }
     public ViewPatientInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
-        ViewPatientInfoPage viewPage = new ViewPatientInfoPage();
         // call patient ID
         Patient patient = PatientDAO.getPatientById(patientList.getValueAt(row,0).toString());
+        ViewPatientInfoPage viewPage = new ViewPatientInfoPage(patient.getPatientId());
         viewPage.form.patientID = patient.getPatientId();
         viewPage.title.setText(STR."#\{patient.getPatientId()}");
         viewPage.form.name.setText(patient.getName());
@@ -215,6 +215,7 @@ class PatientDefaultPage extends JLabel {
         viewPage.form.address.setText(patient.getAddress());
         viewPage.form.DOB.setText(patient.getformattedDate());
         viewPage.form.gender.setSelectedItem(patient.getGender().getValue());
+
         return viewPage;
     }
     public void showSearchResult(String ID) throws ExecutionException, InterruptedException {
@@ -501,9 +502,9 @@ class AddNewPatientPage extends JPanel {
 class ViewPatientInfoPage extends JPanel {
     BackButton backButton = new BackButton();
     JLabel title = new JLabel("#MedicalID");
-    ViewMode form = new ViewMode();
+    ViewMode form;
 
-    ViewPatientInfoPage(){
+    ViewPatientInfoPage(String PatientID){
         title.setFont(title.getFont().deriveFont(18.0F));
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 20));
@@ -518,6 +519,7 @@ class ViewPatientInfoPage extends JPanel {
         title.setAlignmentX(Component.RIGHT_ALIGNMENT);
         this.add(pageHeader);
         this.add(new Box.Filler(new Dimension(100,15), new Dimension(100,15), new Dimension(100,15)));
+        form = new ViewMode(PatientID);
         this.add(form); // Registration form
     }
 
@@ -534,10 +536,13 @@ class ViewPatientInfoPage extends JPanel {
         JButton saveButton = SaveButton();
         JButton cancelButton = CancelButton();
         JPanel PatientInfoForm = Form();
-        JPanel medicalRecord = MedicalRecord();
-        ViewMode(){
+        JPanel medicalRecord;
+        MedicalRecordTableModel model = new MedicalRecordTableModel();
+        JTable table = new JTable(model);
+        ViewMode(String PatientID){
             setLayout(new GridLayout(1,2));
             add(PatientInfoForm);
+            medicalRecord = MedicalRecord(PatientID);
             add(medicalRecord);
             setViewMode();
         }
@@ -623,7 +628,7 @@ class ViewPatientInfoPage extends JPanel {
             form.add(saveButton);
             return form;
         }
-        JPanel MedicalRecord() {
+        JPanel MedicalRecord(String PatientID) {
             JPanel medicalRecord = new JPanel();
             medicalRecord.setLayout(null);
             medicalRecord.setBackground(Color.white);
@@ -643,17 +648,24 @@ class ViewPatientInfoPage extends JPanel {
             assert addAppointment != null;
             header.add(addAppointment, BorderLayout.EAST);
 
-            MedicalRecordTableModel model = new MedicalRecordTableModel();
-            JTable table = new JTable(model);
-            List<MedicalRecord> medicalRecordList = MedRecDAO.getMedRecByPatientId(patientID);
+            List<MedicalRecord> medicalRecordList = MedRecDAO.getMedRecByPatientId(PatientID);
             if (!medicalRecordList.isEmpty()) {
                 MedicalRecord medicalRecord1 = medicalRecordList.getFirst();
                 Object[] rowData = new Object[]{medicalRecord1.getDepartment(), DoctorDAO.getDoctorById(medicalRecord1.getDoctorId()).getName(), medicalRecord1.getCheckIn(), medicalRecord1.getCheckOut(), medicalRecord1.getObservation(), medicalRecord1.getStatus(), medicalRecord1.getServiceReview()};
                 model.addRow(rowData);
             }
+//            System.out.println(patientID);
+//            medicalRecordList = MedRecDAO.getMedRecByPatientId(patientID);
+//            if (!medicalRecordList.isEmpty()) {
+//                MedicalRecord medicalRecord1 = medicalRecordList.getFirst();
+//                Object[] rowData = new Object[]{medicalRecord1.getDepartment(), DoctorDAO.getDoctorById(medicalRecord1.getDoctorId()).getName(), medicalRecord1.getCheckIn(), medicalRecord1.getCheckOut(), medicalRecord1.getObservation(), medicalRecord1.getStatus(), medicalRecord1.getServiceReview()};
+//                model.addRow(rowData);
+//            }
+
+            assert table != null;
             table.setPreferredScrollableViewportSize(new Dimension(400,500));
             JScrollPane scrollPane = new JScrollPane(table);
-            scrollPane.setBounds(25,60, 475,500);
+            scrollPane.setBounds(0,60, 515,500);
 
             medicalRecord.add(header);
             medicalRecord.add(scrollPane);
