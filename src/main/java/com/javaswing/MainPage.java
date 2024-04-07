@@ -34,7 +34,6 @@ class MainPageUIContainer extends JPanel {
         navigationContainer.setPreferredSize(new Dimension(screenSize.width * 4261 / 27320, screenSize.height));
         navigationContainer.setLayout(new BoxLayout(navigationContainer, BoxLayout.Y_AXIS));
         navigationContainer.setBackground(Color.WHITE);
-
         // Thêm nội dung vào control panel
         JLabel label = new JLabel("ABC HOSPITAL");
         label.setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/logo.jpg").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));

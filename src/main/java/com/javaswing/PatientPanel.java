@@ -1,5 +1,8 @@
 package com.javaswing;
+import com.javafirebasetest.dao.DoctorDAO;
+import com.javafirebasetest.dao.MedRecDAO;
 import com.javafirebasetest.dao.PatientDAO;
+import com.javafirebasetest.entity.MedicalRecord;
 import com.javafirebasetest.entity.Patient;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -91,12 +94,12 @@ class PatientPanel extends JPanel {
                         System.out.println(STR."Button clicked for row: \{row}");
                         try {
                             viewPatientInfoPage = defaultPage.viewPage(row);
+
                         } catch (ExecutionException | InterruptedException e) {
                             throw new RuntimeException(e);
                         }
                         parentPanel.add(viewPatientInfoPage, "view-page");
                         currentPage.show(parentPanel, "view-page");
-
                         viewPatientInfoPage.form.saveButton.addActionListener(_-> {
                             viewPatientInfoPage.form.updateInfo();
                             viewPatientInfoPage.form.setViewMode();
@@ -642,6 +645,20 @@ class ViewPatientInfoPage extends JPanel {
 
             MedicalRecordTableModel model = new MedicalRecordTableModel();
             JTable table = new JTable(model);
+            List<MedicalRecord> medicalRecordList = MedRecDAO.getMedRecByPatientId(patientID);
+            if (!medicalRecordList.isEmpty()) {
+                MedicalRecord medicalRecord1 = medicalRecordList.getFirst();
+                Object[] rowData = new Object[]{medicalRecord1.getDepartment(), DoctorDAO.getDoctorById(medicalRecord1.getDoctorId()).getName(), medicalRecord1.getCheckIn(), medicalRecord1.getCheckOut(), medicalRecord1.getObservation(), medicalRecord1.getStatus(), medicalRecord1.getServiceReview()};
+                model.addRow(rowData);
+            }
+//            System.out.println(patientID);
+//            medicalRecordList = MedRecDAO.getMedRecByPatientId(patientID);
+//            if (!medicalRecordList.isEmpty()) {
+//                MedicalRecord medicalRecord1 = medicalRecordList.getFirst();
+//                Object[] rowData = new Object[]{medicalRecord1.getDepartment(), DoctorDAO.getDoctorById(medicalRecord1.getDoctorId()).getName(), medicalRecord1.getCheckIn(), medicalRecord1.getCheckOut(), medicalRecord1.getObservation(), medicalRecord1.getStatus(), medicalRecord1.getServiceReview()};
+//                model.addRow(rowData);
+//            }
+
             table.setPreferredScrollableViewportSize(new Dimension(400,500));
             JScrollPane scrollPane = new JScrollPane(table);
             scrollPane.setBounds(25,60, 475,500);
@@ -692,6 +709,7 @@ class ViewPatientInfoPage extends JPanel {
                     "gender", Objects.requireNonNull(gender.getSelectedItem()).toString(),
                     "bloodGroup", Objects.requireNonNull(bloodGroup.getSelectedItem()).toString(),
                     "birthDate", PatientForm.reformatDate(DOB.getText().replace('/','-')));
+            System.out.println(patientID);
         }
         static class ViewModeTextField extends JTextField {
             ViewModeTextField(){

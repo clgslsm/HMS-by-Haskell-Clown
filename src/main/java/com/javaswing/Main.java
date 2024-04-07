@@ -1,7 +1,11 @@
 package com.javaswing;
 
+import com.google.cloud.Timestamp;
 import com.javafirebasetest.LoginManager;
+import com.javafirebasetest.dao.MedRecDAO;
 import com.javafirebasetest.dao.UserDAO;
+import com.javafirebasetest.entity.DeptType;
+import com.javafirebasetest.entity.MedicalRecord;
 import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
@@ -12,7 +16,10 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
         SwingUtilities.invokeLater(MainPage::new);
-//        DoctorDAO.createDoctor("doctor1", "doctor","nanh", DeptType.EYE);
+//        MedicalRecord medicalRecord = new MedicalRecord("medrec21", "A216", DeptType.EYE, "0e8Z7qsDKt4DJEcWy7KN", Timestamp.now(), Timestamp.now(), "ABC", MedicalRecord.Status.PENDING, "Good", "Good");
+//        MedRecDAO.addMedRec(medicalRecord);
+//        DoctorDAO.createDoctor("doctor1", "doctor"
+//        ,"nanh", DeptType.EYE);
 //        DoctorDAO.createDoctor("doctor2", "doctor","ngoc anh", DeptType.EYE);
 //          UserDAO.createUser("admin", "admin", User.Mode.ADMIN);
 //=======
