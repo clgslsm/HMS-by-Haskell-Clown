@@ -28,7 +28,11 @@ public class PatientDAO {
             return patient.getPatientId();
         }
     }
-    public String getHashPassword(String password) throws NoSuchAlgorithmException {return toHexString(getSHA(password));}
+
+    public String getHashPassword(String password) throws NoSuchAlgorithmException {
+        return toHexString(getSHA(password));
+    }
+
     //READ METHODS
     public static Patient getPatientById(String patientID) throws ExecutionException, InterruptedException {
         Map<String, Object> patientData = dbManager.getDocumentById(DBManager.CollectionPath.PATIENT, patientID).getData();

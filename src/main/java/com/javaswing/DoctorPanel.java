@@ -2,6 +2,7 @@ package com.javaswing;
 import com.javafirebasetest.entity.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.MaskFormatter;
@@ -11,7 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import com.javafirebasetest.dao.PatientDAO;
+import com.javafirebasetest.dao.DoctorDAO;
+
 class DoctorPanel extends JPanel {
     ArrayList<Doctor> data = new ArrayList<>();
     DoctorDefaultPage defaultPage;
@@ -25,56 +27,99 @@ class DoctorPanel extends JPanel {
 
         // When we click "Add Doctor" => change to Doctor Registration Page
         defaultPage.addDoctorBtn.addActionListener(_ -> {
-            // Create Doctor Registration Page
-            AddNewDoctorPage addDoctorPage = new AddNewDoctorPage();
-            this.add(addDoctorPage, "add-doctor-page");
+//            String dep = JOptionPane.showInputDialog(null, "Name of Department:");
+//            String name = JOptionPane.showInputDialog(null, "Name of Dr:")
+//            if (dep != null && name != null) {
+//                // Xử lý khi người dùng nhập liệu và nhấn "OK"
+//                System.out.println("Tên của bạn là: " + input);
+//            } else {
+//                // Xử lý khi người dùng nhấn "Cancel" hoặc đóng cửa sổ
+//                System.out.println("Bạn đã hủy.");
+//            }
+            JTextField depField = new JTextField(30);
+            JTextField nameField = new JTextField(30);
 
-            // Get back to default page
-            addDoctorPage.backButton.addActionListener(_ ->{
-                currentPage.removeLayoutComponent(addDoctorPage);
-                currentPage.show(this,"default-page");
-            });
+            Object[] message = {
+                    "Name of Department:", depField,
+                    "Name of Dr:", nameField
+            };
 
-            // Fill in the form and store the information of the new patient
-            addDoctorPage.form.createBtn.addActionListener(_ ->{
-                String ID = addDoctorPage.form.IDInput.getText();
-                String name = addDoctorPage.form.nameInput.getText();
-                String gender;
-                if (addDoctorPage.form.male.isSelected())
-                    gender = "Male";
-                else if (addDoctorPage.form.female.isSelected())
-                    gender = "Female";
-                else gender = "Other";
-                String phone = addDoctorPage.form.phoneInput.getText();
-                String address = addDoctorPage.form.addressInput.getText();
-                String bloodGroup = addDoctorPage.form.bloodGroupInput.getText();
-                String dateOfBirth = addDoctorPage.form.DOBInput.getText();
-                System.out.println(DoctorForm.reformatDate(dateOfBirth));
+            int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.OK_CANCEL_OPTION);
 
-                // Creating the map
-                Map<String, Object> doctorInfo = new HashMap<>();
-                doctorInfo.put("name", name);
-                doctorInfo.put("gender", gender);
-                doctorInfo.put("phoneNumber", phone);
-                doctorInfo.put("address", address);
-                doctorInfo.put("bloodGroup", bloodGroup);
-                doctorInfo.put("birthDate", DoctorForm.reformatDate(dateOfBirth));
-                //Doctor newDoctor = new Doctor(ID, doctorInfo);
-//                data.add(newDoctor);
-//                try {
-//                    DoctorDAO.addDoctor(newDoctor);
-//                } catch (ExecutionException | InterruptedException ex) {
-//                    throw new RuntimeException(ex);
-//                }
-//                defaultPage.addDoctorToTable(newDoctor);
-//                System.out.println(data);
+            if (option == JOptionPane.OK_OPTION) {
+                String dep = depField.getText();
+                String name = nameField.getText();
 
-                currentPage.removeLayoutComponent(addDoctorPage);
-                currentPage.show(this,"doctor-default-page");
-            });
-
-            currentPage.show(this, "add-doctor-page");
+                // Kiểm tra xem có ô nào bị bỏ trống không
+                if (dep.isEmpty() || name.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "The input box cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Department: " + dep + "\nName: " + name, "Information", JOptionPane.INFORMATION_MESSAGE);
+                    //Doctor newDoctor = new Doctor(ID, doctorInfo);
+////                data.add(newDoctor);
+////                try {
+////                    DoctorDAO.addDoctor(newDoctor);
+////                } catch (ExecutionException | InterruptedException ex) {
+////                    throw new RuntimeException(ex);
+////                }
+////                defaultPage.addDoctorToTable(newDoctor);
+////                System.out.println(data);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Cancel", "Notification", JOptionPane.INFORMATION_MESSAGE);
+            }
         });
+//        defaultPage.addDoctorBtn.addActionListener(_ -> {
+//            // Create Doctor Registration Page
+//            //AddNewDoctorPage addDoctorPage = new AddNewDoctorPage();
+//            //this.add(addDoctorPage, "add-doctor-page");
+//
+//            // Get back to default page
+//            addDoctorPage.backButton.addActionListener(_ ->{
+//                currentPage.removeLayoutComponent(addDoctorPage);
+//                currentPage.show(this,"default-page");
+//            });
+//
+//            // Fill in the form and store the information of the new patient
+//            addDoctorPage.form.createBtn.addActionListener(_ ->{
+//                String ID = addDoctorPage.form.IDInput.getText();
+//                String name = addDoctorPage.form.nameInput.getText();
+//                String gender;
+//                if (addDoctorPage.form.male.isSelected())
+//                    gender = "Male";
+//                else if (addDoctorPage.form.female.isSelected())
+//                    gender = "Female";
+//                else gender = "Other";
+//                String phone = addDoctorPage.form.phoneInput.getText();
+//                String address = addDoctorPage.form.addressInput.getText();
+//                String bloodGroup = addDoctorPage.form.bloodGroupInput.getText();
+//                String dateOfBirth = addDoctorPage.form.DOBInput.getText();
+//                System.out.println(DoctorForm.reformatDate(dateOfBirth));
+//
+//                // Creating the map
+//                Map<String, Object> doctorInfo = new HashMap<>();
+//                doctorInfo.put("name", name);
+//                doctorInfo.put("gender", gender);
+//                doctorInfo.put("phoneNumber", phone);
+//                doctorInfo.put("address", address);
+//                doctorInfo.put("bloodGroup", bloodGroup);
+//                doctorInfo.put("birthDate", DoctorForm.reformatDate(dateOfBirth));
+//                //Doctor newDoctor = new Doctor(ID, doctorInfo);
+////                data.add(newDoctor);
+////                try {
+////                    DoctorDAO.addDoctor(newDoctor);
+////                } catch (ExecutionException | InterruptedException ex) {
+////                    throw new RuntimeException(ex);
+////                }
+////                defaultPage.addDoctorToTable(newDoctor);
+////                System.out.println(data);
+//
+//                currentPage.removeLayoutComponent(addDoctorPage);
+//                currentPage.show(this,"doctor-default-page");
+//            });
+//
+//            currentPage.show(this, "add-doctor-page");
+//        });
 
         // See full information and medical records of a specific patient
         DoctorPanel doctorPanel = this;
@@ -124,12 +169,15 @@ class DoctorDefaultPage extends JLabel {
         // Header container
         JPanel header = new JPanel();
         JLabel title = new JLabel("Doctor Info");
-        title.setFont(title.getFont().deriveFont(20F));
-        header.setBackground(Color.white);
+        title.setFont(title.getFont().deriveFont(25F));
+        title.setForeground(new Color(0x3497F9));
+        header.setBackground(new Color(0xF1F8FF));
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-        header.add(addDoctorBtn);
-        header.add(Box.createHorizontalGlue());
+
+
         header.add(title);
+        header.add(Box.createHorizontalGlue());
+        header.add(addDoctorBtn);
 
         //Table
         JPanel body = new JPanel();
@@ -137,31 +185,44 @@ class DoctorDefaultPage extends JLabel {
         body.setBackground(Color.white);
 
         model = new CustomTableModel();
-//        List<Doctor> allDoctors = DoctorDAO.getAllDoctors();
-//        for (Doctor p : allDoctors) {
-//            addDoctorToTable(p);
-//        }
+        List<Doctor> allDoctors = DoctorDAO.getAllDoctor();
+        for (Doctor p : allDoctors) {
+            addDoctorToTable(p);
+        }
         doctorList = new JTable(model); // UI for patient list
-        doctorList.setRowHeight(30);
-        doctorList.setGridColor(Color.gray);
-        doctorList.setSelectionBackground(new Color(0xfdf7e7));
+
+        doctorList.getTableHeader().setPreferredSize(new Dimension(doctorList.getTableHeader().getWidth(), 40));
+        doctorList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
+        doctorList.getTableHeader().setOpaque(false);
+        doctorList.getTableHeader().setBackground(new Color(32, 136, 203));
+        doctorList.getTableHeader().setForeground(new Color(255,255,255));
+
+        doctorList.setFocusable(false);
+        doctorList.setIntercellSpacing(new java.awt.Dimension(0, 0));
+        doctorList.setSelectionBackground(new java.awt.Color(232, 57, 95));
+        doctorList.setShowVerticalLines(false);
+        doctorList.getTableHeader().setReorderingAllowed(false);
         doctorList.setFont(new Font("Courier",Font.PLAIN,13));
-        doctorList.setPreferredScrollableViewportSize(new Dimension(850,500));
-        //doctorList.getColumn("User Action").setCellRenderer(new ButtonRenderer());
-        //doctorList.getColumn("User Action").setCellEditor(new ButtonEditor(new JCheckBox()));
+        doctorList.getColumn("View").setCellRenderer(new PatientDefaultPage.ButtonRenderer());
+        doctorList.getColumn("View").setCellEditor(new PatientDefaultPage.ButtonEditor(new JCheckBox()));
+        doctorList.setRowHeight(40);
+
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(doctorList);
         body.add(scrollPane);
 
         this.add(header);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
+        JPanel space = new JPanel();
+        space.setBackground(new Color(0xF1F8FF));
+        space.setSize(new Dimension(40, 40));
+        this.add(space);
         this.add(body);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
+        //this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
     }
-    void addDoctorToTable (Doctor dortor){
-//        ButtonRenderer buttonRenderer = new ButtonRenderer();
-//        Object[] rowData = new Object[]{doctor.getDoctorID(), doctor.getName(), doctor.getAge(), doctor.getGender(), doctor.getBloodGroup().getValue(), doctor.getPhoneNumber(), buttonRenderer};
-//        model.addRow(rowData);
+    void addDoctorToTable (Doctor doctor){
+        ButtonRenderer buttonRenderer = new ButtonRenderer();
+        Object[] rowData = new Object[]{doctor.getStaffId(), doctor.getDepartment().getValue(), doctor.getName(), doctor.getPatientCount(), buttonRenderer};
+        model.addRow(rowData);
     }
     public ViewDoctorInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
         ViewDoctorInfoPage viewPage = new ViewDoctorInfoPage();
@@ -182,11 +243,11 @@ class DoctorDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name","Age","Gender","Phone Number"};
+        private final String[] columnNames = {"ID","Department","Name","Number of Patient", "View"};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
-        private final Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,String.class,JButton.class};
+        private final Class[] columnTypes = {String.class,String.class,String.class,String.class,JButton.class};
 
         @Override
         public int getRowCount() {
@@ -216,7 +277,7 @@ class DoctorDefaultPage extends JLabel {
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             // Make all cells non-editable
-            return columnIndex == 4;
+            return columnIndex == 3;
         }
 
         // Method to add a new row to the table
@@ -281,11 +342,14 @@ class DoctorDefaultPage extends JLabel {
     }
 
     public JButton AddDoctorButton(){
-        JButton addDoctorButton = new JButton("  + Add doctor  ");
-        addDoctorButton.setForeground(Color.white);
+        JButton addDoctorButton = new RoundedButton("  + Add doctor  ");
+        addDoctorButton.setFont(new Font("Courier",Font.PLAIN,13));
+        addDoctorButton.setFocusable(false);
+        addDoctorButton.setForeground(Color.WHITE);
         addDoctorButton.setBackground(new Color(0x3497F9));
-        addDoctorButton.setMaximumSize(new Dimension(125,30));
-        addDoctorButton.setBorder(BorderFactory.createEmptyBorder());
+        addDoctorButton.setBounds(100, 100, 125, 60);
+        addDoctorButton.setBorder(new EmptyBorder(10,10,10,10));
+
         return addDoctorButton;
     }
 }
@@ -294,7 +358,7 @@ class AddNewDoctorPage extends JPanel {
     DoctorForm form = new DoctorForm();
     AddNewDoctorPage() {
         JLabel title = new JLabel("Doctor Registration Form");
-        title.setFont(title.getFont().deriveFont(20.0F));
+        title.setFont(title.getFont().deriveFont(25.0F));
 
         this.setBackground(Color.white);
         this.setMaximumSize(new Dimension(1300,600));
