@@ -1,4 +1,5 @@
 package com.javaswing;
+import com.javafirebasetest.dao.PatientDAO;
 import com.javafirebasetest.entity.*;
 
 import javax.swing.*;
@@ -13,6 +14,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import com.javafirebasetest.dao.DoctorDAO;
+import com.javafirebasetest.dao.MedRecDAO;
 
 class DoctorPanel extends JPanel {
     ArrayList<Doctor> data = new ArrayList<>();
@@ -69,60 +71,8 @@ class DoctorPanel extends JPanel {
                 JOptionPane.showMessageDialog(null, "Cancel", "Notification", JOptionPane.INFORMATION_MESSAGE);
             }
         });
-//        defaultPage.addDoctorBtn.addActionListener(_ -> {
-//            // Create Doctor Registration Page
-//            //AddNewDoctorPage addDoctorPage = new AddNewDoctorPage();
-//            //this.add(addDoctorPage, "add-doctor-page");
-//
-//            // Get back to default page
-//            addDoctorPage.backButton.addActionListener(_ ->{
-//                currentPage.removeLayoutComponent(addDoctorPage);
-//                currentPage.show(this,"default-page");
-//            });
-//
-//            // Fill in the form and store the information of the new patient
-//            addDoctorPage.form.createBtn.addActionListener(_ ->{
-//                String ID = addDoctorPage.form.IDInput.getText();
-//                String name = addDoctorPage.form.nameInput.getText();
-//                String gender;
-//                if (addDoctorPage.form.male.isSelected())
-//                    gender = "Male";
-//                else if (addDoctorPage.form.female.isSelected())
-//                    gender = "Female";
-//                else gender = "Other";
-//                String phone = addDoctorPage.form.phoneInput.getText();
-//                String address = addDoctorPage.form.addressInput.getText();
-//                String bloodGroup = addDoctorPage.form.bloodGroupInput.getText();
-//                String dateOfBirth = addDoctorPage.form.DOBInput.getText();
-//                System.out.println(DoctorForm.reformatDate(dateOfBirth));
-//
-//                // Creating the map
-//                Map<String, Object> doctorInfo = new HashMap<>();
-//                doctorInfo.put("name", name);
-//                doctorInfo.put("gender", gender);
-//                doctorInfo.put("phoneNumber", phone);
-//                doctorInfo.put("address", address);
-//                doctorInfo.put("bloodGroup", bloodGroup);
-//                doctorInfo.put("birthDate", DoctorForm.reformatDate(dateOfBirth));
-//                //Doctor newDoctor = new Doctor(ID, doctorInfo);
-////                data.add(newDoctor);
-////                try {
-////                    DoctorDAO.addDoctor(newDoctor);
-////                } catch (ExecutionException | InterruptedException ex) {
-////                    throw new RuntimeException(ex);
-////                }
-////                defaultPage.addDoctorToTable(newDoctor);
-////                System.out.println(data);
-//
-//                currentPage.removeLayoutComponent(addDoctorPage);
-//                currentPage.show(this,"doctor-default-page");
-//            });
-//
-//            currentPage.show(this, "add-doctor-page");
-//        });
-
         // See full information and medical records of a specific patient
-        DoctorPanel doctorPanel = this;
+        DoctorPanel parentPanel = this;
         defaultPage.doctorList.addMouseListener(new java.awt.event.MouseAdapter()
         {
             @Override
@@ -140,13 +90,12 @@ class DoctorPanel extends JPanel {
                         } catch (ExecutionException | InterruptedException e) {
                             throw new RuntimeException(e);
                         }
-//                        parentPanel.add(viewDoctorInfoPage, "view-page");
-//                        currentPage.show(parentPanel, "view-page");
-//
-//                        viewDoctorInfoPage.backButton.addActionListener(_ ->{
-//                            currentPage.removeLayoutComponent(viewDoctorInfoPage);
-//                            currentPage.show(parentPanel,"default-page");
-//                        });
+                        parentPanel.add(viewDoctorInfoPage, "view-page");
+                        currentPage.show(parentPanel, "view-page");
+                        viewDoctorInfoPage.backButton.addActionListener(_ ->{
+                            currentPage.removeLayoutComponent(viewDoctorInfoPage);
+                            currentPage.show(parentPanel,"default-page");
+                        });
                     }
                 }
             }
@@ -227,14 +176,10 @@ class DoctorDefaultPage extends JLabel {
     public ViewDoctorInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
         ViewDoctorInfoPage viewPage = new ViewDoctorInfoPage();
         // call patient ID
-//        Doctor doctor = DoctorDAO.getDoctorByID(DoctorList.getValueAt(row,0).toString());
-//        viewPage.title.setText(STR."#\{doctor.getDoctorId()}");
-//        viewPage.form.name.setText(doctor.getName());
-//        viewPage.form.phone.setText(doctor.getPhoneNumber());
-//        viewPage.form.bloodGroup.setText(doctor.getBloodGroup().getValue());
-//        viewPage.form.address.setText(doctor.getAddress());
-//        viewPage.form.DOB.setText(doctor.getformattedDate());
-//        viewPage.form.gender.setText(doctor.getGender().getValue());
+        List<MedicalRecord> medicalRecords = MedRecDAO.getMedRecByDoctorId(doctorList.getValueAt(row, 0).toString());
+        MedicalRecord medicalRecord = medicalRecords.getFirst();
+        viewPage.title.setText(STR."#\{medicalRecord.getPatientId()}");
+        viewPage.form.name.setText(medicalRecord.doctorId);
         return viewPage;
     }
 

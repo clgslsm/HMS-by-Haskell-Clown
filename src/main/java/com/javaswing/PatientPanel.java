@@ -358,11 +358,9 @@ class ViewPatientInfoPage extends JPanel {
 
     ViewPatientInfoPage() {
         title.setFont(title.getFont().deriveFont(18.0F));
-
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 20));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
         JPanel pageHeader = new JPanel();
         pageHeader.setBackground(Color.white);
         pageHeader.setLayout(new BoxLayout(pageHeader, BoxLayout.X_AXIS));
@@ -371,7 +369,6 @@ class ViewPatientInfoPage extends JPanel {
         pageHeader.add(Box.createHorizontalGlue());
         pageHeader.add(title);
         title.setAlignmentX(Component.RIGHT_ALIGNMENT);
-
         this.add(pageHeader);
         this.add(new Box.Filler(new Dimension(100, 15), new Dimension(100, 15), new Dimension(100, 15)));
         this.add(form); // Registration form

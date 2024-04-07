@@ -56,7 +56,7 @@ class MainPageUIContainer extends JPanel {
         machineSection.setSelected(false);
 
         patientSection.addActionListener(e -> {
-            System.out.println("Lua chon 1");
+//            System.out.println("Lua chon 1");
             patientSection.setSelected(true);
             doctorSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -65,7 +65,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         doctorSection.addActionListener(e -> {
-            System.out.println("Lua chon 2");
+//            System.out.println("Lua chon 2");
             patientSection.setSelected(false);
             doctorSection.setSelected(true);
             medicineSection.setSelected(false);
@@ -74,7 +74,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         medicineSection.addActionListener(e -> {
-            System.out.println("Lua chon 3");
+//            System.out.println("Lua chon 3");
             patientSection.setSelected(false);
             doctorSection.setSelected(false);
             medicineSection.setSelected(true);
@@ -83,7 +83,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         machineSection.addActionListener(e -> {
-            System.out.println("Lua chon 3");
+//            System.out.println("Lua chon 3");
             patientSection.setSelected(false);
             doctorSection.setSelected(false);
             medicineSection.setSelected(false);
