@@ -60,6 +60,26 @@ public class MedRecDAO {
         return medRecList;
     }
 
+    public static List<MedicalRecord> getMedRecByCondition(Object... fieldsAndValues) {
+        Filter[] filters = new Filter[fieldsAndValues.length/2];
+
+        for (int i = 0; i < fieldsAndValues.length; i += 2){
+            filters[i/2] = Filter.equalTo((String) fieldsAndValues[i], fieldsAndValues[i+1]);
+        }
+
+        List<QueryDocumentSnapshot> querySnapshot;
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.MEDICAL_RECORD,
+                filters
+        );
+
+        List<MedicalRecord> medRecList = new ArrayList<>();
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            medRecList.add(new MedicalRecord(qds.getId(), qds.getData()));
+        }
+        return medRecList;
+    }
+
     public static List<MedicalRecord> getAllMedRec() {
         List<QueryDocumentSnapshot> querySnapshot;
         querySnapshot = dbManager.getAllDocuments(DBManager.CollectionPath.MEDICAL_RECORD);
