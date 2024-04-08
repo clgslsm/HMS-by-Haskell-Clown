@@ -71,6 +71,7 @@ class PatientPanel extends JPanel {
                     currentPage.removeLayoutComponent(addPatientPage);
                     currentPage.show(this, "default-page");
                 }
+                else addPatientPage.form.alertBlank.setVisible(true);
             });
 
             currentPage.show(this, "add-patient-page");
@@ -817,6 +818,7 @@ class PatientForm extends JPanel{
     JComboBox<String> genderInput;
     JFormattedTextField DOBInput;
     JTextArea addressInput;
+    JLabel alertBlank;
     JComboBox<String> bloodGroupInput;
     PatientForm() {
         JPanel form = Form();
@@ -910,6 +912,15 @@ class PatientForm extends JPanel{
         bloodGroupInput.setBorder(BorderFactory.createEmptyBorder());
         bloodGroupInput.setBounds(385,270+ 20,70,20);
 
+        // Alert if blank information exists
+        alertBlank = new JLabel("------ Information cannot be blank ------", SwingConstants.CENTER);
+        alertBlank.setBackground(new Color(0xFEEFEF));
+        alertBlank.setForeground(Color.red);
+        alertBlank.setBorder(BorderFactory.createLineBorder(Color.red, 2, true));
+        alertBlank.setBounds(300, 410, 300, 30);
+//        alertBlank.setHorizontalTextPosition(SwingConstants.CENTER);
+        alertBlank.setVisible(false);
+
         // Create button
         createBtn = new JButton("CREATE");
         createBtn.setBackground(new Color(0x3497F9));
@@ -951,6 +962,7 @@ class PatientForm extends JPanel{
         form.add(bloodGroupLabel);
         form.add(bloodGroupInput);
         form.add(createBtn);
+        form.add(alertBlank);
 
         return form;
     }
