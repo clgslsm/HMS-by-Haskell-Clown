@@ -34,7 +34,6 @@ class MainPageUIContainer extends JPanel {
         navigationContainer.setPreferredSize(new Dimension(screenSize.width * 4261 / 27320, screenSize.height));
         navigationContainer.setLayout(new BoxLayout(navigationContainer, BoxLayout.Y_AXIS));
         navigationContainer.setBackground(Color.WHITE);
-
         // Thêm nội dung vào control panel
         JLabel label = new JLabel("ABC HOSPITAL");
         label.setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/logo.jpg").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
@@ -56,7 +55,7 @@ class MainPageUIContainer extends JPanel {
         machineSection.setSelected(false);
 
         patientSection.addActionListener(e -> {
-            System.out.println("Lua chon 1");
+//            System.out.println("Lua chon 1");
             patientSection.setSelected(true);
             doctorSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -65,7 +64,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         doctorSection.addActionListener(e -> {
-            System.out.println("Lua chon 2");
+//            System.out.println("Lua chon 2");
             patientSection.setSelected(false);
             doctorSection.setSelected(true);
             medicineSection.setSelected(false);
@@ -74,7 +73,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         medicineSection.addActionListener(e -> {
-            System.out.println("Lua chon 3");
+//            System.out.println("Lua chon 3");
             patientSection.setSelected(false);
             doctorSection.setSelected(false);
             medicineSection.setSelected(true);
@@ -83,7 +82,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         machineSection.addActionListener(e -> {
-            System.out.println("Lua chon 3");
+//            System.out.println("Lua chon 3");
             patientSection.setSelected(false);
             doctorSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -185,5 +184,34 @@ class BackButton extends JButton {
         setBorder(BorderFactory.createEmptyBorder());
         setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/back-icon.png").getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH)));
         setSize(new Dimension(20,20));
+    }
+}
+
+class RoundedButton extends JButton {
+    public RoundedButton(String text) {
+        super(text);
+        setContentAreaFilled(false);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        if (getModel().isArmed()) {
+            g.setColor(Color.lightGray);
+        }
+        else {
+            g.setColor(getBackground());
+        }
+        Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.fillRoundRect(0,0,getWidth(), getHeight(), 20, 20);
+        super.paintComponent(g);
+    }
+
+    @Override
+    protected void paintBorder(Graphics g) {
+        g.setColor(getForeground());
+        Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.drawRoundRect(0,0,getWidth()-1, getHeight()-1, 20, 20);
     }
 }
