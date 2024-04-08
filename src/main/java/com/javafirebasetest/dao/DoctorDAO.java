@@ -70,5 +70,4 @@ public class DoctorDAO {
     public static void deleteDoctorById(String doctorId) {
         dbManager.deleteDocument(DBManager.CollectionPath.STAFF, doctorId);
     }
-
 }
