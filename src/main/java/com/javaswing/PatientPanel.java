@@ -8,11 +8,10 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.image.ImageObserver;
 import java.text.AttributedCharacterIterator;
 import java.text.ParseException;
@@ -20,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.awt.event.FocusListener;
 
 class PatientPanel extends JPanel {
     ArrayList<Patient> data = new ArrayList<>();
@@ -57,20 +55,22 @@ class PatientPanel extends JPanel {
                 System.out.println(PatientForm.reformatDate(dateOfBirth));
 
                 // Creating the map
-                Map<String, Object> patientInfo = new HashMap<>();
-                patientInfo.put("name", name);
-                patientInfo.put("gender", gender);
-                patientInfo.put("phoneNumber", phone);
-                patientInfo.put("address", address);
-                patientInfo.put("bloodGroup", bloodGroup);
-                patientInfo.put("birthDate", PatientForm.reformatDate(dateOfBirth));
-                Patient newPatient = new Patient(ID, patientInfo);
-                data.add(newPatient);
-                PatientDAO.addPatient(newPatient);
-                defaultPage.addPatientToTable(newPatient);
+                if (!ID.trim().isEmpty() && !name.trim().isEmpty() && !phone.trim().isEmpty() && !address.trim().isEmpty()) {
+                    Map<String, Object> patientInfo = new HashMap<>();
+                    patientInfo.put("name", name);
+                    patientInfo.put("gender", gender);
+                    patientInfo.put("phoneNumber", phone);
+                    patientInfo.put("address", address);
+                    patientInfo.put("bloodGroup", bloodGroup);
+                    patientInfo.put("birthDate", PatientForm.reformatDate(dateOfBirth));
+                    Patient newPatient = new Patient(ID, patientInfo);
+                    data.add(newPatient);
+                    PatientDAO.addPatient(newPatient);
+                    defaultPage.updateTableUI();
 
-                currentPage.removeLayoutComponent(addPatientPage);
-                currentPage.show(this,"default-page");
+                    currentPage.removeLayoutComponent(addPatientPage);
+                    currentPage.show(this, "default-page");
+                }
             });
 
             currentPage.show(this, "add-patient-page");
@@ -282,7 +282,7 @@ class PatientDefaultPage extends JLabel {
             System.arraycopy(data, 0, newData, 0, data.length);
             newData[data.length] = rowData;
             data = newData;
-            fireTableRowsInserted(0, 0); // Notify the table that rows have been inserted
+            fireTableRowsInserted(data.length-1,data.length-1); // Notify the table that rows have been inserted
         }
 
         // Method to delete a row from the table
@@ -832,6 +832,13 @@ class PatientForm extends JPanel{
         JLabel IDLabel = new JLabel("Medical ID");
         IDLabel.setBounds(300,20 + 20,95,20);
         IDInput = new JTextField();
+        IDInput.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                IDInput.setBackground(Color.white);
+                IDInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            }
+        });
         IDInput.setBounds(385,20 + 20,100,20);
 
         // Patient's name
@@ -839,12 +846,26 @@ class PatientForm extends JPanel{
         nameLabel.setBounds(300,50+ 20,95,20);
         nameInput = new JTextField();
         nameInput.setBounds(385,50+ 20,200,20);
+        nameInput.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                nameInput.setBackground(Color.white);
+                nameInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            }
+        });
 
         //  Patient's phone number
         JLabel phoneLabel = new JLabel("Phone");
         phoneLabel.setBounds(300,80+ 20,95,20);
         phoneInput = new JTextField();
         phoneInput.setBounds(385,80+ 20,200,20);
+        phoneInput.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                phoneInput.setBackground(Color.white);
+                phoneInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            }
+        });
 
         // Patient's gender
         JLabel genderLabel = new JLabel("Gender");
@@ -869,6 +890,13 @@ class PatientForm extends JPanel{
         addressInput.setBounds(385, 170+ 20, 200, 80);
         addressInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         addressInput.setLineWrap(true);
+        addressInput.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                addressInput.setBackground(Color.white);
+                addressInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            }
+        });
 
         // Patient's blood group
         JLabel bloodGroupLabel = new JLabel("Blood type");
@@ -887,6 +915,23 @@ class PatientForm extends JPanel{
         createBtn.setBackground(new Color(0x3497F9));
         createBtn.setForeground(Color.white);
         createBtn.setBounds(400,380-10,100,30);
+        createBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (IDInput.getText().trim().isEmpty()){
+                    alertBlank(IDInput);
+                }
+                if (nameInput.getText().trim().isEmpty()){
+                    alertBlank(nameInput);
+                }
+                if (phoneInput.getText().trim().isEmpty()){
+                    alertBlank(phoneInput);
+                }
+                if (addressInput.getText().trim().isEmpty()){
+                    alertBlank(addressInput);
+                }
+            }
+        });
 
         JPanel form = new JPanel();
         form.setBackground(Color.white);
@@ -930,6 +975,13 @@ class PatientForm extends JPanel{
         } catch (ParseException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    private void alertBlank(Component textfield){
+        textfield.setBackground(new Color(0xfeefef));
+        if (textfield instanceof JTextField || textfield instanceof JTextArea){
+            ((JTextComponent) textfield).setBorder(BorderFactory.createLineBorder(Color.red));
         }
     }
 }
