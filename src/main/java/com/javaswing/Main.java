@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
-        SwingUtilities.invokeLater(MainPage::new);
+        SwingUtilities.invokeLater((Runnable) new MainPage("Doctor"));
 //        MedicalRecord medicalRecord = new MedicalRecord("medrec21", "A216", DeptType.EYE, "0e8Z7qsDKt4DJEcWy7KN", Timestamp.now(), Timestamp.now(), "ABC", MedicalRecord.Status.PENDING, "Good", "Good");
 //        MedRecDAO.addMedRec(medicalRecord);
 //        DoctorDAO.createDoctor("doctor1", "doctor"

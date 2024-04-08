@@ -24,57 +24,50 @@ class MachinePanel extends JPanel {
 
         defaultPage = new MachineDefaultPage();
 
-        // When we click "Add Machine" => change to Machine Registration Page
+        // When we click "Add Doctor" => change to Doctor Registration Page
         defaultPage.addMachineBtn.addActionListener(_ -> {
-            // Create Machine Registration Page
-            AddNewMachinePage addMachinePage = new AddNewMachinePage();
-            this.add(addMachinePage, "add-machine-page");
+            String[] status = new String[Machine.Status.values().length];
+            int i = 0;
+            for (Machine.Status st : Machine.Status.values()) {
+                status[i] = st.getValue();
+                i++;
+            }
+            JComboBox<String> sta = new JComboBox<>(status);
+            sta.setBackground(Color.white);
+            sta.setBorder(BorderFactory.createEmptyBorder());
+            sta.setBounds(385-250,130,70,20);
+            JTextField nameField = new JTextField(30);
 
-            // Get back to default page
-            addMachinePage.backButton.addActionListener(_ ->{
-                currentPage.removeLayoutComponent(addMachinePage);
-                currentPage.show(this,"default-page");
-            });
+            Object[] message = {
+                    "Name of Dr:", nameField,
+                    "Status:", sta
 
-            // Fill in the form and store the information of the new patient
-            addMachinePage.form.createBtn.addActionListener(_ ->{
-                String ID = addMachinePage.form.IDInput.getText();
-                String name = addMachinePage.form.nameInput.getText();
-                String gender;
-                if (addMachinePage.form.male.isSelected())
-                    gender = "Male";
-                else if (addMachinePage.form.female.isSelected())
-                    gender = "Female";
-                else gender = "Other";
-                String phone = addMachinePage.form.phoneInput.getText();
-                String address = addMachinePage.form.addressInput.getText();
-                String bloodGroup = addMachinePage.form.bloodGroupInput.getText();
-                String dateOfBirth = addMachinePage.form.DOBInput.getText();
-                System.out.println(MachineForm.reformatDate(dateOfBirth));
+            };
 
-                // Creating the map
-                Map<String, Object> machineInfo = new HashMap<>();
-                machineInfo.put("name", name);
-                machineInfo.put("gender", gender);
-                machineInfo.put("phoneNumber", phone);
-                machineInfo.put("address", address);
-                machineInfo.put("bloodGroup", bloodGroup);
-                machineInfo.put("birthDate", MachineForm.reformatDate(dateOfBirth));
-                //Machine newMachine = new Machine(ID, machineInfo);
-//                data.add(newMachine);
-//                try {
-//                    MachineDAO.addMachine(newMachine);
-//                } catch (ExecutionException | InterruptedException ex) {
-//                    throw new RuntimeException(ex);
-//                }
-//                defaultPage.addMachineToTable(newMachine);
-//                System.out.println(data);
+            int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.OK_CANCEL_OPTION);
 
-                currentPage.removeLayoutComponent(addMachinePage);
-                currentPage.show(this,"machine-default-page");
-            });
+            if (option == JOptionPane.OK_OPTION) {
+                String s = Objects.requireNonNull(sta.getSelectedItem()).toString();
+                String name = nameField.getText();
 
-            currentPage.show(this, "add-machine-page");
+                // Kiểm tra xem có ô nào bị bỏ trống không
+                if (s.isEmpty() || name.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "The input box cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Department: " + s + "\nName: " + name, "Information", JOptionPane.INFORMATION_MESSAGE);
+                    //Doctor newDoctor = new Doctor("12", name, );
+////                data.add(newDoctor);
+////                try {
+////                    DoctorDAO.addDoctor(newDoctor);
+////                } catch (ExecutionException | InterruptedException ex) {
+////                    throw new RuntimeException(ex);
+////                }
+////                defaultPage.addDoctorToTable(newDoctor);
+////                System.out.println(data);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Cancel", "Notification", JOptionPane.INFORMATION_MESSAGE);
+            }
         });
 
         // See full information and medical records of a specific patient

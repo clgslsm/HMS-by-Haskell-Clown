@@ -1,31 +1,38 @@
 package com.javaswing;
 
+import com.javafirebasetest.entity.User;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class MainPage extends JFrame {
-    MainPage(){
+    MainPage(String role){
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("ABC Hospital @Receptionist");
         this.getContentPane().setBackground(new Color(0xF1F8FF));
         this.setLayout(new BorderLayout());
         this.setVisible(true);
-        this.add(new MainPageUIContainer());
+        this.add(new MainPageUIContainer(role));
         this.pack();
     }
 }
 
 class MainPageUIContainer extends JPanel {
+    String role;
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     CardLayout containerLayout = new CardLayout();
-    JPanel navContainer = NavigationContainer();
-    JPanel mainPageContainer = MainPageContainer();
-    MainPageUIContainer(){
+    JPanel navContainer;
+    JPanel mainPageContainer;
+    MainPageUIContainer(String user){
+        role = user;
+
         this.setLayout(new BorderLayout());
         this.setSize(new Dimension(screenSize.width, screenSize.height));
 
+        navContainer = NavigationContainer();
+        mainPageContainer  = MainPageContainer();
         this.add(navContainer, BorderLayout.WEST);
         this.add(mainPageContainer);
     }
@@ -55,7 +62,6 @@ class MainPageUIContainer extends JPanel {
         machineSection.setSelected(false);
 
         patientSection.addActionListener(e -> {
-//            System.out.println("Lua chon 1");
             patientSection.setSelected(true);
             doctorSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -64,7 +70,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         doctorSection.addActionListener(e -> {
-//            System.out.println("Lua chon 2");
             patientSection.setSelected(false);
             doctorSection.setSelected(true);
             medicineSection.setSelected(false);
@@ -73,7 +78,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         medicineSection.addActionListener(e -> {
-//            System.out.println("Lua chon 3");
             patientSection.setSelected(false);
             doctorSection.setSelected(false);
             medicineSection.setSelected(true);
@@ -82,7 +86,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         machineSection.addActionListener(e -> {
-//            System.out.println("Lua chon 3");
             patientSection.setSelected(false);
             doctorSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -97,23 +100,27 @@ class MainPageUIContainer extends JPanel {
         cPanel.setBackground(Color.WHITE);
         cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 
-        cPanel.add(patientSection);
-        cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(Box.createVerticalStrut(10));
+        // (role != null && role.equals("Doctor")) {
+            cPanel.add(patientSection);
+            cPanel.add(Box.createVerticalStrut(10));
+        //}
+        //else {
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(doctorSection);
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(doctorSection);
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(medicineSection);
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(medicineSection);
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(machineSection);
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(machineSection);
+            cPanel.add(Box.createVerticalStrut(10));
+        //}
 
         navigationContainer.add(cPanel);
         return navigationContainer;
