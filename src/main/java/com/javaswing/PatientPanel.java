@@ -14,13 +14,13 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.ImageObserver;
-import java.text.AttributedCharacterIterator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+
+import static com.javafirebasetest.dao.DoctorDAO.getDoctorWithMinPatientCountByDepartment;
 
 class PatientPanel extends JPanel {
     ArrayList<Patient> data = new ArrayList<>();
@@ -47,7 +47,7 @@ class PatientPanel extends JPanel {
 
             // Fill in the form and store the information of the new patient
             addPatientPage.form.createBtn.addActionListener(_ ->{
-                String ID = addPatientPage.form.IDInput.getText();
+//                String ID = addPatientPage.form.IDInput.getText();
                 String name = addPatientPage.form.nameInput.getText();
                 String gender = Objects.requireNonNull(addPatientPage.form.genderInput.getSelectedItem()).toString();
                 String phone = addPatientPage.form.phoneInput.getText();
@@ -57,7 +57,7 @@ class PatientPanel extends JPanel {
                 System.out.println(PatientForm.reformatDate(dateOfBirth));
 
                 // Creating the map
-                if (!ID.trim().isEmpty() && !name.trim().isEmpty() && !phone.trim().isEmpty() && !address.trim().isEmpty()) {
+                if (!name.trim().isEmpty() && !phone.trim().isEmpty() && !address.trim().isEmpty()) {
                     Map<String, Object> patientInfo = new HashMap<>();
                     patientInfo.put("name", name);
                     patientInfo.put("gender", gender);
@@ -65,8 +65,9 @@ class PatientPanel extends JPanel {
                     patientInfo.put("address", address);
                     patientInfo.put("bloodGroup", bloodGroup);
                     patientInfo.put("birthDate", PatientForm.reformatDate(dateOfBirth));
-                    Patient newPatient = new Patient(ID, patientInfo);
-                    data.add(newPatient);
+                    Patient newPatient = new Patient(null, patientInfo);
+                    newPatient.setPatientId(PatientDAO.addPatient(newPatient));
+                    System.out.println(newPatient.getPatientId());
                     PatientDAO.addPatient(newPatient);
                     defaultPage.updateTableUI();
 
@@ -223,9 +224,14 @@ class PatientDefaultPage extends JLabel {
     }
     public void showSearchResult(String ID) throws ExecutionException, InterruptedException {
         if (!ID.trim().isEmpty() && !ID.trim().equals("Search by patient ID")){
+            try{
             Patient res = PatientDAO.getPatientById(ID);
             model.clearData();
-            addPatientToTable(res);
+            addPatientToTable(res);}
+            catch (Exception e) {
+                searchEngine.searchInput.setText("No patient found");
+                searchEngine.searchInput.setForeground(Color.red);
+            }
         }
         else updateTableUI();
     }
@@ -433,7 +439,7 @@ class PatientDefaultPage extends JLabel {
             field.addMouseListener(new CustomMouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (field.getText().equals("Search by patient ID")) {
+                    if (field.getText().equals("Search by patient ID") || field.getText().equals("No patient found")) {
                         field.setText("");
                         field.setForeground(Color.BLACK);
                     }
@@ -649,16 +655,26 @@ class ViewPatientInfoPage extends JPanel {
             addAppointment = AddAppointmentButton();
             header.add(headerLabel, BorderLayout.WEST);
             addAppointment.addActionListener(_->{
-                new AddAppointmentPopup(medicalRecord);
+                AddAppointmentPopup popup = new AddAppointmentPopup(medicalRecord);
+                if (popup.choice == 0){
+                    Doctor chosenDoctor = getDoctorWithMinPatientCountByDepartment(DeptType.fromValue((String) popup.dep.getSelectedItem()));
+                    try {
+                        MedicalRecord newAppointment = MedRecDAO.addMedRecByDoctorAndPatient(chosenDoctor, PatientDAO.getPatientById(PatientID));
+                    } catch (ExecutionException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    updateAppointmentTable();
+                }
             });
             assert addAppointment != null;
             header.add(addAppointment, BorderLayout.EAST);
 
             List<MedicalRecord> medicalRecordList = MedRecDAO.getMedRecByPatientId(PatientID);
             if (!medicalRecordList.isEmpty()) {
-                MedicalRecord medicalRecord1 = medicalRecordList.getFirst();
-                Object[] rowData = new Object[]{medicalRecord1.getDepartment(), DoctorDAO.getDoctorById(medicalRecord1.getDoctorId()).getName(), medicalRecord1.getCheckIn(), medicalRecord1.getCheckOut(), medicalRecord1.getObservation(), medicalRecord1.getStatus(), medicalRecord1.getServiceReview()};
+                for (MedicalRecord medRecord : medicalRecordList){
+                Object[] rowData = new Object[]{medRecord.getDepartment(), DoctorDAO.getDoctorById(medRecord.getDoctorId()).getName(), medRecord.getCheckIn(), medRecord.getCheckOut(), medRecord.getObservation(), medRecord.getStatus(), medRecord.getServiceReview()};
                 model.addRow(rowData);
+                }
             }
 
             assert table != null;
@@ -713,6 +729,15 @@ class ViewPatientInfoPage extends JPanel {
                     "bloodGroup", Objects.requireNonNull(bloodGroup.getSelectedItem()).toString(),
                     "birthDate", PatientForm.reformatDate(DOB.getText().replace('/','-')));
             System.out.println(patientID);
+        }
+        public void updateAppointmentTable(){
+            model.clearData();
+            List<MedicalRecord> medicalRecords = MedRecDAO.getMedRecByPatientId(patientID);
+            for (MedicalRecord medicalRecord : medicalRecords) {
+                Object[] rowData = new Object[]{medicalRecord.getDepartment(), DoctorDAO.getDoctorById(medicalRecord.getDoctorId()).getName(), medicalRecord.getCheckIn(), medicalRecord.getCheckOut(), medicalRecord.getObservation(), medicalRecord.getStatus(), medicalRecord.getServiceReview()};
+                model.addRow(rowData);
+            }
+            System.out.println("Update");
         }
         static class ViewModeTextField extends JTextField {
             ViewModeTextField(){
@@ -771,6 +796,11 @@ class ViewPatientInfoPage extends JPanel {
                 data = newData;
                 fireTableRowsInserted(data.length - 1, data.length - 1); // Notify the table that rows have been inserted
             }
+            public void clearData() {
+                int rowCount = getRowCount();
+                data = new Object[0][0];
+                if (rowCount > 0) fireTableRowsDeleted(0, rowCount - 1); // Notify the table that rows have been deleted
+            }
         }
         public JButton AddAppointmentButton(){
             JButton addAppointmentButton = new JButton("  + Add appointment  ");
@@ -810,7 +840,7 @@ class ViewPatientInfoPage extends JPanel {
 }
 class PatientForm extends JPanel{
     JButton createBtn;
-    JTextField IDInput;
+//    JTextField IDInput;
     JTextField nameInput ;
     JTextField phoneInput ;
     JComboBox<String> genderInput;
@@ -829,17 +859,17 @@ class PatientForm extends JPanel{
 
     public JPanel Form (){
         // Patient's ID
-        JLabel IDLabel = new JLabel("Medical ID");
-        IDLabel.setBounds(300,20 + 20,95,20);
-        IDInput = new JTextField();
-        IDInput.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                IDInput.setBackground(Color.white);
-                IDInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            }
-        });
-        IDInput.setBounds(385,20 + 20,100,20);
+//        JLabel IDLabel = new JLabel("Medical ID");
+//        IDLabel.setBounds(300,20 + 20,95,20);
+//        IDInput = new JTextField();
+//        IDInput.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                IDInput.setBackground(Color.white);
+//                IDInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+//            }
+//        });
+//        IDInput.setBounds(385,20 + 20,100,20);
 
         // Patient's name
         JLabel nameLabel = new JLabel("Name");
@@ -927,9 +957,6 @@ class PatientForm extends JPanel{
         createBtn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (IDInput.getText().trim().isEmpty()){
-                    alertBlank(IDInput);
-                }
                 if (nameInput.getText().trim().isEmpty()){
                     alertBlank(nameInput);
                 }
@@ -955,8 +982,8 @@ class PatientForm extends JPanel{
         form.add(DOBInput);
         form.add(addressLabel);
         form.add(addressInput);
-        form.add(IDLabel);
-        form.add(IDInput);
+//        form.add(IDLabel);
+//        form.add(IDInput);
         form.add(bloodGroupLabel);
         form.add(bloodGroupInput);
         form.add(createBtn);
@@ -1013,6 +1040,8 @@ class CustomMouseListener implements MouseListener {
     }
 }
 class AddAppointmentPopup {
+    public int choice;
+    JComboBox<String> dep;
     AddAppointmentPopup(JPanel patient){
         int i = 0;
         String[] department = new String[DeptType.values().length];
@@ -1020,26 +1049,26 @@ class AddAppointmentPopup {
             department[i] = dt.getValue();
             i++;
         }
-        JComboBox<String> dep = new JComboBox<>(department);
+        dep = new JComboBox<>(department);
         dep.setBackground(Color.white);
         dep.setBorder(BorderFactory.createEmptyBorder());
-        JComboBox<String> docName = new JComboBox<>();
-        dep.addActionListener(_->{
-            docName.removeAllItems();
-            List<Doctor> availableDoctor = DoctorDAO.getDoctorByDepartment(DeptType.fromValue((String) dep.getSelectedItem()));
-            for(Doctor doc : availableDoctor){
-                docName.addItem(doc.getName());
-            }
-        });
 
+        Object[] message = {"Name of Department:", dep};
+        String[] responses = {"Add", "Cancel"};
+        ImageIcon icon = new ImageIcon("src/main/java/com/javaswing/img/schedule.png");
+        Image image = icon.getImage(); // transform it
+        image = image.getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        icon = new ImageIcon(image);  // transform it back
 
-        Object[] message = {
-                "Name of Department:", dep,
-                "Doctor:", docName
-        };
-
-
-
-        int option = JOptionPane.showConfirmDialog(patient, message, "", JOptionPane.OK_CANCEL_OPTION);
+        choice = JOptionPane.showOptionDialog(
+                patient,
+                message,
+                "Add appointment",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                icon,
+                responses,
+                1
+                );
     }
 }
