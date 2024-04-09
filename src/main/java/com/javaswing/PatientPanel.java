@@ -658,12 +658,17 @@ class ViewPatientInfoPage extends JPanel {
                 AddAppointmentPopup popup = new AddAppointmentPopup(medicalRecord);
                 if (popup.choice == 0){
                     Doctor chosenDoctor = getDoctorWithMinPatientCountByDepartment(DeptType.fromValue((String) popup.dep.getSelectedItem()));
-                    try {
-                        MedicalRecord newAppointment = MedRecDAO.addMedRecByDoctorAndPatient(chosenDoctor, PatientDAO.getPatientById(PatientID));
-                    } catch (ExecutionException | InterruptedException e) {
-                        throw new RuntimeException(e);
+                    if (chosenDoctor != null) {
+                        try {
+                            MedicalRecord newAppointment = MedRecDAO.addMedRecByDoctorAndPatient(chosenDoctor, PatientDAO.getPatientById(PatientID));
+                        } catch (ExecutionException | InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        updateAppointmentTable();
                     }
-                    updateAppointmentTable();
+                    else {
+                        System.out.println("The doctor doesn't exist");
+                    }
                 }
             });
             assert addAppointment != null;
