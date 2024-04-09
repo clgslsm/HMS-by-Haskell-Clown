@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class StaffDAO {
     private static final DBManager dbManager = DBManager.getInstance();
@@ -26,28 +25,22 @@ public class StaffDAO {
     }
 
     //READ METHODS
-    public static Staff getStaffById(String staffId){
+    public static Staff getStaffById(String staffId) {
 
-        Map<String, Object> staffData = null;
-        try {
-            staffData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, staffId).getData();
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException("Staff ID does not exist"  + e.toString() );
-        }
+        Map<String, Object> staffData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, staffId).getData();
 
         assert staffData != null;
         return new Staff(staffId, staffData);
     }
+
     public static List<Staff> getStaffByUserMode(User.Mode userMode) {
         List<QueryDocumentSnapshot> querySnapshot;
-        try {
-            querySnapshot = dbManager.getDocumentsByConditions(
-                    DBManager.CollectionPath.STAFF,
-                    Filter.equalTo("userMode", userMode)
-            );
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.STAFF,
+                Filter.equalTo("userMode", userMode.getValue())
+        );
+
         List<Staff> staffList = new ArrayList<>();
 
         for (QueryDocumentSnapshot qds : querySnapshot) {
@@ -68,6 +61,7 @@ public class StaffDAO {
 
         return staffData;
     }
+
     //UPDATE METHODS
     public static void updateStaff(String staffId, Object... fieldsAndValues) {
         Map<String, Object> newData = new HashMap<>();
@@ -76,12 +70,13 @@ public class StaffDAO {
         }
         dbManager.updateDocument(DBManager.CollectionPath.STAFF, staffId, newData);
     }
+
     //DELETE METHODS
-    public  static void deleteStaffById(String staffId){
+    public static void deleteStaffById(String staffId) {
         try {
             dbManager.deleteDocument(DBManager.CollectionPath.STAFF, staffId);
         } catch (Exception e) {
-            throw new RuntimeException("Delete failed: Staff does not exist/" + e.toString());
+            throw new RuntimeException("Delete failed: Staff does not exist/" + e);
         }
     }
 }

@@ -1,31 +1,38 @@
 package com.javaswing;
 
+import com.javafirebasetest.entity.User;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class MainPage extends JFrame {
-    MainPage(){
+    MainPage(String role){
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("ABC Hospital @Receptionist");
         this.getContentPane().setBackground(new Color(0xF1F8FF));
         this.setLayout(new BorderLayout());
         this.setVisible(true);
-        this.add(new MainPageUIContainer());
+        this.add(new MainPageUIContainer(role));
         this.pack();
     }
 }
 
 class MainPageUIContainer extends JPanel {
+    String role;
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     CardLayout containerLayout = new CardLayout();
-    JPanel navContainer = NavigationContainer();
-    JPanel mainPageContainer = MainPageContainer();
-    MainPageUIContainer(){
+    JPanel navContainer;
+    JPanel mainPageContainer;
+    MainPageUIContainer(String user){
+        role = user;
+
         this.setLayout(new BorderLayout());
         this.setSize(new Dimension(screenSize.width, screenSize.height));
 
+        navContainer = NavigationContainer();
+        mainPageContainer  = MainPageContainer();
         this.add(navContainer, BorderLayout.WEST);
         this.add(mainPageContainer);
     }
@@ -34,7 +41,6 @@ class MainPageUIContainer extends JPanel {
         navigationContainer.setPreferredSize(new Dimension(screenSize.width * 4261 / 27320, screenSize.height));
         navigationContainer.setLayout(new BoxLayout(navigationContainer, BoxLayout.Y_AXIS));
         navigationContainer.setBackground(Color.WHITE);
-
         // Thêm nội dung vào control panel
         JLabel label = new JLabel("ABC HOSPITAL");
         label.setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/logo.jpg").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
@@ -56,7 +62,6 @@ class MainPageUIContainer extends JPanel {
         machineSection.setSelected(false);
 
         patientSection.addActionListener(e -> {
-            System.out.println("Lua chon 1");
             patientSection.setSelected(true);
             doctorSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -65,7 +70,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         doctorSection.addActionListener(e -> {
-            System.out.println("Lua chon 2");
             patientSection.setSelected(false);
             doctorSection.setSelected(true);
             medicineSection.setSelected(false);
@@ -74,7 +78,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         medicineSection.addActionListener(e -> {
-            System.out.println("Lua chon 3");
             patientSection.setSelected(false);
             doctorSection.setSelected(false);
             medicineSection.setSelected(true);
@@ -83,7 +86,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         machineSection.addActionListener(e -> {
-            System.out.println("Lua chon 3");
             patientSection.setSelected(false);
             doctorSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -98,23 +100,27 @@ class MainPageUIContainer extends JPanel {
         cPanel.setBackground(Color.WHITE);
         cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 
-        cPanel.add(patientSection);
-        cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(Box.createVerticalStrut(10));
+        // (role != null && role.equals("Doctor")) {
+            cPanel.add(patientSection);
+            cPanel.add(Box.createVerticalStrut(10));
+        //}
+        //else {
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(doctorSection);
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(doctorSection);
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(medicineSection);
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(medicineSection);
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(machineSection);
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(machineSection);
+            cPanel.add(Box.createVerticalStrut(10));
+        //}
 
         navigationContainer.add(cPanel);
         return navigationContainer;
@@ -185,5 +191,34 @@ class BackButton extends JButton {
         setBorder(BorderFactory.createEmptyBorder());
         setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/back-icon.png").getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH)));
         setSize(new Dimension(20,20));
+    }
+}
+
+class RoundedButton extends JButton {
+    public RoundedButton(String text) {
+        super(text);
+        setContentAreaFilled(false);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        if (getModel().isArmed()) {
+            g.setColor(Color.lightGray);
+        }
+        else {
+            g.setColor(getBackground());
+        }
+        Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.fillRoundRect(0,0,getWidth(), getHeight(), 20, 20);
+        super.paintComponent(g);
+    }
+
+    @Override
+    protected void paintBorder(Graphics g) {
+        g.setColor(getForeground());
+        Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.drawRoundRect(0,0,getWidth()-1, getHeight()-1, 20, 20);
     }
 }

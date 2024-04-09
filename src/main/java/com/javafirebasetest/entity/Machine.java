@@ -21,7 +21,7 @@ public class Machine {
         public static Machine.Status fromValue(String value) {
             for (Machine.Status bg : Machine.Status.values())
                 if (bg.value.equalsIgnoreCase(value)) return bg;
-            throw new IllegalArgumentException("Invalid blood group: " + value);
+            throw new IllegalArgumentException("Invalid machine status: " + value);
         }
     }
     public Machine() {}
@@ -36,9 +36,7 @@ public class Machine {
         super();
         this.machineId = machineId;
         this.machineName = (String) machine.get("machineName");
-        this.purchaseDate = LocalDate.parse((String) machine.get("purchaseDate"), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        this.machineStatus = Machine.Status.fromValue((String) machine.get("machineStatus"));
-        this.usageHistory = (String) machine.get("usageHistory");
+        this.purchaseDate = LocalDate.parse((String) machine.get("purchaseDate"));
         this.machineStatus = Machine.Status.fromValue((String) machine.get("machineStatus"));
         this.usageHistory = (String) machine.get("usageHistory");
     }
@@ -58,7 +56,6 @@ public class Machine {
     }
     public Map<String, Object> toMap() {
         Map<String, Object> machineData = new HashMap<>();
-        machineData.put("machineId", machineId);
         machineData.put("machineName", machineName);
         machineData.put("purchaseDate", purchaseDate.toString());
         machineData.put("machineStatus", machineStatus.getValue());

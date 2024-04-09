@@ -10,21 +10,17 @@ import com.google.firebase.cloud.FirestoreClient;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 //SINGLETON DESIGN PATTERN
 
 public class DBManager {
     private static DBManager instance;
     final public Firestore db;
-
-
-
     public enum CollectionPath {
-        PATIENT("Patients"), STAFF("Staffs"), MEDICAL_RECORD("MedicalRecords"), MACHINE("Machines"), MEDICINE("Medicines"), USER("User");
+        PATIENT("Patients"), STAFF("Staffs"), MEDICAL_RECORD("MedicalRecords"), MACHINE("Machines"), MEDICINE("Medicines"), USER("Users");
         private final String value;
         CollectionPath(String value) {
             this.value = value;
@@ -50,7 +46,6 @@ public class DBManager {
             options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -73,35 +68,42 @@ public class DBManager {
 
 
     // Add a document to a collection
-    public void addDocument(CollectionPath collectionPath, Map<String, Object> data) {
+    public String addDocument(CollectionPath collectionPath, Map<String, Object> data){
         CollectionReference colRef = db.collection(collectionPath.getValue());
         ApiFuture<DocumentReference> result = colRef.add(data);
 
         try {
             DocumentReference docRef = result.get();
+            return result.get().getId();
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            System.out.println("DBManager addDocument - cannot get added document" + e);
+            return null;
         }
     }
     // Get a document by document ID
 
-    public DocumentSnapshot getDocumentById(CollectionPath collectionPath, String documentId) throws
-            ExecutionException, InterruptedException {
+    public DocumentSnapshot getDocumentById(CollectionPath collectionPath, String documentId){
         DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
         ApiFuture<DocumentSnapshot> future = docRef.get();
-        DocumentSnapshot document = future.get();
-        if (document.exists()) {
-            return document;
-        } else {
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            System.out.println("DBManager getDocumentById - cannot get document (ID does not exist?) " + e);
             return null;
         }
     }
 
     // Query documents based on certain conditions
-    public List<QueryDocumentSnapshot> getDocumentsByConditions(CollectionPath collectionPath, Filter ... filters) throws
-            ExecutionException, InterruptedException {
+    public List<QueryDocumentSnapshot> getDocumentsByConditions(CollectionPath collectionPath, Filter ... filters){
         ApiFuture<QuerySnapshot> future = db.collection(collectionPath.getValue()).where(makeFilter(filters)).get();
-        QuerySnapshot querySnapshot = future.get();
+        QuerySnapshot querySnapshot = null;
+
+        try {
+            querySnapshot = future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            System.out.println("DBManager getDocumentsByConditions - cannot get document " + e);
+            return null;
+        }
 
         return querySnapshot.getDocuments();
     }
@@ -114,7 +116,8 @@ public class DBManager {
         try {
             querySnapshot = future.get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException("No document in " + collectionPath.getValue());
+            System.out.println("DBManager getAllDocuments - cannot get documents " + e);
+            return null;
         }
 
         return querySnapshot.getDocuments();
@@ -124,7 +127,7 @@ public class DBManager {
     public void updateDocument(CollectionPath collectionPath, String documentId, Map<String, Object> newData){
         try {
             //TO ADD DOCUMENT WITH CUSTOM ID
-            if (! db.collection(collectionPath.getValue()).document(documentId).get().get().exists()){
+            if (!db.collection(collectionPath.getValue()).document(documentId).get().get().exists()){
                 //SET new document with given id and blank data
                 db.collection(collectionPath.getValue()).document(documentId).set(newData);
             }
@@ -134,9 +137,9 @@ public class DBManager {
                 docRef.update(newData);
             }
         } catch (InterruptedException | ExecutionException e) {
-            System.out.println("This is not supposed to happen :/" + e.toString());
+            System.out.println("DBManager updateDocument - cannot get document (ID does not exist?)" + e);
+            return;
         }
-
     }
 
     // Delete a document
@@ -145,7 +148,8 @@ public class DBManager {
         try{
             docRef.get().get();
         } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
+            System.out.println("DBManager deleteDocument - cannot delete document (ID does not exist?)");
+            return;
         }
         docRef.delete();
     }
@@ -158,34 +162,5 @@ public class DBManager {
         }
 
         return res;
-    }
-
-    // Method to generate a random purchase date
-    private static Date generateRandomDate() {
-        Random rand = new Random();
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(rand.nextInt(10) + 2010, rand.nextInt(12), rand.nextInt(28) + 1); // Random date between 2010 and current year
-        return calendar.getTime();
-    }
-
-    private static LocalDate generateRandomBirthDate() {
-        // Generating random birthdate within the range of 1950 and 2003
-        int year = 1950 + new Random().nextInt(54); // 1950 + random between 0 and 53
-        int month = 1 + new Random().nextInt(12); // Random month between 1 and 12
-        int day = 1 + new Random().nextInt(28); // Random day between 1 and 28 (assuming February)
-
-        return LocalDate.of(year, month, day);
-    }
-
-    private static String generateRandomPhoneNumber() {
-        // Generating random phone number (dummy implementation)
-        // You can replace this with a more realistic phone number generator
-        StringBuilder phoneNumber = new StringBuilder("+");
-
-        for (int i = 0; i < 10; i++) {
-            phoneNumber.append(new Random().nextInt(10));
-        }
-
-        return phoneNumber.toString();
     }
 }

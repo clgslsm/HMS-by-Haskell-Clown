@@ -181,6 +181,42 @@ Hệ thống xếp lịch
             ApiFuture<DocumentReference> docRef = db.collection("Medicines").add(medicineData);
             System.out.println("Added medicine with ID: " + docRef.get().getId());
         }
+        Medicine newMedicine = new Medicine(
+                        "lmao",
+                        "Thuoc an than",
+                        LocalDate.now(),
+                        LocalDate.now(),
+                        null,
+                        64L,
+                        "viên",
+                        100L
+                );
+
+                MedicineDAO.addMedicine(newMedicine);
+
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Medicine medicine;
+                try {
+                    medicine = MedicineDAO.getMedicineById("lmao");
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                System.out.println(medicine);
+
+                MedicineDAO.updateMedicine("lmao", "description", "Bla bla bla");
+
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
 
     private static Machine generateRandomMachine() {
         Random random = new Random();

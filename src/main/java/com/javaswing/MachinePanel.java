@@ -1,7 +1,9 @@
 package com.javaswing;
+import com.javafirebasetest.dao.MachineDAO;
 import com.javafirebasetest.entity.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.MaskFormatter;
@@ -11,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import com.javafirebasetest.dao.PatientDAO;
 class MachinePanel extends JPanel {
     ArrayList<Machine> data = new ArrayList<>();
     MachineDefaultPage defaultPage;
@@ -23,57 +24,50 @@ class MachinePanel extends JPanel {
 
         defaultPage = new MachineDefaultPage();
 
-        // When we click "Add Machine" => change to Machine Registration Page
+        // When we click "Add Doctor" => change to Doctor Registration Page
         defaultPage.addMachineBtn.addActionListener(_ -> {
-            // Create Machine Registration Page
-            AddNewMachinePage addMachinePage = new AddNewMachinePage();
-            this.add(addMachinePage, "add-machine-page");
+            String[] status = new String[Machine.Status.values().length];
+            int i = 0;
+            for (Machine.Status st : Machine.Status.values()) {
+                status[i] = st.getValue();
+                i++;
+            }
+            JComboBox<String> sta = new JComboBox<>(status);
+            sta.setBackground(Color.white);
+            sta.setBorder(BorderFactory.createEmptyBorder());
+            sta.setBounds(385-250,130,70,20);
+            JTextField nameField = new JTextField(30);
 
-            // Get back to default page
-            addMachinePage.backButton.addActionListener(_ ->{
-                currentPage.removeLayoutComponent(addMachinePage);
-                currentPage.show(this,"default-page");
-            });
+            Object[] message = {
+                    "Name of Dr:", nameField,
+                    "Status:", sta
 
-            // Fill in the form and store the information of the new patient
-            addMachinePage.form.createBtn.addActionListener(_ ->{
-                String ID = addMachinePage.form.IDInput.getText();
-                String name = addMachinePage.form.nameInput.getText();
-                String gender;
-                if (addMachinePage.form.male.isSelected())
-                    gender = "Male";
-                else if (addMachinePage.form.female.isSelected())
-                    gender = "Female";
-                else gender = "Other";
-                String phone = addMachinePage.form.phoneInput.getText();
-                String address = addMachinePage.form.addressInput.getText();
-                String bloodGroup = addMachinePage.form.bloodGroupInput.getText();
-                String dateOfBirth = addMachinePage.form.DOBInput.getText();
-                System.out.println(MachineForm.reformatDate(dateOfBirth));
+            };
 
-                // Creating the map
-                Map<String, Object> machineInfo = new HashMap<>();
-                machineInfo.put("name", name);
-                machineInfo.put("gender", gender);
-                machineInfo.put("phoneNumber", phone);
-                machineInfo.put("address", address);
-                machineInfo.put("bloodGroup", bloodGroup);
-                machineInfo.put("birthDate", MachineForm.reformatDate(dateOfBirth));
-                //Machine newMachine = new Machine(ID, machineInfo);
-//                data.add(newMachine);
-//                try {
-//                    MachineDAO.addMachine(newMachine);
-//                } catch (ExecutionException | InterruptedException ex) {
-//                    throw new RuntimeException(ex);
-//                }
-//                defaultPage.addMachineToTable(newMachine);
-//                System.out.println(data);
+            int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.OK_CANCEL_OPTION);
 
-                currentPage.removeLayoutComponent(addMachinePage);
-                currentPage.show(this,"machine-default-page");
-            });
+            if (option == JOptionPane.OK_OPTION) {
+                String s = Objects.requireNonNull(sta.getSelectedItem()).toString();
+                String name = nameField.getText();
 
-            currentPage.show(this, "add-machine-page");
+                // Kiểm tra xem có ô nào bị bỏ trống không
+                if (s.isEmpty() || name.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "The input box cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Department: " + s + "\nName: " + name, "Information", JOptionPane.INFORMATION_MESSAGE);
+                    //Doctor newDoctor = new Doctor("12", name, );
+////                data.add(newDoctor);
+////                try {
+////                    DoctorDAO.addDoctor(newDoctor);
+////                } catch (ExecutionException | InterruptedException ex) {
+////                    throw new RuntimeException(ex);
+////                }
+////                defaultPage.addDoctorToTable(newDoctor);
+////                System.out.println(data);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Cancel", "Notification", JOptionPane.INFORMATION_MESSAGE);
+            }
         });
 
         // See full information and medical records of a specific patient
@@ -124,12 +118,15 @@ class MachineDefaultPage extends JLabel {
         // Header container
         JPanel header = new JPanel();
         JLabel title = new JLabel("Machine Info");
-        title.setFont(title.getFont().deriveFont(20F));
-        header.setBackground(Color.white);
+        title.setFont(title.getFont().deriveFont(25F));
+        title.setForeground(new Color(0x3497F9));
+        header.setBackground(new Color(0xF1F8FF));
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-        header.add(addMachineBtn);
-        header.add(Box.createHorizontalGlue());
+
+
         header.add(title);
+        header.add(Box.createHorizontalGlue());
+        header.add(addMachineBtn);
 
         //Table
         JPanel body = new JPanel();
@@ -137,31 +134,42 @@ class MachineDefaultPage extends JLabel {
         body.setBackground(Color.white);
 
         model = new CustomTableModel();
-//        List<Machine> allMachines = MachineDAO.getAllMachines();
-//        for (Machine p : allMachines) {
-//            addMachineToTable(p);
-//        }
+        List<Machine> allMachines = MachineDAO.getAllMachines();
+        for (Machine p : allMachines) {
+            addMachineToTable(p);
+        }
         machineList = new JTable(model); // UI for patient list
-        machineList.setRowHeight(30);
-        machineList.setGridColor(Color.gray);
-        machineList.setSelectionBackground(new Color(0xfdf7e7));
+
+        machineList.getTableHeader().setPreferredSize(new Dimension(machineList.getTableHeader().getWidth(), 40));
+        machineList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
+        machineList.getTableHeader().setOpaque(false);
+        machineList.getTableHeader().setBackground(new Color(32, 136, 203));
+        machineList.getTableHeader().setForeground(new Color(255,255,255));
+
+        machineList.setFocusable(false);
+        machineList.setIntercellSpacing(new java.awt.Dimension(0, 0));
+        machineList.setSelectionBackground(new java.awt.Color(232, 57, 95));
+        machineList.setShowVerticalLines(false);
+        machineList.getTableHeader().setReorderingAllowed(false);
         machineList.setFont(new Font("Courier",Font.PLAIN,13));
-        machineList.setPreferredScrollableViewportSize(new Dimension(850,500));
-        machineList.getColumn("User Action").setCellRenderer(new ButtonRenderer());
-        machineList.getColumn("User Action").setCellEditor(new ButtonEditor(new JCheckBox()));
+        //machineList.getColumn("View").setCellRenderer(new ButtonRenderer());
+        //machineList.getColumn("View").setCellEditor(new ButtonEditor(new JCheckBox()));
+        machineList.setRowHeight(40);
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(machineList);
         body.add(scrollPane);
 
         this.add(header);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
+        JPanel space = new JPanel();
+        space.setBackground(new Color(0xF1F8FF));
+        space.setSize(new Dimension(40, 40));
+        this.add(space);
         this.add(body);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
     }
     void addMachineToTable (Machine machine){
-//        ButtonRenderer buttonRenderer = new ButtonRenderer();
-//        Object[] rowData = new Object[]{machine.getMachineID(), machine.getName(), machine.getAge(), machine.getGender(), machine.getBloodGroup().getValue(), machine.getPhoneNumber(), buttonRenderer};
-//        model.addRow(rowData);
+        ButtonRenderer buttonRenderer = new ButtonRenderer();
+        Object[] rowData = new Object[]{machine.getMachineId(), machine.getMachineName(), machine.getPurchaseDate(), machine.getMachineStatus(), machine.getUsageHistory(), buttonRenderer};
+        model.addRow(rowData);
     }
     public ViewMachineInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
         ViewMachineInfoPage viewPage = new ViewMachineInfoPage();
@@ -182,7 +190,7 @@ class MachineDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","User Action"};
+        private final String[] columnNames = {"ID","Name","Purchase Date","Status","Usage History"};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
@@ -216,7 +224,7 @@ class MachineDefaultPage extends JLabel {
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             // Make all cells non-editable
-            return columnIndex == 6;
+            return columnIndex == 5;
         }
 
         // Method to add a new row to the table
@@ -281,11 +289,13 @@ class MachineDefaultPage extends JLabel {
     }
 
     public JButton AddMachineButton(){
-        JButton addMachineButton = new JButton("  + Add machine  ");
-        addMachineButton.setForeground(Color.white);
+        JButton addMachineButton = new RoundedButton("  + Add machine  ");
+        addMachineButton.setFont(new Font("Courier", Font.PLAIN,13));
+        addMachineButton.setFocusable(false);
+        addMachineButton.setForeground(Color.WHITE);
         addMachineButton.setBackground(new Color(0x3497F9));
-        addMachineButton.setMaximumSize(new Dimension(125,30));
-        addMachineButton.setBorder(BorderFactory.createEmptyBorder());
+        addMachineButton.setBounds(100, 100, 125, 60);
+        addMachineButton.setBorder(new EmptyBorder(10,10,10,10));
         return addMachineButton;
     }
 }
