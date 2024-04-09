@@ -173,6 +173,7 @@ public class Draft extends JFrame{
         headerPanel.add(returnButton);
         headerPanel.add(headerLabel);
 
+
         JLabel nameLabel = new JLabel("Tên khoa");
         nameLabel.setBounds(50, 10, 100, 30);
         nameLabel.setFont(new Font("Courier New", Font.PLAIN, 18));

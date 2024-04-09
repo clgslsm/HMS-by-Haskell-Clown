@@ -29,35 +29,35 @@ class DoctorPanel extends JPanel {
 
         // When we click "Add Doctor" => change to Doctor Registration Page
         defaultPage.addDoctorBtn.addActionListener(_ -> {
-//            String dep = JOptionPane.showInputDialog(null, "Name of Department:");
-//            String name = JOptionPane.showInputDialog(null, "Name of Dr:")
-//            if (dep != null && name != null) {
-//                // Xử lý khi người dùng nhập liệu và nhấn "OK"
-//                System.out.println("Tên của bạn là: " + input);
-//            } else {
-//                // Xử lý khi người dùng nhấn "Cancel" hoặc đóng cửa sổ
-//                System.out.println("Bạn đã hủy.");
-//            }
-            JTextField depField = new JTextField(30);
+            String[] department = new String[DeptType.values().length];
+            int i = 0;
+            for (DeptType dt : DeptType.values()) {
+                department[i] = dt.getValue();
+                i++;
+            }
+            JComboBox<String> dep = new JComboBox<>(department);
+            dep.setBackground(Color.white);
+            dep.setBorder(BorderFactory.createEmptyBorder());
+            dep.setBounds(385-250,130,70,20);
             JTextField nameField = new JTextField(30);
 
             Object[] message = {
-                    "Name of Department:", depField,
+                    "Name of Department:", dep,
                     "Name of Dr:", nameField
             };
 
             int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.OK_CANCEL_OPTION);
 
             if (option == JOptionPane.OK_OPTION) {
-                String dep = depField.getText();
+                String d = Objects.requireNonNull(dep.getSelectedItem()).toString();
                 String name = nameField.getText();
 
                 // Kiểm tra xem có ô nào bị bỏ trống không
-                if (dep.isEmpty() || name.isEmpty()) {
+                if (d.isEmpty() || name.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "The input box cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Department: " + dep + "\nName: " + name, "Information", JOptionPane.INFORMATION_MESSAGE);
-                    //Doctor newDoctor = new Doctor(ID, doctorInfo);
+                    JOptionPane.showMessageDialog(null, "Department: " + d + "\nName: " + name, "Information", JOptionPane.INFORMATION_MESSAGE);
+                    //Doctor newDoctor = new Doctor("12", name, );
 ////                data.add(newDoctor);
 ////                try {
 ////                    DoctorDAO.addDoctor(newDoctor);
