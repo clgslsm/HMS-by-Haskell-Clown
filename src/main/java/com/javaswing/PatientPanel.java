@@ -667,7 +667,7 @@ class ViewPatientInfoPage extends JPanel {
                         updateAppointmentTable();
                     }
                     else {
-                        System.out.println("The doctor doesn't exist");
+                        JOptionPane.showOptionDialog(medicalRecord,"No available doctor","",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,null,0);
                     }
                 }
             });
