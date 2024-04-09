@@ -2,12 +2,15 @@ package com.javafirebasetest.dao;
 
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.javafirebasetest.entity.Doctor;
 import com.javafirebasetest.entity.MedicalRecord;
+import com.javafirebasetest.entity.Patient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 public class MedRecDAO {
     private static final DBManager dbManager = DBManager.getInstance();
@@ -24,6 +27,11 @@ public class MedRecDAO {
         }
     }
 
+    public static MedicalRecord addMedRecByDoctorAndPatient(Doctor doctor, Patient patient) {
+        MedicalRecord medicalRecord = new MedicalRecord(doctor, patient);
+        addMedRec(medicalRecord);
+        return medicalRecord;
+    }
     //READ METHODS
     public static MedicalRecord getMedRecById(String medRecID) {
         Map<String, Object> medRecData = null;
