@@ -2,6 +2,8 @@ package com.javaswing;
 import com.javafirebasetest.dao.DoctorDAO;
 import com.javafirebasetest.dao.MedRecDAO;
 import com.javafirebasetest.dao.PatientDAO;
+import com.javafirebasetest.entity.DeptType;
+import com.javafirebasetest.entity.Doctor;
 import com.javafirebasetest.entity.MedicalRecord;
 import com.javafirebasetest.entity.Patient;
 import javax.swing.*;
@@ -646,6 +648,9 @@ class ViewPatientInfoPage extends JPanel {
 
             addAppointment = AddAppointmentButton();
             header.add(headerLabel, BorderLayout.WEST);
+            addAppointment.addActionListener(_->{
+                new AddAppointmentPopup(medicalRecord);
+            });
             assert addAppointment != null;
             header.add(addAppointment, BorderLayout.EAST);
 
@@ -655,13 +660,6 @@ class ViewPatientInfoPage extends JPanel {
                 Object[] rowData = new Object[]{medicalRecord1.getDepartment(), DoctorDAO.getDoctorById(medicalRecord1.getDoctorId()).getName(), medicalRecord1.getCheckIn(), medicalRecord1.getCheckOut(), medicalRecord1.getObservation(), medicalRecord1.getStatus(), medicalRecord1.getServiceReview()};
                 model.addRow(rowData);
             }
-//            System.out.println(patientID);
-//            medicalRecordList = MedRecDAO.getMedRecByPatientId(patientID);
-//            if (!medicalRecordList.isEmpty()) {
-//                MedicalRecord medicalRecord1 = medicalRecordList.getFirst();
-//                Object[] rowData = new Object[]{medicalRecord1.getDepartment(), DoctorDAO.getDoctorById(medicalRecord1.getDoctorId()).getName(), medicalRecord1.getCheckIn(), medicalRecord1.getCheckOut(), medicalRecord1.getObservation(), medicalRecord1.getStatus(), medicalRecord1.getServiceReview()};
-//                model.addRow(rowData);
-//            }
 
             assert table != null;
             table.setPreferredScrollableViewportSize(new Dimension(400,500));
@@ -997,7 +995,6 @@ class PatientForm extends JPanel{
         }
     }
 }
-
 class CustomMouseListener implements MouseListener {
     public void mouseClicked(MouseEvent e) {
 
@@ -1013,5 +1010,36 @@ class CustomMouseListener implements MouseListener {
     }
 
     public void mouseExited(MouseEvent e) {
+    }
+}
+class AddAppointmentPopup {
+    AddAppointmentPopup(JPanel patient){
+        int i = 0;
+        String[] department = new String[DeptType.values().length];
+        for (DeptType dt : DeptType.values()) {
+            department[i] = dt.getValue();
+            i++;
+        }
+        JComboBox<String> dep = new JComboBox<>(department);
+        dep.setBackground(Color.white);
+        dep.setBorder(BorderFactory.createEmptyBorder());
+        JComboBox<String> docName = new JComboBox<>();
+        dep.addActionListener(_->{
+            docName.removeAllItems();
+            List<Doctor> availableDoctor = DoctorDAO.getDoctorByDepartment(DeptType.fromValue((String) dep.getSelectedItem()));
+            for(Doctor doc : availableDoctor){
+                docName.addItem(doc.getName());
+            }
+        });
+
+
+        Object[] message = {
+                "Name of Department:", dep,
+                "Doctor:", docName
+        };
+
+
+
+        int option = JOptionPane.showConfirmDialog(patient, message, "", JOptionPane.OK_CANCEL_OPTION);
     }
 }
