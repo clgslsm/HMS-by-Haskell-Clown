@@ -1,13 +1,17 @@
 package com.javaswing;
+import com.google.firebase.database.collection.LLRBNode;
 import com.javafirebasetest.dao.MedicineDAO;
 import com.javafirebasetest.entity.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -123,15 +127,15 @@ class MedicineDefaultPage extends JLabel {
     JTable medicineList;
     MedicineDefaultPage() {
         this.setMaximumSize(new Dimension(1300,600));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 75));
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 25));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Header container
         JPanel header = new JPanel();
-        JLabel title = new JLabel("Medicine Info");
+        JLabel title = new JLabel("List of Medicines");
         title.setFont(title.getFont().deriveFont(25F));
         title.setForeground(new Color(0x3497F9));
-        header.setBackground(new Color(0xF1F8FF));
+        header.setBackground(Color.white);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
 
 
@@ -151,21 +155,26 @@ class MedicineDefaultPage extends JLabel {
         }
         medicineList = new JTable(model); // UI for patient list
 
-        medicineList.getTableHeader().setPreferredSize(new Dimension(medicineList.getTableHeader().getWidth(), 40));
+        medicineList.getTableHeader().setPreferredSize(new Dimension(medicineList.getTableHeader().getWidth(), 36));
         medicineList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
         medicineList.getTableHeader().setOpaque(false);
         medicineList.getTableHeader().setBackground(new Color(32, 136, 203));
         medicineList.getTableHeader().setForeground(new Color(255,255,255));
-
         medicineList.setFocusable(false);
         medicineList.setIntercellSpacing(new java.awt.Dimension(0, 0));
         medicineList.setSelectionBackground(new java.awt.Color(232, 57, 95));
         medicineList.setShowVerticalLines(false);
         medicineList.getTableHeader().setReorderingAllowed(false);
         medicineList.setFont(new Font("Courier",Font.PLAIN,13));
-        //medicineList.getColumn("View").setCellRenderer(new ButtonRenderer());
-        //medicineList.getColumn("View").setCellEditor(new ButtonEditor(new JCheckBox()));
-        medicineList.setRowHeight(40);
+        medicineList.getColumn("Action").setCellRenderer(new ButtonRenderer());
+        medicineList.getColumn("Action").setCellEditor(new ButtonEditor(new JCheckBox()));
+        medicineList.setRowHeight(32);
+        // Center-align the content in each column
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < medicineList.getColumnCount() - 1; i++) {
+            medicineList.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(medicineList);
@@ -173,14 +182,14 @@ class MedicineDefaultPage extends JLabel {
 
         this.add(header);
         JPanel space = new JPanel();
-        space.setBackground(new Color(0xF1F8FF));
+        space.setBackground(Color.white);
         space.setSize(new Dimension(40, 40));
         this.add(space);
         this.add(body);
     }
     void addMedicineToTable (Medicine medicine){
         ButtonRenderer buttonRenderer = new ButtonRenderer();
-        Object[] rowData = new Object[]{medicine.getMedicineId(), medicine.getMedicineName(), medicine.getImportDate(), medicine.getExpiryDate(),medicine.getDescription(), medicine.getAmount(), medicine.getUnit(), medicine.getPrice(), buttonRenderer};
+        Object[] rowData = new Object[]{ medicine.getMedicineName(), medicine.getMedicineId(), medicine.getformattedImportDate(), medicine.getformattedExpiryDate(), medicine.getAmount(), medicine.getUnit(), buttonRenderer};
         model.addRow(rowData);
     }
     public ViewMedicineInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
@@ -202,11 +211,11 @@ class MedicineDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name","Import Date","Expiry Date","Description", "Amount","Unit", "Price"};
+        private final String[] columnNames = {"Name","Medicine ID","Import Date","Expiry Date", "Stock in Qty","Group Name", "Action"};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
-        private final Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,String.class,String.class, JButton.class};
+        private final Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,String.class,JButton.class};
 
         @Override
         public int getRowCount() {
@@ -236,7 +245,7 @@ class MedicineDefaultPage extends JLabel {
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             // Make all cells non-editable
-            return columnIndex == 7;
+            return columnIndex == 6;
         }
 
         // Method to add a new row to the table
@@ -258,9 +267,11 @@ class MedicineDefaultPage extends JLabel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            setBackground(Color.green);
-            setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/view-icon.png").getImage().getScaledInstance(15,15*143/256, Image.SCALE_SMOOTH)));
-            setSize(25,25);
+            setBackground(Color.WHITE);
+            setText("View Full Detail >>");
+            setMaximumSize(new Dimension(70,18));
+            setOpaque(false);
+            setBorder(BorderFactory.createEmptyBorder());
             return this;
         }
     }
@@ -280,9 +291,25 @@ class MedicineDefaultPage extends JLabel {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            button.setBackground(Color.green);
-            button.setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/view-icon.png").getImage().getScaledInstance(15,15*143/256, Image.SCALE_SMOOTH)));
+            button.setBackground(Color.white);
+            button.setText("View Full Detail >>");
             button.setSize(25,25);
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    button.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                }
+            });
             isPushed = true;
             return button;
         }

@@ -187,6 +187,7 @@ class PatientDefaultPage extends JLabel {
         patientList.getColumn("Del").setCellRenderer(new DeleteButtonRenderer());
         patientList.getColumn("Del").setCellEditor(new DeleteButtonEditor(new JCheckBox()));
         patientList.setRowHeight(40);
+
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(patientList);
         body.add(scrollPane);
