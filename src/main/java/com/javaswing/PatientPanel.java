@@ -461,7 +461,7 @@ class PatientDefaultPage extends JLabel {
         }
 
         JButton SearchButton(){
-            JButton button = new JButton("Search");
+            JButton button = new RoundedButton("Search");
             button.setBackground(Color.gray);
             button.setForeground(Color.white);
             button.setPreferredSize(new Dimension(80,36));

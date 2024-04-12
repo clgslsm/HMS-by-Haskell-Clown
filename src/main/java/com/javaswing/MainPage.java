@@ -3,9 +3,11 @@ package com.javaswing;
 import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
+import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 
 public class MainPage extends JFrame {
     MainPage(String role){
@@ -52,34 +54,34 @@ class MainPageUIContainer extends JPanel {
 
         // Thêm các điều hướng
         NavButton patientSection = new NavButton("Patients");
-        NavButton doctorSection = new NavButton("Doctors");
+        NavButton staffSection = new NavButton("Staffs");
         NavButton medicineSection = new NavButton("Medicine");
         NavButton machineSection = new NavButton("Machine");
 
         patientSection.setSelected(true);
-        doctorSection.setSelected(false);
+        staffSection.setSelected(false);
         medicineSection.setSelected(false);
         machineSection.setSelected(false);
 
         patientSection.addActionListener(e -> {
             patientSection.setSelected(true);
-            doctorSection.setSelected(false);
+            staffSection.setSelected(false);
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"patient-panel");
         });
 
-        doctorSection.addActionListener(e -> {
+        staffSection.addActionListener(e -> {
             patientSection.setSelected(false);
-            doctorSection.setSelected(true);
+            staffSection.setSelected(true);
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
-            containerLayout.show(mainPageContainer, "doctor-panel");
+            containerLayout.show(mainPageContainer, "staff-panel");
         });
 
         medicineSection.addActionListener(e -> {
             patientSection.setSelected(false);
-            doctorSection.setSelected(false);
+            staffSection.setSelected(false);
             medicineSection.setSelected(true);
             machineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"medicine-panel");
@@ -87,7 +89,7 @@ class MainPageUIContainer extends JPanel {
 
         machineSection.addActionListener(e -> {
             patientSection.setSelected(false);
-            doctorSection.setSelected(false);
+            staffSection.setSelected(false);
             medicineSection.setSelected(false);
             machineSection.setSelected(true);
             containerLayout.show(mainPageContainer,"machine-panel");
@@ -108,7 +110,7 @@ class MainPageUIContainer extends JPanel {
         //else {
             cPanel.add(Box.createVerticalStrut(10));
 
-            cPanel.add(doctorSection);
+            cPanel.add(staffSection);
             cPanel.add(Box.createVerticalStrut(10));
 
             cPanel.add(Box.createVerticalStrut(10));
@@ -131,12 +133,12 @@ class MainPageUIContainer extends JPanel {
         container.setPreferredSize(new Dimension(screenSize.width * 23059 / 27320, screenSize.height));
 
         JPanel patientPanel = new PatientPanel();
-        JPanel doctorPanel = new DoctorPanel();
+        JPanel staffPanel = new StaffPanel();
         JPanel medicinePanel = new MedicinePanel();
         JPanel machinePanel = new MachinePanel();
 
         container.add(patientPanel, "patient-panel");
-        container.add(doctorPanel, "doctor-panel");
+        container.add(staffPanel, "staff-panel");
         container.add(medicinePanel, "medicine-panel");
         container.add(machinePanel, "machine-panel");
 
@@ -198,6 +200,8 @@ class RoundedButton extends JButton {
     public RoundedButton(String text) {
         super(text);
         setContentAreaFilled(false);
+        setFocusable(false);
+        setFont(new Font("Courier",Font.PLAIN,16));
     }
 
     @Override
@@ -220,5 +224,32 @@ class RoundedButton extends JButton {
         Graphics2D graphics2D = (Graphics2D) g;
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics2D.drawRoundRect(0,0,getWidth()-1, getHeight()-1, 20, 20);
+    }
+}
+
+class RoundedTextField extends JTextField {
+    private static final long serialVersionUID = 1L;
+    private int radius;
+
+    public RoundedTextField(int columns, int radius) {
+        super(columns);
+        this.radius = radius;
+        setOpaque(false);
+        //setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5)); // Thiết lập padding
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        // Vẽ nền
+        g.setColor(getBackground());
+        g.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
+
+        // Gọi phương thức paintComponent của lớp cha để vẽ nội dung JTextField
+        super.paintComponent(g);
+    }
+
+    @Override
+    protected void paintBorder(Graphics g) {
+        // Không làm gì ở đây để ngăn việc vẽ viền mặc định của JTextField
     }
 }
