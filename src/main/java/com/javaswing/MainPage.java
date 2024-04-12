@@ -110,6 +110,7 @@ class MainPageUIContainer extends JPanel {
         //else {
             cPanel.add(Box.createVerticalStrut(10));
 
+
             cPanel.add(staffSection);
             cPanel.add(Box.createVerticalStrut(10));
 
@@ -226,7 +227,6 @@ class RoundedButton extends JButton {
         graphics2D.drawRoundRect(0,0,getWidth()-1, getHeight()-1, 20, 20);
     }
 }
-
 class RoundedTextField extends JTextField {
     private static final long serialVersionUID = 1L;
     private int radius;

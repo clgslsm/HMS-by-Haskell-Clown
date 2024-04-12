@@ -183,9 +183,8 @@ class StaffDefaultPage extends JLabel {
         staffList.getSelectionModel().addListSelectionListener(e -> {
             int selectedRow = staffList.getSelectedRow();
             buttonRenderer.setSelectedRow(selectedRow);
-            buttonEditor.setID(staffList.getValueAt(selectedRow, 0).toString());
+            //buttonEditor.setID(staffList.getValueAt(selectedRow, 0).toString());
             staffList.repaint();
-
         });
 
         JScrollPane scrollPane = new JScrollPane();
