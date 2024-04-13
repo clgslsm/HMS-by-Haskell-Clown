@@ -37,7 +37,23 @@ public class DoctorDAO {
         assert doctorData != null;
         return new Doctor(doctorId, doctorData);
     }
-
+    public static List<Doctor> getDoctorByName(String doctorName) {
+        List<QueryDocumentSnapshot> querySnapshot;
+        try {
+            querySnapshot = dbManager.getDocumentsByConditions(
+                    DBManager.CollectionPath.STAFF,
+                    Filter.and(Filter.greaterThanOrEqualTo("name", doctorName),
+                            Filter.lessThanOrEqualTo("name", doctorName + "\uf7ff"))
+            );
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        List<Doctor> doctorList = new ArrayList<>();
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            doctorList.add(new Doctor(qds.getId(), qds.getData()));
+        }
+        return doctorList;
+    }
     public static List<Doctor> getDoctorByDepartment(DeptType deptType) {
         List<QueryDocumentSnapshot> querySnapshot;
         try {
