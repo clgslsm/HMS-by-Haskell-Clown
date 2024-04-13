@@ -299,7 +299,7 @@ class DoctorDefaultPage extends JLabel {
     }
 }
 class AddNewDoctorPage extends JPanel {
-    BackButton backButton = new BackButton();
+    JButton backButton = new RoundedButton(" Return ");
     DoctorForm form = new DoctorForm();
     AddNewDoctorPage() {
         JLabel title = new JLabel("Doctor Registration Form");
@@ -327,7 +327,7 @@ class AddNewDoctorPage extends JPanel {
     }
 }
 class ViewDoctorInfoPage extends JPanel {
-    BackButton backButton = new BackButton();
+    JButton backButton = new RoundedButton(" Return ");
     ViewMode form = new ViewMode();
     JLabel title = new JLabel("#MedicalID");
 

@@ -6,7 +6,10 @@ import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
 
 public class MainPage extends JFrame {
@@ -188,14 +191,6 @@ class NavButton extends JButton {
         }
     }
 }
-class BackButton extends JButton {
-    BackButton(){
-        setBackground(Color.white);
-        setBorder(BorderFactory.createEmptyBorder());
-        setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/back-icon.png").getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH)));
-        setSize(new Dimension(20,20));
-    }
-}
 
 class RoundedButton extends JButton {
     public RoundedButton(String text) {
@@ -203,6 +198,10 @@ class RoundedButton extends JButton {
         setContentAreaFilled(false);
         setFocusable(false);
         setFont(new Font("Courier",Font.PLAIN,16));
+        setForeground(Color.WHITE);
+        setBackground(new Color(0x3497F9));
+        setBounds(100, 100, 125, 60);
+        setBorder(new EmptyBorder(10,10,10,10));
     }
 
     @Override
@@ -234,8 +233,10 @@ class RoundedTextField extends JTextField {
     public RoundedTextField(int columns, int radius) {
         super(columns);
         this.radius = radius;
+        setFont(new Font("Courier",Font.PLAIN,16));
         setOpaque(false);
-        //setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5)); // Thiết lập padding
+        setBorder(new LineBorder(Color.BLACK));
+        setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5)); // Thiết lập padding
     }
 
     @Override
@@ -244,6 +245,11 @@ class RoundedTextField extends JTextField {
         g.setColor(getBackground());
         g.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
 
+        // Vẽ viền sau
+        ((Graphics2D) g).setStroke(new BasicStroke(0.5f)); // Thiết lập độ dày cho viền
+        g.setColor(Color.BLACK);
+        g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
+
         // Gọi phương thức paintComponent của lớp cha để vẽ nội dung JTextField
         super.paintComponent(g);
     }
@@ -251,5 +257,37 @@ class RoundedTextField extends JTextField {
     @Override
     protected void paintBorder(Graphics g) {
         // Không làm gì ở đây để ngăn việc vẽ viền mặc định của JTextField
+    }
+}
+
+class RoundedTextArea extends JTextArea {
+    private int radius;
+    private Color borderColor;
+
+    public RoundedTextArea(int rows, int columns, int radius, Color borderColor) {
+        super(rows, columns);
+        this.setFont(new Font("Courier",Font.PLAIN,16));
+        this.radius = radius;
+        this.borderColor = borderColor;
+        setOpaque(false); // Để hiển thị hình dạng bo góc
+
+        // Loại bỏ viền của JTextArea
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setStroke(new BasicStroke(0.5f));
+        // Vẽ hình chữ nhật bo góc
+        g2.setColor(getBackground());
+        g2.fill(new RoundRectangle2D.Double(0, 0, getWidth() - 1, getHeight() - 1, radius, radius));
+        // Vẽ viền bo góc
+        g2.setColor(borderColor);
+        g2.draw(new RoundRectangle2D.Double(0, 0, getWidth() - 1, getHeight() - 1, radius, radius));
+        g2.dispose();
+
+        // Gọi phương thức paintComponent của lớp cha để vẽ nội dung JTextArea
+        super.paintComponent(g);
     }
 }

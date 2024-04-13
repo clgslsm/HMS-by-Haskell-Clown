@@ -162,7 +162,7 @@ class StaffDefaultPage extends JLabel {
         }; // UI for patient list
 
         staffList.getTableHeader().setPreferredSize(new Dimension(staffList.getTableHeader().getWidth(), 60));
-        staffList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
+        staffList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 16));
         staffList.getTableHeader().setOpaque(false);
         staffList.getTableHeader().setBackground(new Color(32, 136, 203));
         staffList.getTableHeader().setForeground(new Color(255,255,255));
@@ -447,8 +447,6 @@ class StaffDefaultPage extends JLabel {
                     jo.setBounds(385 - 250, 100, 70, 20);
                     dep.setBounds(385-250,130,70,20);
                     JTextField nameField = new JTextField(30);
-                    JTextField usernameField = new JTextField(30);
-                    JTextField passField = new JTextField(30);
 
                     dep.setEnabled(false);
                     jo.addActionListener(new ActionListener() {
