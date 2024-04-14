@@ -46,38 +46,47 @@ class PatientPanel extends JPanel {
                 currentPage.show(this,"default-page");
             });
 
-            // Fill in the form and store the information of the new patient
-            addPatientPage.form.createBtn.addActionListener(_ ->{
-//                String ID = addPatientPage.form.IDInput.getText();
-                String name = addPatientPage.form.nameInput.getText();
-                String gender = Objects.requireNonNull(addPatientPage.form.genderInput.getSelectedItem()).toString();
-                String phone = addPatientPage.form.phoneInput.getText();
-                String address = addPatientPage.form.addressInput.getText();
-                String bloodGroup = Objects.requireNonNull(addPatientPage.form.bloodGroupInput.getSelectedItem()).toString();
-                String dateOfBirth = addPatientPage.form.DOBInput.getText();
-                System.out.println(PatientForm.reformatDate(dateOfBirth));
+            addPatientPage.saveButton.addActionListener(_ -> {
+                if (addPatientPage.name.getText().isEmpty() || addPatientPage.address.getText().isEmpty() || addPatientPage.phone.getText().isEmpty() ||
+                        addPatientPage.gender.getSelectedItem() == null || addPatientPage.bloodGroup.getSelectedItem() == null || addPatientPage.DOB.mergeDate().isEmpty()) {
+                    addPatientPage.message.setText("The information can not be left blank!");
+                    addPatientPage.message.setVisible(true);
+                } else {
+                    addPatientPage.message.setVisible(false);
+                    System.out.println(addPatientPage.name.getText());
+                    System.out.println(addPatientPage.address.getText());
+                    System.out.println(addPatientPage.phone.getText());
+                    System.out.println(Objects.requireNonNull(addPatientPage.gender.getSelectedItem()).toString());
+                    System.out.println(Objects.requireNonNull(addPatientPage.bloodGroup.getSelectedItem()).toString());
+                    System.out.println(addPatientPage.DOB.mergeDate());
 
-                // Creating the map
-                if (!name.trim().isEmpty() && !phone.trim().isEmpty() && !address.trim().isEmpty()) {
                     Map<String, Object> patientInfo = new HashMap<>();
-                    patientInfo.put("name", name);
-                    patientInfo.put("gender", gender);
-                    patientInfo.put("phoneNumber", phone);
-                    patientInfo.put("address", address);
-                    patientInfo.put("bloodGroup", bloodGroup);
-                    patientInfo.put("birthDate", PatientForm.reformatDate(dateOfBirth));
+                    patientInfo.put("name", addPatientPage.name.getText());
+                    patientInfo.put("gender", Objects.requireNonNull(addPatientPage.gender.getSelectedItem()).toString());
+                    patientInfo.put("phoneNumber", addPatientPage.phone.getText());
+                    patientInfo.put("address", addPatientPage.address.getText());
+                    patientInfo.put("bloodGroup", Objects.requireNonNull(addPatientPage.bloodGroup.getSelectedItem()).toString());
+                    patientInfo.put("birthDate", addPatientPage.DOB.mergeDate());
+
                     Patient newPatient = new Patient(null, patientInfo);
                     newPatient.setPatientId(PatientDAO.addPatient(newPatient));
                     System.out.println(newPatient.getPatientId());
                     PatientDAO.addPatient(newPatient);
-                    defaultPage.updateTableUI();
 
                     currentPage.removeLayoutComponent(addPatientPage);
-                    currentPage.show(this, "default-page");
+                    currentPage.show(this,"default-page");
+                    defaultPage.updateTableUI();
                 }
-                else addPatientPage.form.alertBlank.setVisible(true);
-            });
 
+//                PatientDAO.updatePatient(patientID,
+//                    "name", name.getText(),
+//                    "birthDate", DOB.mergeDate(),
+//                    "gender", Objects.requireNonNull(gender.getSelectedItem()).toString(),
+//                    "address", address.getText(),
+//                    "phoneNumber", phone.getText(),
+//                    "bloodGroup", Objects.requireNonNull(bloodGroup.getSelectedItem()).toString());
+//                System.out.println(patientID);
+            });
             currentPage.show(this, "add-patient-page");
         });
 
@@ -113,6 +122,7 @@ class PatientPanel extends JPanel {
                         viewPatientInfoPage.backButton.addActionListener(_ ->{
                             currentPage.removeLayoutComponent(viewPatientInfoPage);
                             currentPage.show(parentPanel,"default-page");
+                            //defaultPage.updateTableUI();
                         });
                     }
 
@@ -121,7 +131,7 @@ class PatientPanel extends JPanel {
                         // Instead of simulating button click, print to terminal
                         System.out.println(STR."Button clicked for row: \{row}");
                         String ID = defaultPage.patientList.getValueAt(row,0).toString();
-                        defaultPage.deletePatient(row);
+                        defaultPage.deletePatient(row, defaultPage.model);
                         PatientDAO.deletePatient(ID);
                     }
                 }
@@ -136,8 +146,8 @@ class PatientPanel extends JPanel {
 class PatientDefaultPage extends JLabel {
     SearchEngine searchEngine = new SearchEngine();
     JButton addPatientBtn = AddPatientButton();
-    CustomTableModel model = new CustomTableModel();
-    JTable patientList = new JTable(model);
+    CustomTableModel model;
+    JTable patientList;
     PatientDefaultPage() {
         this.setMaximumSize(new Dimension(1300,600));
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
@@ -170,7 +180,14 @@ class PatientDefaultPage extends JLabel {
         body.setLayout(new BorderLayout());
         body.setBackground(Color.white);
 
-        updateTableUI();
+        model = new CustomTableModel();
+        List<Patient> allPatients = PatientDAO.getAllPatients();
+        for (Patient p : allPatients) {
+            addPatientToTable(p, model);
+        }
+
+        patientList = new JTable(model);
+
         // UI for patient list
         patientList.getTableHeader().setPreferredSize(new Dimension(patientList.getTableHeader().getWidth(), 40));
         patientList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 16));
@@ -206,29 +223,22 @@ class PatientDefaultPage extends JLabel {
         this.add(space);
         this.add(body);
     }
-    void addPatientToTable (Patient patient){
+    void addPatientToTable (Patient patient, CustomTableModel model){
         ButtonRenderer buttonRenderer = new ButtonRenderer();
         DeleteButtonRenderer deleteButtonEditor = new DeleteButtonRenderer();
         Object[] rowData = new Object[]{patient.getPatientId(), patient.getName(), patient.getAge(), patient.getGender(), patient.getBloodGroup().getValue(), patient.getPhoneNumber(), buttonRenderer, deleteButtonEditor};
         model.addRow(rowData);
     }
-    void deletePatient (int row){
+    void deletePatient (int row, CustomTableModel model){
         model.deleteRow(row);
     }
     public ViewPatientInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
         // call patient ID
         Patient patient = PatientDAO.getPatientById(patientList.getValueAt(row,0).toString());
         ViewPatientInfoPage viewPage = new ViewPatientInfoPage(patient.getPatientId());
-//        viewPage.form.patientID = patient.getPatientId();
         viewPage.title.setText(STR."Information of \{patient.getName()}");
         viewPage.title.setFont(new Font("Courier",Font.BOLD,25));
         viewPage.title.setForeground(Color.gray);
-//        viewPage.form.name.setText(patient.getName());
-//        viewPage.form.phone.setText(patient.getPhoneNumber());
-//        viewPage.form.bloodGroup.setSelectedItem(patient.getBloodGroup().getValue());
-//        viewPage.form.address.setText(patient.getAddress());
-//        viewPage.form.DOB.setText(patient.getformattedDate());
-//        viewPage.form.gender.setSelectedItem(patient.getGender().getValue());
         return viewPage;
     }
     public void showSearchResult(String ID) throws ExecutionException, InterruptedException {
@@ -236,7 +246,7 @@ class PatientDefaultPage extends JLabel {
             try{
             Patient res = PatientDAO.getPatientById(ID);
             model.clearData();
-            addPatientToTable(res);}
+            addPatientToTable(res, model);}
             catch (Exception e) {
                 searchEngine.searchInput.setText("No patient found");
                 searchEngine.searchInput.setForeground(Color.red);
@@ -244,11 +254,11 @@ class PatientDefaultPage extends JLabel {
         }
         else updateTableUI();
     }
-    public void updateTableUI(){
+    public void updateTableUI() {
         model.clearData();
         List<Patient> allPatients = PatientDAO.getAllPatients();
         for (Patient p : allPatients) {
-            addPatientToTable(p);
+            addPatientToTable(p, model);
         }
         System.out.println("Update");
     }
@@ -401,7 +411,6 @@ class PatientDefaultPage extends JLabel {
         }
     }
     static class DeleteButtonEditor extends DefaultCellEditor {
-
         protected JButton button;
         private String label;
         private boolean isPushed;
@@ -501,41 +510,139 @@ class PatientDefaultPage extends JLabel {
         addPatientButton.setBorder(new EmptyBorder(10,10,10,10));
         return addPatientButton;
     }
-
 }
 class AddNewPatientPage extends JPanel {
+    JLabel message = new JLabel("");
     JButton backButton = new RoundedButton(" Return ");
-    PatientForm form = new PatientForm();
+    JTextField name;
+    JTextField phone;
+    JComboBox<String> gender;
+    CustomDatePicker DOB;
+    JTextArea address;
+    JComboBox<String> bloodGroup;
+    JButton addAppointment;
+    RoundedButton saveButton;
     AddNewPatientPage() {
-        JLabel title = new JLabel("Patient Registration Form");
-        title.setFont(title.getFont().deriveFont(20.0F));
-
-        this.setBackground(Color.white);
-        this.setMaximumSize(new Dimension(1300,600));
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
+        //setLayout(new GridLayout(1,2));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        JLabel title = new JLabel("Patient Registration Form");
+        title.setFont(new Font("Courier",Font.BOLD,25));
+        title.setForeground(Color.gray);
+        title.setBounds(50, 0, 400, 50);
 
         JPanel pageHeader = new JPanel();
         pageHeader.setBackground(Color.white);
         pageHeader.setLayout(new BoxLayout(pageHeader, BoxLayout.X_AXIS));
         pageHeader.add(backButton);
         backButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        backButton.setAlignmentY(0);
         pageHeader.add(Box.createHorizontalGlue());
         pageHeader.add(title);
         title.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        title.setAlignmentY(Component.TOP_ALIGNMENT);
+        pageHeader.add(Box.createHorizontalGlue());
 
-        this.add(pageHeader);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
-        this.add(form); // Registration form
+        // Patient's name
+        JLabel nameLabel = new JLabel("Name");
+        nameLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        nameLabel.setBounds(100,50,100,20);
+        name = new RoundedTextField(1, 20);
+        name.setBounds(200,50,200,20);
+//        name.setText(patient.getName());
+
+        //  Patient's phone number
+        JLabel phoneLabel = new JLabel("Phone");
+        phoneLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        phoneLabel.setBounds(100,90,100,20);
+        phone = new RoundedTextField(1, 20);
+        phone.setBounds(200,90,200,20);
+//        phone.setText(patient.getPhoneNumber());
+
+        // Patient's gender
+        JLabel genderLabel = new JLabel("Gender");
+        genderLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        genderLabel.setBounds(100,130,100,20);
+        String[] sex = {"Male", "Female", "Other"};
+        gender = new JComboBox<>(sex);
+        gender.setFont(new Font("Courier",Font.PLAIN,16));
+        gender.setBackground(Color.white);
+        gender.setBorder(BorderFactory.createEmptyBorder());
+        gender.setBounds(200,130,100,20);
+//        gender.setSelectedItem(patient.getGender());
+
+        // Date of birth (DOB)
+        JLabel DOBLabel = new JLabel("Date of birth");
+        DOBLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        DOBLabel.setBounds(100,170,100,20);
+        String[] d = {"01" ,"April", "2024"};
+        DOB = new CustomDatePicker(d);
+        DOB.setBounds(200, 170, 300, 25);
+
+        // Address
+        JLabel addressLabel = new JLabel("Address");
+        addressLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        addressLabel.setBounds(100,210,100,20);
+        address = new RoundedTextArea(1, 1,20, Color.gray);
+        address.setBounds(200, 210, 200, 100);
+        address.setLineWrap(true);
+//        address.setText(patient.getAddress());
+
+        // Patient's blood group
+        JLabel bloodGroupLabel = new JLabel("Blood type");
+        bloodGroupLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        bloodGroupLabel.setBounds(100,330,100,20);
+        String[] bloodType = {"A+", "A-",
+                "B+", "B-",
+                "AB+", "AB-",
+                "O+", "O-"};
+        bloodGroup = new JComboBox<>(bloodType);
+        bloodGroup.setFont(new Font("Courier",Font.PLAIN,16));
+        bloodGroup.setBackground(Color.WHITE);
+        bloodGroup.setBorder(BorderFactory.createEmptyBorder());
+        bloodGroup.setBounds(200,330,100,20);
+//        bloodGroup.setSelectedItem(patient.getBloodGroup());
+
+        message.setFont(new Font("Courier",Font.PLAIN,16));
+        message.setForeground(Color.red);
+        message.setBounds(100,370,400,20);
+
+        // Save Button
+        saveButton = new RoundedButton(" Save");
+        saveButton.setBounds(150, 410, 80, 25);
+
+        setBackground(Color.white);
+        add(pageHeader);
+
+        JPanel form = new JPanel();
+        form.setVisible(true);
+
+        form.setLayout(null);
+        form.setBounds(500, 80, 800, 800);
+        form.setBackground(Color.white);
+
+        //add(new Box.Filler(new Dimension(100,15), new Dimension(100,15), new Dimension(100,15)));
+        form.add(nameLabel);
+        form.add(name);
+        form.add(phoneLabel);
+        form.add(phone);
+        form.add(genderLabel);
+        form.add(gender);
+        form.add(DOBLabel);
+        form.add(DOB);
+        form.add(addressLabel);
+        form.add(address);
+        form.add(bloodGroupLabel);
+        form.add(bloodGroup);
+        form.add(message);
+        form.add(saveButton);
+
+        add(form);
     }
 }
 class ViewPatientInfoPage extends JPanel {
     JButton backButton = new RoundedButton(" Return ");
     JLabel title = new JLabel("#MedicalID");
     ViewMode form;
-
     ViewPatientInfoPage(String PatientID) throws ExecutionException, InterruptedException {
         title.setFont(title.getFont().deriveFont(18.0F));
         this.setBackground(Color.white);
@@ -856,7 +963,6 @@ class ViewPatientInfoPage extends JPanel {
 }
 class PatientForm extends JPanel{
     JButton createBtn;
-//    JTextField IDInput;
     JTextField nameInput ;
     JTextField phoneInput ;
     JComboBox<String> genderInput;

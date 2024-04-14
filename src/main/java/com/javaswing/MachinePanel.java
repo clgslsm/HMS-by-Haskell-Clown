@@ -101,7 +101,6 @@ class MachineDefaultPage extends JLabel {
         header.setBackground(new Color(0xF1F8FF));
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
 
-
         header.add(title);
         header.add(Box.createHorizontalGlue());
         header.add(searchEngine);
