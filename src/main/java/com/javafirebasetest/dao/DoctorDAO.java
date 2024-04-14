@@ -42,8 +42,8 @@ public class DoctorDAO {
         try {
             querySnapshot = dbManager.getDocumentsByConditions(
                     DBManager.CollectionPath.STAFF,
-                    Filter.and(Filter.greaterThanOrEqualTo("name", doctorName),
-                            Filter.lessThanOrEqualTo("name", doctorName + "\uf7ff"))
+                    Filter.greaterThanOrEqualTo("name", doctorName),
+                    Filter.lessThanOrEqualTo("name", doctorName + "\uf7ff")
             );
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);

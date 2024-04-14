@@ -22,8 +22,8 @@ public class MedicineDAO {
         try {
             querySnapshot = dbManager.getDocumentsByConditions(
                     DBManager.CollectionPath.MEDICINE,
-                    Filter.and(Filter.greaterThanOrEqualTo("medicineName", medicineName),
-                            Filter.lessThanOrEqualTo("medicineName", medicineName + "\uf7ff"))
+                    Filter.greaterThanOrEqualTo("medicineName", medicineName),
+                    Filter.lessThanOrEqualTo("medicineName", medicineName + "\uf7ff")
             );
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);

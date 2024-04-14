@@ -32,7 +32,6 @@ public class Machine {
     public int getUsedCount() {return usedCount;}
     public Map<String, Object> toMap() {
         Map<String, Object> machineData = new HashMap<>();
-        machineData.put("machineId", machineId);
         machineData.put("machineName", machineName);
         machineData.put("avaiUse", avaiUse);
         machineData.put("usedCount", usedCount);

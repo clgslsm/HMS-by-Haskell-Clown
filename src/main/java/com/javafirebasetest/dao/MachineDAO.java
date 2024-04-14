@@ -21,8 +21,8 @@ public class MachineDAO {
         try {
             querySnapshot = dbManager.getDocumentsByConditions(
                     DBManager.CollectionPath.MACHINE,
-                    Filter.and(Filter.greaterThanOrEqualTo("machineName", machineName),
-                    Filter.lessThanOrEqualTo("machineName", machineName + "\uf7ff"))
+                    Filter.greaterThanOrEqualTo("machineName", machineName),
+                    Filter.lessThanOrEqualTo("machineName", machineName + "\uf7ff")
             );
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);

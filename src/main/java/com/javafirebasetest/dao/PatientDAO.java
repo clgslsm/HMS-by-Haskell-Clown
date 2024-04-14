@@ -38,8 +38,8 @@ public class PatientDAO {
         try {
             querySnapshot = dbManager.getDocumentsByConditions(
                     DBManager.CollectionPath.PATIENT,
-                    Filter.and(Filter.greaterThanOrEqualTo("name", name),
-                            Filter.lessThanOrEqualTo("name", name + "uf7ff"))
+                    Filter.greaterThanOrEqualTo("name", name),
+                    Filter.lessThanOrEqualTo("name", name + "uf7ff")
             );
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);

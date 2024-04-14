@@ -12,14 +12,12 @@ public class MedicalRecord {
     //private DeptType department;
     private String doctorId;
     private String receptionistId;
-
     private Timestamp checkIn;
-
     private Timestamp checkOut;
     //private String observation;
     private Status status;
     private int serviceRating;
-    private TestResult result;
+    private TestResult testResult;
 
     public enum Status {
         PENDING("Pending"), CHECKED("Checked"), CHECKEDOUT("CheckedOut");
@@ -40,11 +38,12 @@ public class MedicalRecord {
         }
     }
 
-    public MedicalRecord() {}
+    public MedicalRecord() {
+    }
 
     //    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
     public MedicalRecord(String medicalRecordID, String patientId, String doctorId, String receptionistId, Timestamp checkIn,
-                         Timestamp checkOut, String observation, Status status, int serviceRating, TestResult result) {
+                         Timestamp checkOut, String observation, Status status, int serviceRating, TestResult testResult) {
         this.medicalRecordID = medicalRecordID;
         this.patientId = patientId;
         //this.department = department;
@@ -55,22 +54,20 @@ public class MedicalRecord {
         //this.observation = observation;
         this.status = status;
         this.serviceRating = serviceRating;
-        this.result = result;
+        this.testResult = testResult;
     }
 
     public MedicalRecord(String medRecId, Map<String, Object> medRec) {
         super();
         this.medicalRecordID = medRecId;
         this.patientId = (String) medRec.get("patientId");
-        //this.department = DeptType.fromValue((String) medRec.get("department"));
         this.doctorId = (String) medRec.get("doctorId");
         this.receptionistId = (String) medRec.get("receptionistId");
         this.checkIn = (Timestamp) medRec.get("checkIn");
         this.checkOut = (Timestamp) medRec.get("checkOut");
-        //this.observation = (String) medRec.get("observation");
         this.status = Status.fromValue((String) medRec.get("status"));
         this.serviceRating = (int) medRec.get("serviceRating");
-        this.result = (TestResult) medRec.get("result");
+        this.testResult = (TestResult) medRec.get("testResult");
     }
 
     public String getmedicalRecordId() {
@@ -89,10 +86,6 @@ public class MedicalRecord {
         this.patientId = patientId;
     }
 
-//    public DeptType getDepartment() {return department;}
-
-//    public void setDepartment(DeptType department) {this.department = department;}
-
     public String getDoctorId() {
         return doctorId;
     }
@@ -100,8 +93,14 @@ public class MedicalRecord {
     public void setDid(String doctorId) {
         this.doctorId = doctorId;
     }
-    public String getReceptionistId() {return receptionistId;}
-    public void setReceptionistId(String receptionistId) {this.receptionistId = receptionistId;}
+
+    public String getReceptionistId() {
+        return receptionistId;
+    }
+
+    public void setReceptionistId(String receptionistId) {
+        this.receptionistId = receptionistId;
+    }
 
     public Timestamp getCheckIn() {
         return checkIn;
@@ -118,10 +117,6 @@ public class MedicalRecord {
     public void setCheckOut(Timestamp checkOut) {
         this.checkOut = checkOut;
     }
-
-//    public String getObservation() {return observation;}
-
-//    public void setObservation(String observation) {this.observation = observation;}
 
     public Status getStatus() {
         return status;
@@ -141,9 +136,13 @@ public class MedicalRecord {
         this.serviceRating = serviceRating;
     }
 
-    public TestResult getResult() {return result;}
+    public TestResult getTestResult() {
+        return testResult;
+    }
 
-    public void setResult(TestResult result) {this.result = result;}
+    public void setTestResult(TestResult testResult) {
+        this.testResult = testResult;
+    }
     //endregion
 
     public String getformattedCheckIn() { // Hiển thị ngày tháng theo định dạng "dd/mm/yyyy"
@@ -167,15 +166,13 @@ public class MedicalRecord {
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("patientId", getPatientId());
-        //map.put("department", getDepartment().getValue());
         map.put("doctorId", getDoctorId());
         map.put("receptionistId", getReceptionistId());
         map.put("checkIn", getCheckIn());
         map.put("checkOut", getCheckOut());
-        //map.put("observation", getObservation());
         map.put("status", getStatus().getValue());
         map.put("serviceRating", getServiceRating());
-        map.put("result", getResult());
+        map.put("testResult", getTestResult());
 
         return map;
     }
@@ -184,6 +181,6 @@ public class MedicalRecord {
     public String toString() {
         return "MedicalRecord [medicalRecordId=" + medicalRecordID + ", patientId=" + patientId + ", doctorId=" + doctorId +
                 ", receptionisId=" + receptionistId + ", checkIn=" + getformattedCheckIn() + ", checkOut=" + getformattedCheckOut() +
-                ", status=" + status.getValue() + ", serviceReview=" + serviceRating + ", result=" + result + "]";
+                ", status=" + status.getValue() + ", serviceReview=" + serviceRating + ", testResult=" + testResult + "]";
     }
 }
