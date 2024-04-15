@@ -21,7 +21,6 @@ import java.util.concurrent.ExecutionException;
 import com.javafirebasetest.dao.StaffDAO;
 
 class StaffPanel extends JPanel {
-    ArrayList<Staff> data = new ArrayList<>();
     public StaffDefaultPage defaultPage;
     StaffPanel() {
         CardLayout currentPage = new CardLayout();
@@ -527,22 +526,3 @@ class StaffDefaultPage extends JLabel {
     }
 
 }
-
-//defaultPage.staffList.addMouseListener(new java.awt.event.MouseAdapter()
-//{
-//    @Override
-//    public void mouseClicked(java.awt.event.MouseEvent evt) {
-//    int column = defaultPage.staffList.getColumnModel().getColumnIndexAtX(evt.getX());
-//    int row = evt.getY() / defaultPage.staffList.getRowHeight();
-//
-//    if (row < defaultPage.staffList.getRowCount() && row >= 0 && column < defaultPage.staffList.getColumnCount() && column >= 0) {
-//        Object value = defaultPage.staffList.getValueAt(row, column);
-//        if (value instanceof JButton) {
-//            // Instead of simulating button click, print to terminal
-//            System.out.println(STR."Button clicked for row: \{row}");
-//
-//
-//        }
-//    }
-//}
-//});
