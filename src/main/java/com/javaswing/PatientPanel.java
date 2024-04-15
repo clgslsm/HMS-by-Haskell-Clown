@@ -233,13 +233,13 @@ class PatientDefaultPage extends JLabel {
         patientList.getTableHeader().setReorderingAllowed(false);
         patientList.setFont(new Font("Courier",Font.PLAIN,16));
 
-        patientList.getColumn("Edit").setCellRenderer(new ButtonRenderer());
-        patientList.getColumn("Edit").setCellEditor(new ButtonEditor(new JCheckBox()));
-        patientList.getColumn("Delete").setCellRenderer(new DeleteButtonRenderer());
-        patientList.getColumn("Delete").setCellEditor(new DeleteButtonEditor(new JCheckBox()));
+        patientList.getColumn(" ").setCellRenderer(new ButtonRenderer());
+        patientList.getColumn(" ").setCellEditor(new ButtonEditor(new JCheckBox()));
+        patientList.getColumn("  ").setCellRenderer(new DeleteButtonRenderer());
+        patientList.getColumn("  ").setCellEditor(new DeleteButtonEditor(new JCheckBox()));
 
-        patientList.getColumn("Edit").setPreferredWidth(10);
-        patientList.getColumn("Delete").setPreferredWidth(10);
+        patientList.getColumn(" ").setPreferredWidth(10);
+        patientList.getColumn("  ").setPreferredWidth(10);
         patientList.setRowHeight(60);
 
         JScrollPane scrollPane = new JScrollPane();
@@ -299,7 +299,7 @@ class PatientDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number","Edit","Delete"};
+        private final String[] columnNames = {"ID","Name","Age","Gender","Blood Type","Phone Number"," ","  "};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
@@ -431,7 +431,7 @@ class PatientDefaultPage extends JLabel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            setForeground(new Color(0x3497F9));
+            setForeground(new Color(0xdb524b));
             setFont(new Font("Courier",Font.BOLD,16));
             setBackground(Color.white);
             setText("Delete");
@@ -456,7 +456,7 @@ class PatientDefaultPage extends JLabel {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            button.setBackground(new Color(0x126DA6));
+            button.setBackground(new Color(0xdb524b));
             button.setForeground(Color.white);
             button.setFont(new Font("Courier",Font.PLAIN,16));
             button.setFocusable(false);
