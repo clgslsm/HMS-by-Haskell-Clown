@@ -91,7 +91,6 @@ public class PatientDAO {
         List<Patient> patientData = new ArrayList<>();
         for (QueryDocumentSnapshot qds : querySnapshot) {
             patientData.add(new Patient(qds.getId(), qds.getData()));
-            patientData.add(new Patient(qds.getId(), qds.getData()));
         }
 
         return patientData;
