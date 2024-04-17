@@ -32,7 +32,21 @@ public class StaffDAO {
         assert staffData != null;
         return new Staff(staffId, staffData);
     }
+    public static List<Staff> getStaffByName(String name) {
+        List<QueryDocumentSnapshot> querySnapshot;
 
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.STAFF,
+                Filter.greaterThanOrEqualTo("name", name),
+                Filter.lessThanOrEqualTo("name", name + "\uf7ff")
+        );
+
+        List<Staff> staffList = new ArrayList<>();
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            staffList.add(new Staff(qds.getId(), qds.getData()));
+        }
+        return staffList;
+    }
     public static List<Staff> getStaffByUserMode(User.Mode userMode) {
         List<QueryDocumentSnapshot> querySnapshot;
 

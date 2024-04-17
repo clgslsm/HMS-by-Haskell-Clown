@@ -20,10 +20,10 @@ public class MedicineDAO {
 
     public static List<Medicine> getMedicineByName(String medicineName) {
         List<QueryDocumentSnapshot> querySnapshot;
-
         querySnapshot = dbManager.getDocumentsByConditions(
                 DBManager.CollectionPath.MEDICINE,
-                Filter.equalTo("medicineName", medicineName)
+                Filter.greaterThanOrEqualTo("medicineName", medicineName),
+                Filter.lessThanOrEqualTo("medicineName", medicineName + "\uf7ff")
         );
 
         List<Medicine> medicineData = new ArrayList<>();

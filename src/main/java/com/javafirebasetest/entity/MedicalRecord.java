@@ -7,18 +7,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MedicalRecord {
-    public String medicalRecordID;
-    public String patientId;
-    public DeptType department;
-    public String doctorId;
-
-    public Timestamp checkIn;
-
-    public Timestamp checkOut;
-    public String observation;
-    public Status status;
-    public String serviceReview;
-    public String prescription;
+    private String medicalRecordID;
+    private String patientId;
+    //private DeptType department;
+    private String doctorId;
+    private String receptionistId;
+    private Timestamp checkIn;
+    private Timestamp checkOut;
+    //private String observation;
+    private Status status;
+    private int serviceRating;
+    private TestResult testResult;
 
     public enum Status {
         PENDING("Pending"), CHECKED("Checked"), CHECKEDOUT("CheckedOut");
@@ -39,35 +38,34 @@ public class MedicalRecord {
         }
     }
 
-    public MedicalRecord() {}
+    public MedicalRecord() {
+    }
 
     //    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
-    public MedicalRecord(String medicalRecordID, String patientId, DeptType department, String doctorId, Timestamp checkIn,
-                         Timestamp checkOut, String observation, Status status, String serviceReview, String prescription) {
+    public MedicalRecord(String medicalRecordID, String patientId, String doctorId, String receptionistId, Timestamp checkIn,
+                         Timestamp checkOut, Status status, int serviceRating, TestResult testResult) {
         this.medicalRecordID = medicalRecordID;
         this.patientId = patientId;
-        this.department = department;
         this.doctorId = doctorId;
+        this.receptionistId = receptionistId;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
-        this.observation = observation;
         this.status = status;
-        this.serviceReview = serviceReview;
-        this.prescription = prescription;
+        this.serviceRating = serviceRating;
+        this.testResult = testResult;
     }
 
     public MedicalRecord(String medRecId, Map<String, Object> medRec) {
         super();
         this.medicalRecordID = medRecId;
         this.patientId = (String) medRec.get("patientId");
-        this.department = DeptType.fromValue((String) medRec.get("department"));
         this.doctorId = (String) medRec.get("doctorId");
+        this.receptionistId = (String) medRec.get("receptionistId");
         this.checkIn = (Timestamp) medRec.get("checkIn");
         this.checkOut = (Timestamp) medRec.get("checkOut");
-        this.observation = (String) medRec.get("observation");
         this.status = Status.fromValue((String) medRec.get("status"));
-        this.serviceReview = (String) medRec.get("serviceReview");
-        this.prescription = (String) medRec.get("prescription");
+        this.serviceRating = (int) medRec.get("serviceRating");
+        this.testResult = (TestResult) medRec.get("testResult");
     }
 
     public String getmedicalRecordId() {
@@ -86,20 +84,20 @@ public class MedicalRecord {
         this.patientId = patientId;
     }
 
-    public DeptType getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(DeptType department) {
-        this.department = department;
-    }
-
     public String getDoctorId() {
         return doctorId;
     }
 
     public void setDid(String doctorId) {
         this.doctorId = doctorId;
+    }
+
+    public String getReceptionistId() {
+        return receptionistId;
+    }
+
+    public void setReceptionistId(String receptionistId) {
+        this.receptionistId = receptionistId;
     }
 
     public Timestamp getCheckIn() {
@@ -118,14 +116,6 @@ public class MedicalRecord {
         this.checkOut = checkOut;
     }
 
-    public String getObservation() {
-        return observation;
-    }
-
-    public void setObservation(String observation) {
-        this.observation = observation;
-    }
-
     public Status getStatus() {
         return status;
     }
@@ -134,20 +124,22 @@ public class MedicalRecord {
         this.status = status;
     }
 
-    public String getServiceReview() {
-        return serviceReview;
+    public int getServiceRating() {
+        return serviceRating;
     }
 
-    public void setServiceReview(String serviceReview) {
-        this.serviceReview = serviceReview;
+    public void setServiceRating(int serviceRating) {
+        if (serviceRating < 0 || serviceRating > 5)
+            throw new IllegalArgumentException("Invalid service rating: " + serviceRating + ". Must be between 0 and 5.");
+        this.serviceRating = serviceRating;
     }
 
-    public String getPrescription() {
-        return prescription;
+    public TestResult getTestResult() {
+        return testResult;
     }
 
-    public void setPrescription(String prescription) {
-        this.prescription = prescription;
+    public void setTestResult(TestResult testResult) {
+        this.testResult = testResult;
     }
     //endregion
 
@@ -172,23 +164,21 @@ public class MedicalRecord {
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("patientId", getPatientId());
-        map.put("department", getDepartment().getValue());
         map.put("doctorId", getDoctorId());
+        map.put("receptionistId", getReceptionistId());
         map.put("checkIn", getCheckIn());
         map.put("checkOut", getCheckOut());
-        map.put("observation", getObservation());
         map.put("status", getStatus().getValue());
-        map.put("serviceReview", getServiceReview());
-        map.put("prescription", getPrescription());
+        map.put("serviceRating", getServiceRating());
+        map.put("testResult", getTestResult());
 
         return map;
     }
 
     @Override
     public String toString() {
-        return "MedicalRecord [medicalRecordId=" + medicalRecordID + ", patientId=" + patientId + ", department=" +
-                department.getValue() + ", doctorId=" + doctorId + ", checkIn=" + getformattedCheckIn() + ", checkOut=" +
-                getformattedCheckOut() + ", observation=" + observation + ", status=" + status.getValue() +
-                ", serviceReview=" + serviceReview + ", prescription=" + prescription + "]";
+        return "MedicalRecord [medicalRecordId=" + medicalRecordID + ", patientId=" + patientId + ", doctorId=" + doctorId +
+                ", receptionisId=" + receptionistId + ", checkIn=" + getformattedCheckIn() + ", checkOut=" + getformattedCheckOut() +
+                ", status=" + status.getValue() + ", serviceReview=" + serviceRating + ", testResult=" + testResult + "]";
     }
 }

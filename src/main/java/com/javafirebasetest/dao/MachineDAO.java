@@ -20,9 +20,11 @@ public class MachineDAO {
 
     public static List<Machine> getMachineByName(String machineName) {
         List<QueryDocumentSnapshot> querySnapshot;
+
         querySnapshot = dbManager.getDocumentsByConditions(
                 DBManager.CollectionPath.MACHINE,
-                Filter.equalTo("machineName", machineName)
+                Filter.greaterThanOrEqualTo("machineName", machineName),
+                Filter.lessThanOrEqualTo("machineName", machineName + "\uf7ff")
         );
 
         List<Machine> machineData = new ArrayList<>();

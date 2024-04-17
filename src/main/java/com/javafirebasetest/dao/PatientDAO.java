@@ -45,7 +45,8 @@ public class PatientDAO {
         List<QueryDocumentSnapshot> querySnapshot;
         querySnapshot = dbManager.getDocumentsByConditions(
                 DBManager.CollectionPath.PATIENT,
-                Filter.equalTo("name", name)
+                Filter.greaterThanOrEqualTo("name", name),
+                Filter.lessThanOrEqualTo("name", name + "uf7ff")
         );
 
         List<Patient> patientList = new ArrayList<>();
