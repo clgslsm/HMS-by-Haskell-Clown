@@ -206,16 +206,14 @@ class MedicineDefaultPage extends JLabel {
     }
     public ViewMedicineInfoPage viewPage(int row) throws Exception {
         ViewMedicineInfoPage viewPage = new ViewMedicineInfoPage();
-        // call patient ID
+        // call medicine ID
         Medicine medicine = MedicineDAO.getMedicineById(medicineList.getValueAt(row,1).toString());
         viewPage.titleMedicine.setText(medicine.getMedicineName());
         BufferedImage image = ViewMedicineInfoPage.generateEAN13BarcodeImage(medicine.getMedicineId());
         viewPage.MedicineID.setIcon(new ImageIcon(image));
         viewPage.MedicineUnit.setText(medicine.getUnit());
         viewPage.medicineSupply.setText(medicine.getAmount().toString());
-//        viewPage.form.address.setText(medicin.getAddress());
-//        viewPage.form.DOB.setText(medicin.getformattedDate());
-//        viewPage.form.gender.setText(Medicin.getGender().getValue());
+        viewPage.howToUse.setText(medicine.getDescription());
         return viewPage;
     }
     static class CustomTableModel extends AbstractTableModel {
@@ -408,32 +406,38 @@ class AddNewMedicinePage extends JPanel {
 class ViewMedicineInfoPage extends JPanel {
     JButton backButton = new RoundedButton(" Return ");
     JButton editButton = new RoundedButton(" Edit Details ");
-    ViewMode form = new ViewMode();
     JLabel titleMedicine;
     JLabel MedicineID;
     JLabel MedicineUnit;
     JLabel medicineSupply;
+    JTextArea howToUse;
+    JTextArea sideEffects;
     JButton deleteButton = new RoundedButton(" Delete Medicine ");
 
     ViewMedicineInfoPage(){
-        this.setBackground(Color.white);
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 35));
+        this.setBackground(Color.WHITE);
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 25));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        container.setOpaque(false);
+        container.setBorder(new EmptyBorder(10,10,10,10));
 
         deleteButton.setBackground(Color.WHITE);
         deleteButton.setForeground(Color.RED);
         deleteButton.setBorder(BorderFactory.createLineBorder(Color.red));
-        deleteButton.setMaximumSize(new Dimension(180,50));
+        deleteButton.setMaximumSize(new Dimension(160,50));
 
-        this.add(headerContainer());
-        this.add(Box.createVerticalStrut(30));
-        this.add(bodyContainer());
-        this.add(Box.createVerticalStrut(30));
-        this.add(deleteButton);
+        container.add(headerContainer());
+        container.add(Box.createVerticalStrut(30));
+        container.add(bodyContainer());
+        container.add(Box.createVerticalStrut(30));
+        container.add(deleteButton);
+
+        add(container);
 
     }
-
-
     JPanel headerContainer(){
         JPanel header = new JPanel();
         header.setOpaque(false);
@@ -493,7 +497,6 @@ class ViewMedicineInfoPage extends JPanel {
         header.add(container01);
         return header;
     }
-
     JPanel bodyContainer(){
         JPanel panel = new JPanel();
         panel.setMaximumSize(new Dimension(1300,600));
@@ -510,7 +513,7 @@ class ViewMedicineInfoPage extends JPanel {
 
         JPanel MedicineIDBox = new JPanel();
         MedicineIDBox.setBorder(new EmptyBorder(10,30,10,10));
-        MedicineIDBox.setOpaque(false);
+        MedicineIDBox.setBackground(Color.WHITE);
         MedicineIDBox.setLayout(new GridLayout(2,1));
         JLabel MedicineIDLabel = new JLabel("Medicine ID");
         MedicineIDLabel.setFont(new Font("Poppins",Font.PLAIN,17));
@@ -520,7 +523,7 @@ class ViewMedicineInfoPage extends JPanel {
         MedicineIDBox.add(MedicineIDLabel);
 
         JPanel MedicineGroup = new JPanel();
-        MedicineGroup.setOpaque(false);
+        MedicineGroup.setBackground(Color.WHITE);
         MedicineGroup.setBorder(new EmptyBorder(10,30,10,20));
         MedicineGroup.setLayout(new GridLayout(2,1));
         JLabel MedicineGroupLabel = new JLabel("Medicine Group");
@@ -543,7 +546,7 @@ class ViewMedicineInfoPage extends JPanel {
 
         JPanel medicineSupplyBox = new JPanel(new GridLayout(2,1));
         medicineSupplyBox.setBorder(new EmptyBorder(10,30,10,20));
-        medicineSupplyBox.setOpaque(false);
+        medicineSupplyBox.setBackground(Color.WHITE);
         JLabel medicineSupplyLabel = new JLabel("Lifetime Supply");
         medicineSupplyLabel.setFont(new Font("Poppins",Font.PLAIN,17));
         medicineSupply = new JLabel();
@@ -553,7 +556,7 @@ class ViewMedicineInfoPage extends JPanel {
 
         JPanel medicineSoldBox = new JPanel(new GridLayout(2,1));
         medicineSoldBox.setBorder(new EmptyBorder(10,30,10,20));
-        medicineSoldBox.setOpaque(false);
+        medicineSoldBox.setBackground(Color.WHITE);
         JLabel medicineSoldLabel = new JLabel("Lifetime Sales");
         medicineSoldLabel.setFont(new Font("Poppins",Font.PLAIN,17));
         JLabel medicineSold = new JLabel("0");
@@ -563,7 +566,7 @@ class ViewMedicineInfoPage extends JPanel {
 
         JPanel medicineInStockBox = new JPanel(new GridLayout(2,1));
         medicineInStockBox.setBorder(new EmptyBorder(10,30,10,20));
-        medicineInStockBox.setOpaque(false);
+        medicineInStockBox.setBackground(Color.WHITE);
         JLabel medicineInStockLabel = new JLabel("Stock Left");
         medicineInStockLabel.setFont(new Font("Poppins",Font.PLAIN,17));
         JLabel medicineInStock = new JLabel("0");
@@ -590,7 +593,7 @@ class ViewMedicineInfoPage extends JPanel {
         border3.setTitleFont(new Font("Poppins", Font.BOLD, 20));
         HowToUseBox.setBorder(border3);
         String text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate";
-        JTextArea howToUse = new JTextArea();
+        howToUse = new JTextArea();
         howToUse.setText(text);
         howToUse.setEditable(false);
         howToUse.setLineWrap(true);
@@ -613,7 +616,7 @@ class ViewMedicineInfoPage extends JPanel {
                 "Side Effects", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
         border4.setTitleFont(new Font("Poppins", Font.BOLD, 20));
         SideEffectBox.setBorder(border4);
-        JTextArea sideEffects = new JTextArea();
+        sideEffects = new JTextArea();
         sideEffects.setText(text);
         sideEffects.setEditable(false);
         sideEffects.setLineWrap(true);
@@ -634,101 +637,13 @@ class ViewMedicineInfoPage extends JPanel {
         panel.add(HowToUseBox);
         panel.add(Box.createVerticalStrut(30));
         panel.add(SideEffectBox);
+
         return panel;
     }
     public static BufferedImage generateEAN13BarcodeImage(String barcodeText) throws Exception {
         Barcode barcode = BarcodeFactory.createCode128A(barcodeText);
         barcode.setFont(new Font("Poppins",Font.BOLD,17));
         return BarcodeImageHandler.getImage(barcode);
-    }
-    static class ViewMode extends JPanel {
-        JTextField name;
-        JTextField phone;
-        JTextField gender;
-        JTextField DOB;
-        JTextArea address;
-        JTextField bloodGroup;
-        ViewMode(){
-            JPanel form = Form();
-            setLayout(new BorderLayout());
-            setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
-//            setSize(700,400);
-            add(form);
-            setVisible(true);
-        }
-
-        JPanel Form() {
-            JLabel title = new JLabel("Personal Information");
-            title.setFont(new Font("Arial", Font.BOLD,18));
-            title.setForeground(Color.gray);
-            title.setBounds(50, 10, 200, 50);
-
-            // Patient's name
-            JLabel nameLabel = new JLabel("Name");
-            nameLabel.setBounds(300-250,50+ 20,95,20);
-            name = new ViewModeTextField();
-            name.setBounds(385-250,50+ 20,200,20);
-
-            //  Patient's phone number
-            JLabel phoneLabel = new JLabel("Phone");
-            phoneLabel.setBounds(300-250,80+ 20,95,20);
-            phone = new ViewModeTextField();
-            phone.setBounds(385-250,80+ 20,200,20);
-
-            // Patient's gender
-            JLabel genderLabel = new JLabel("Gender");
-            genderLabel.setBounds(300-250,110+ 20,95,20);
-            gender = new ViewModeTextField();
-            gender.setBounds(385-250, 130, 50,20);
-
-            // Date of birth (DOB)
-            JLabel DOBLabel = new JLabel("Date of birth");
-            DOBLabel.setBounds(300-250,140+ 20,100,20);
-            DOB = new ViewModeTextField();
-            DOB.setBounds(385-250, 140+ 20, 70, 20);
-
-            // Address
-            JLabel addressLabel = new JLabel("Address");
-            addressLabel.setBounds(300-250,170+ 20,100,20);
-            address = new JTextArea();
-            address.setEditable(false);
-            address.setBounds(385-250, 170+ 20, 200, 80);
-            address.setLineWrap(true);
-
-            // Patient's blood group
-            JLabel bloodGroupLabel = new JLabel("Blood type");
-            bloodGroupLabel.setBounds(300-250,270+ 20,100,20);
-            bloodGroup = new ViewModeTextField();
-            bloodGroup.setBounds(385-250,270+ 20,70,20);
-
-            JPanel form = new JPanel();
-            form.setBackground(Color.white);
-            form.add(title);
-            form.setLayout(null);
-            form.add(nameLabel);
-            form.add(name);
-            form.add(phoneLabel);
-            form.add(phone);
-            form.add(genderLabel);
-            form.add(gender);
-            form.add(DOBLabel);
-            form.add(DOB);
-            form.add(addressLabel);
-            form.add(address);
-            form.add(bloodGroupLabel);
-            form.add(bloodGroup);
-
-            return form;
-        }
-
-        static class ViewModeTextField extends JTextField {
-            ViewModeTextField(){
-                super();
-                setEditable(false);
-                setBorder(BorderFactory.createEmptyBorder());
-                setBackground(Color.white);
-            }
-        }
     }
 }
 class MedicineForm extends JPanel{
