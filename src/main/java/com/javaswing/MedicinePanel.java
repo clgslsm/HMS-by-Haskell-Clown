@@ -1,9 +1,14 @@
 package com.javaswing;
 import com.javafirebasetest.dao.MedicineDAO;
+import com.javafirebasetest.dao.PatientDAO;
 import com.javafirebasetest.entity.*;
+import net.sourceforge.barbecue.Barcode;
+import net.sourceforge.barbecue.BarcodeFactory;
+import net.sourceforge.barbecue.BarcodeImageHandler;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
@@ -11,6 +16,7 @@ import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -100,16 +106,16 @@ class MedicinePanel extends JPanel {
                         System.out.println(STR."Button clicked for row: \{row}");
                         try {
                             viewMedicineInfoPage = defaultPage.viewPage(row);
-                        } catch (ExecutionException | InterruptedException e) {
+                        } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
-//                        parentPanel.add(viewMedicinInfoPage, "view-page");
-//                        currentPage.show(parentPanel, "view-page");
-//
-//                        viewMedicinInfoPage.backButton.addActionListener(_ ->{
-//                            currentPage.removeLayoutComponent(viewMedicinInfoPage);
-//                            currentPage.show(parentPanel,"default-page");
-//                        });
+                        medicinePanel.add(viewMedicineInfoPage, "view-page");
+                        currentPage.show(medicinePanel, "view-page");
+
+                        viewMedicineInfoPage.backButton.addActionListener(_ ->{
+                            currentPage.removeLayoutComponent(viewMedicineInfoPage);
+                            currentPage.show(medicinePanel,"default-page");
+                        });
                     }
                 }
             }
@@ -124,21 +130,27 @@ class MedicineDefaultPage extends JLabel {
     JButton addMedicineBtn = AddMedicineButton();
     CustomTableModel model;
     JTable medicineList;
+    JLabel title = new JLabel("List of Medicines");
     MedicineDefaultPage() {
         this.setMaximumSize(new Dimension(1300,600));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 25));
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 35));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Header container
         JPanel header = new JPanel();
-        JLabel title = new JLabel("List of Medicines");
-        title.setFont(title.getFont().deriveFont(25F));
+        JPanel titleContainer = new JPanel();
+        titleContainer.setLayout(new GridLayout(2,1));
+        titleContainer.setBackground(Color.white);
+        title.setFont(title.getFont().deriveFont(28F));
         title.setForeground(new Color(0x3497F9));
+        JLabel subTitle = new JLabel("List of medicines available for sales");
+        subTitle.setFont(new Font("Arial",Font.BOLD,15));
+        titleContainer.add(title);
+        titleContainer.add(subTitle);
         header.setBackground(Color.white);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
 
-
-        header.add(title);
+        header.add(titleContainer);
         header.add(Box.createHorizontalGlue());
         header.add(addMedicineBtn);
 
@@ -148,13 +160,10 @@ class MedicineDefaultPage extends JLabel {
         body.setBackground(Color.white);
 
         model = new CustomTableModel();
-        List<Medicine> allMedicins = MedicineDAO.getAllMedicine();
-        for (Medicine p : allMedicins) {
-            addMedicineToTable(p);
-        }
         medicineList = new JTable(model); // UI for patient list
+        refreshMedicineTable();
 
-        medicineList.getTableHeader().setPreferredSize(new Dimension(medicineList.getTableHeader().getWidth(), 36));
+        medicineList.getTableHeader().setPreferredSize(new Dimension(medicineList.getTableHeader().getWidth(), 40));
         medicineList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
         medicineList.getTableHeader().setOpaque(false);
         medicineList.getTableHeader().setBackground(new Color(32, 136, 203));
@@ -162,14 +171,15 @@ class MedicineDefaultPage extends JLabel {
 
         medicineList.setFocusable(false);
         medicineList.setIntercellSpacing(new java.awt.Dimension(0, 0));
-        medicineList.setSelectionBackground(new java.awt.Color(232, 57, 95));
+        medicineList.setSelectionBackground(new Color(0x126DA6));
+        medicineList.setSelectionForeground(Color.white);
         medicineList.setShowVerticalLines(false);
         medicineList.getTableHeader().setReorderingAllowed(false);
         medicineList.setFont(new Font("Courier",Font.PLAIN,13));
 
         medicineList.getColumn("Action").setCellRenderer(new ButtonRenderer());
         medicineList.getColumn("Action").setCellEditor(new ButtonEditor(new JCheckBox()));
-        medicineList.setRowHeight(32);
+        medicineList.setRowHeight(36);
         // Center-align the content in each column
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -194,20 +204,20 @@ class MedicineDefaultPage extends JLabel {
         Object[] rowData = new Object[]{ medicine.getMedicineName(), medicine.getMedicineId(), medicine.getformattedImportDate(), medicine.getformattedExpiryDate(), medicine.getAmount(), medicine.getUnit(), buttonRenderer};
         model.addRow(rowData);
     }
-    public ViewMedicineInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
+    public ViewMedicineInfoPage viewPage(int row) throws Exception {
         ViewMedicineInfoPage viewPage = new ViewMedicineInfoPage();
         // call patient ID
-//        Medicin medicin = MedicinDAO.getMedicinByID(MedicinList.getValueAt(row,0).toString());
-//        viewPage.title.setText(STR."#\{medicin.getMedicinId()}");
-//        viewPage.form.name.setText(medicin.getName());
-//        viewPage.form.phone.setText(medicin.getPhoneNumber());
-//        viewPage.form.bloodGroup.setText(medicin.getBloodGroup().getValue());
+        Medicine medicine = MedicineDAO.getMedicineById(medicineList.getValueAt(row,1).toString());
+        viewPage.titleMedicine.setText(medicine.getMedicineName());
+        BufferedImage image = ViewMedicineInfoPage.generateEAN13BarcodeImage(medicine.getMedicineId());
+        viewPage.MedicineID.setIcon(new ImageIcon(image));
+        viewPage.MedicineUnit.setText(medicine.getUnit());
+        viewPage.medicineSupply.setText(medicine.getAmount().toString());
 //        viewPage.form.address.setText(medicin.getAddress());
 //        viewPage.form.DOB.setText(medicin.getformattedDate());
 //        viewPage.form.gender.setText(Medicin.getGender().getValue());
         return viewPage;
     }
-
     static class CustomTableModel extends AbstractTableModel {
         // Data for each column
         private Object[][] data = {};
@@ -258,8 +268,29 @@ class MedicineDefaultPage extends JLabel {
             data = newData;
             fireTableRowsInserted(data.length - 1, data.length - 1); // Notify the table that rows have been inserted
         }
-    }
 
+        // Method to delete a row from the table
+        public void deleteRow(int rowIndex) {
+            if (rowIndex >= 0 && rowIndex < data.length) {
+                Object[][] newData = new Object[data.length - 1][getColumnCount()];
+                int dstIndex = 0;
+                for (int srcIndex = 0; srcIndex < data.length; srcIndex++) {
+                    if (srcIndex != rowIndex) {
+                        newData[dstIndex++] = data[srcIndex];
+                    }
+                }
+                data = newData;
+                fireTableRowsDeleted(rowIndex, rowIndex); // Notify the table that rows have been deleted
+            }
+        }
+
+        // Method to clear all data from the table
+        public void clearData() {
+            int rowCount = getRowCount();
+            data = new Object[0][0];
+            if (rowCount > 0) fireTableRowsDeleted(0, rowCount - 1); // Notify the table that rows have been deleted
+        }
+    }
     static class ButtonRenderer extends JButton implements TableCellRenderer {
 
         public ButtonRenderer() {
@@ -278,7 +309,6 @@ class MedicineDefaultPage extends JLabel {
         }
     }
     static class ButtonEditor extends DefaultCellEditor {
-
         protected JButton button;
         private String label;
         private boolean isPushed;
@@ -328,28 +358,35 @@ class MedicineDefaultPage extends JLabel {
             return super.stopCellEditing();
         }
     }
-
     public JButton AddMedicineButton(){
         JButton addMedicinButton = new RoundedButton("  + Add medicine  ");
-        addMedicinButton.setFont(new Font("Courier",Font.PLAIN,13));
+        addMedicinButton.setFont(new Font("Courier",Font.PLAIN,15));
         addMedicinButton.setFocusable(false);
         addMedicinButton.setForeground(Color.WHITE);
         addMedicinButton.setBackground(new Color(0x3497F9));
-        addMedicinButton.setBounds(100, 100, 125, 60);
-        addMedicinButton.setBorder(new EmptyBorder(10,10,10,10));
+        addMedicinButton.setBounds(100, 100, 145, 50);
         return addMedicinButton;
+    }
+    public void refreshMedicineTable(){
+        model.clearData();
+        List<Medicine> allMedicins = MedicineDAO.getAllMedicine();
+        for (Medicine p : allMedicins) {
+            addMedicineToTable(p);
+        }
+        title.setText("List of Medicines (%d)".formatted(allMedicins.size()));
+        System.out.println("Refresh Medicine Table");
     }
 }
 class AddNewMedicinePage extends JPanel {
     JButton backButton = new RoundedButton(" Return ");
     MedicineForm form = new MedicineForm();
     AddNewMedicinePage() {
-        JLabel title = new JLabel("Medicin Registration Form");
-        title.setFont(title.getFont().deriveFont(20.0F));
+        JLabel title = new JLabel("Add New Medicine");
+        title.setFont(title.getFont().deriveFont(28.0F));
 
         this.setBackground(Color.white);
         this.setMaximumSize(new Dimension(1300,600));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 75));
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 35));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JPanel pageHeader = new JPanel();
@@ -370,30 +407,240 @@ class AddNewMedicinePage extends JPanel {
 }
 class ViewMedicineInfoPage extends JPanel {
     JButton backButton = new RoundedButton(" Return ");
+    JButton editButton = new RoundedButton(" Edit Details ");
     ViewMode form = new ViewMode();
-    JLabel title = new JLabel("#MedicalID");
+    JLabel titleMedicine;
+    JLabel MedicineID;
+    JLabel MedicineUnit;
+    JLabel medicineSupply;
+    JButton deleteButton = new RoundedButton(" Delete Medicine ");
 
     ViewMedicineInfoPage(){
-        title.setFont(title.getFont().deriveFont(18.0F));
-
         this.setBackground(Color.white);
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 20));
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 35));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JPanel pageHeader = new JPanel();
-        pageHeader.setBackground(Color.white);
-        pageHeader.setLayout(new BoxLayout(pageHeader, BoxLayout.X_AXIS));
-        pageHeader.add(backButton);
-        backButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        pageHeader.add(Box.createHorizontalGlue());
-        pageHeader.add(title);
-        title.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        deleteButton.setBackground(Color.WHITE);
+        deleteButton.setForeground(Color.RED);
+        deleteButton.setBorder(BorderFactory.createLineBorder(Color.red));
+        deleteButton.setMaximumSize(new Dimension(180,50));
 
-        this.add(pageHeader);
-        this.add(new Box.Filler(new Dimension(100,15), new Dimension(100,15), new Dimension(100,15)));
-        this.add(form); // Registration form
+        this.add(headerContainer());
+        this.add(Box.createVerticalStrut(30));
+        this.add(bodyContainer());
+        this.add(Box.createVerticalStrut(30));
+        this.add(deleteButton);
+
     }
 
+
+    JPanel headerContainer(){
+        JPanel header = new JPanel();
+        header.setOpaque(false);
+
+        JLabel titleContainer = new JLabel();
+        titleContainer.setLayout(new BoxLayout(titleContainer,BoxLayout.Y_AXIS));
+        titleContainer.setBackground(Color.white);
+
+        JPanel titleJoined = new JPanel();
+        titleJoined.setLayout(new BoxLayout(titleJoined,BoxLayout.X_AXIS));
+        titleJoined.setOpaque(false);
+
+        JLabel title = new JLabel("List of Medicines > ");
+        title.setFont(title.getFont().deriveFont(28F));
+        title.setForeground(new Color(0x3497F9));
+
+        titleMedicine = new JLabel("");
+        titleMedicine.setFont(title.getFont().deriveFont(28F));
+        titleMedicine.setForeground(Color.BLACK);
+
+        titleJoined.add(title);
+        titleJoined.add(titleMedicine);
+        titleJoined.setAlignmentX(LEFT_ALIGNMENT);
+
+        JLabel subTitle = new JLabel("List of medicines available for sales");
+        subTitle.setOpaque(false);
+        subTitle.setFont(new Font("Arial",Font.BOLD,15));
+        subTitle.setAlignmentX(LEFT_ALIGNMENT);
+
+        titleContainer.add(titleJoined);
+        titleContainer.add(subTitle);
+        titleContainer.setMaximumSize(new Dimension(1300,80));
+
+        header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
+        header.setMaximumSize(new Dimension(1300,130));
+
+        JPanel backButtonContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        backButtonContainer.setMaximumSize(new Dimension(1300,50));
+        backButtonContainer.setOpaque(false);
+        backButton.setMaximumSize(new Dimension(80,35));
+        backButton.setFont(new Font("Courier",Font.PLAIN,15));
+        backButtonContainer.add(backButton);
+
+        JPanel container01 = new JPanel();
+        container01.setLayout(new BoxLayout(container01,BoxLayout.X_AXIS));
+        container01.setOpaque(false);
+
+        editButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        editButton.setMaximumSize(new Dimension(125,35));
+        editButton.setFont(new Font("Courier",Font.PLAIN,15));
+
+        container01.add(titleContainer);
+        container01.add(editButton);
+
+        header.add(backButtonContainer);
+        header.add(Box.createVerticalStrut(10));
+        header.add(container01);
+        return header;
+    }
+
+    JPanel bodyContainer(){
+        JPanel panel = new JPanel();
+        panel.setMaximumSize(new Dimension(1300,600));
+        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+        panel.setOpaque(false);
+
+        JPanel MedicineContainer01 = new JPanel();
+        MedicineContainer01.setLayout(new BoxLayout(MedicineContainer01,BoxLayout.X_AXIS));
+        TitledBorder border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY),
+                "Medicine", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
+        border.setTitleFont(new Font("Poppins", Font.BOLD, 20));
+        MedicineContainer01.setBorder(border);
+        MedicineContainer01.setOpaque(false);
+
+        JPanel MedicineIDBox = new JPanel();
+        MedicineIDBox.setBorder(new EmptyBorder(10,30,10,10));
+        MedicineIDBox.setOpaque(false);
+        MedicineIDBox.setLayout(new GridLayout(2,1));
+        JLabel MedicineIDLabel = new JLabel("Medicine ID");
+        MedicineIDLabel.setFont(new Font("Poppins",Font.PLAIN,17));
+        MedicineID = new JLabel();
+        MedicineID.setFont(new Font("Poppins",Font.BOLD,19));
+        MedicineIDBox.add(MedicineID);
+        MedicineIDBox.add(MedicineIDLabel);
+
+        JPanel MedicineGroup = new JPanel();
+        MedicineGroup.setOpaque(false);
+        MedicineGroup.setBorder(new EmptyBorder(10,30,10,20));
+        MedicineGroup.setLayout(new GridLayout(2,1));
+        JLabel MedicineGroupLabel = new JLabel("Medicine Group");
+        MedicineGroupLabel.setFont(new Font("Poppins",Font.PLAIN,17));
+        MedicineUnit = new JLabel();
+        MedicineUnit.setFont(new Font("Poppins",Font.BOLD,19));
+        MedicineGroup.add(MedicineUnit);
+        MedicineGroup.add(MedicineGroupLabel);
+
+        MedicineContainer01.add(MedicineIDBox);
+        MedicineContainer01.add(MedicineGroup);
+
+        JPanel MedicineContainer02 = new JPanel();
+        MedicineContainer02.setLayout(new GridLayout(1,3,10,10));
+        TitledBorder border2 = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY),
+                "Inventory in Qty", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
+        border2.setTitleFont(new Font("Poppins", Font.BOLD, 20));
+        MedicineContainer02.setBorder(border2);
+        MedicineContainer02.setOpaque(false);
+
+        JPanel medicineSupplyBox = new JPanel(new GridLayout(2,1));
+        medicineSupplyBox.setBorder(new EmptyBorder(10,30,10,20));
+        medicineSupplyBox.setOpaque(false);
+        JLabel medicineSupplyLabel = new JLabel("Lifetime Supply");
+        medicineSupplyLabel.setFont(new Font("Poppins",Font.PLAIN,17));
+        medicineSupply = new JLabel();
+        medicineSupply.setFont(new Font("Poppins",Font.BOLD,23));
+        medicineSupplyBox.add(medicineSupply);
+        medicineSupplyBox.add(medicineSupplyLabel);
+
+        JPanel medicineSoldBox = new JPanel(new GridLayout(2,1));
+        medicineSoldBox.setBorder(new EmptyBorder(10,30,10,20));
+        medicineSoldBox.setOpaque(false);
+        JLabel medicineSoldLabel = new JLabel("Lifetime Sales");
+        medicineSoldLabel.setFont(new Font("Poppins",Font.PLAIN,17));
+        JLabel medicineSold = new JLabel("0");
+        medicineSold.setFont(new Font("Poppins",Font.BOLD,23));
+        medicineSoldBox.add(medicineSold);
+        medicineSoldBox.add(medicineSoldLabel);
+
+        JPanel medicineInStockBox = new JPanel(new GridLayout(2,1));
+        medicineInStockBox.setBorder(new EmptyBorder(10,30,10,20));
+        medicineInStockBox.setOpaque(false);
+        JLabel medicineInStockLabel = new JLabel("Stock Left");
+        medicineInStockLabel.setFont(new Font("Poppins",Font.PLAIN,17));
+        JLabel medicineInStock = new JLabel("0");
+        medicineInStock.setFont(new Font("Poppins",Font.BOLD,23));
+        medicineInStockBox.add(medicineInStock);
+        medicineInStockBox.add(medicineInStockLabel);
+
+        MedicineContainer02.add(medicineSupplyBox);
+        MedicineContainer02.add(medicineSoldBox);
+        MedicineContainer02.add(medicineInStockBox);
+
+        JPanel MedicineContainer = new JPanel();
+        MedicineContainer.setLayout(new BoxLayout(MedicineContainer,BoxLayout.X_AXIS));
+        MedicineContainer.setOpaque(false);
+        MedicineContainer.add(MedicineContainer01);
+        MedicineContainer.add(Box.createHorizontalStrut(30));
+        MedicineContainer.add(MedicineContainer02);
+
+        JPanel HowToUseBox = new JPanel();
+        HowToUseBox.setLayout(new BoxLayout(HowToUseBox,BoxLayout.Y_AXIS));
+        HowToUseBox.setOpaque(false);
+        TitledBorder border3 = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY),
+                "How to use", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
+        border3.setTitleFont(new Font("Poppins", Font.BOLD, 20));
+        HowToUseBox.setBorder(border3);
+        String text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate";
+        JTextArea howToUse = new JTextArea();
+        howToUse.setText(text);
+        howToUse.setEditable(false);
+        howToUse.setLineWrap(true);
+        howToUse.setWrapStyleWord(true);
+        howToUse.setEditable(false);
+        howToUse.setFont(new Font("Poppins",Font.PLAIN,15));
+        howToUse.setBorder(new EmptyBorder(10,30,10,30));
+        howToUse.setOpaque(false);
+        JScrollPane HowToUseScrollPane = new JScrollPane(howToUse);
+        HowToUseScrollPane.setOpaque(false);
+        HowToUseScrollPane.getViewport().setBackground(Color.WHITE);
+        HowToUseScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrollbar
+        HowToUseScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        HowToUseBox.add(HowToUseScrollPane);
+
+        JPanel SideEffectBox = new JPanel();
+        SideEffectBox.setLayout(new BoxLayout(SideEffectBox,BoxLayout.Y_AXIS));
+        SideEffectBox.setOpaque(false);
+        TitledBorder border4 = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY),
+                "Side Effects", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
+        border4.setTitleFont(new Font("Poppins", Font.BOLD, 20));
+        SideEffectBox.setBorder(border4);
+        JTextArea sideEffects = new JTextArea();
+        sideEffects.setText(text);
+        sideEffects.setEditable(false);
+        sideEffects.setLineWrap(true);
+        sideEffects.setWrapStyleWord(true);
+        sideEffects.setEditable(false);
+        sideEffects.setFont(new Font("Poppins",Font.PLAIN,15));
+        sideEffects.setBorder(new EmptyBorder(20,30,20,30));
+        sideEffects.setOpaque(false);
+        JScrollPane SideEffectScrollPane = new JScrollPane(sideEffects);
+        SideEffectScrollPane.setOpaque(false);
+        SideEffectScrollPane.getViewport().setBackground(Color.WHITE);
+        SideEffectScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrollbar
+        SideEffectScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        SideEffectBox.add(SideEffectScrollPane);
+
+        panel.add(MedicineContainer);
+        panel.add(Box.createVerticalStrut(30));
+        panel.add(HowToUseBox);
+        panel.add(Box.createVerticalStrut(30));
+        panel.add(SideEffectBox);
+        return panel;
+    }
+    public static BufferedImage generateEAN13BarcodeImage(String barcodeText) throws Exception {
+        Barcode barcode = BarcodeFactory.createCode128A(barcodeText);
+        barcode.setFont(new Font("Poppins",Font.BOLD,17));
+        return BarcodeImageHandler.getImage(barcode);
+    }
     static class ViewMode extends JPanel {
         JTextField name;
         JTextField phone;
@@ -405,7 +652,7 @@ class ViewMedicineInfoPage extends JPanel {
             JPanel form = Form();
             setLayout(new BorderLayout());
             setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
-            setSize(700,400);
+//            setSize(700,400);
             add(form);
             setVisible(true);
         }
@@ -500,7 +747,7 @@ class MedicineForm extends JPanel{
         JPanel form = Form();
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
-        setSize(700,400);
+//        setSize(700,400);
         add(form);
         setVisible(true);
     }
