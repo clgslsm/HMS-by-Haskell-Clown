@@ -77,7 +77,8 @@ public class MedicalRecord {
         this.checkOut = (Timestamp) medRec.get("checkOut");
         this.status = Status.fromValue((String) medRec.get("status"));
         this.serviceRating = (int) medRec.get("serviceRating");
-        this.testResult = (TestResult) medRec.get("testResult");
+
+        this.testResult = new TestResult((Map<String, Object>) medRec.get("testResult"));
     }
 
     public String getMedRecId() {
@@ -145,8 +146,9 @@ public class MedicalRecord {
         map.put("receptionistId", getReceptionistId());
         map.put("checkIn", getCheckIn());
         map.put("checkOut", getCheckOut());
-        map.put("status", getStatus());
+        map.put("status", getStatus().toString());
         map.put("serviceRating", getServiceRating());
+
         map.put("testResult", getTestResult().toMap());
 
         return map;
@@ -154,7 +156,7 @@ public class MedicalRecord {
 
     public void advanceStatus(){
         if (status != Status.CHECKED_OUT)
-        status = Status.values()[status.ordinal() + 1];
+            status = Status.values()[status.ordinal() + 1];
     }
 
     public void openAnalysisFile() {

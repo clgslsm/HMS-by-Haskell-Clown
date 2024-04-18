@@ -18,11 +18,11 @@ public class TestResult {
         this.diagnosis = diagnosis;
         this.prescription = prescription;
     }
-    public TestResult(String testType, Map<String, Object> testResult) {
-        this.testType = testType;
+    public TestResult(Map<String, Object> testResult) {
+        this.testType = (String) testResult.get("testType");
         this.diagnosis = (String) testResult.get("diagnosis");
         this.prescription = (String) testResult.get("prescription");
-        this.analysisFilePath = (String) testResult.get("analysis");
+        this.analysisFilePath = (String) testResult.get("analysisFilePath");
     }
     public String getTestType() {
         return testType;

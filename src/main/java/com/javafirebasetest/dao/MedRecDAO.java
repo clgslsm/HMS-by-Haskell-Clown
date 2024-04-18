@@ -28,8 +28,7 @@ public class MedRecDAO {
 
     //READ METHODS
     public static MedicalRecord getMedRecById(String medRecId) {
-        Map<String, Object> medRecData = null;
-        medRecData = dbManager.getDocumentById(DBManager.CollectionPath.MEDICAL_RECORD, medRecId).getData();
+        Map<String, Object> medRecData = dbManager.getDocumentById(DBManager.CollectionPath.MEDICAL_RECORD, medRecId).getData();
         assert medRecData != null;
         return new MedicalRecord(medRecId, medRecData);
     }
@@ -39,6 +38,21 @@ public class MedRecDAO {
         querySnapshot = dbManager.getDocumentsByConditions(
                 DBManager.CollectionPath.MEDICAL_RECORD,
                 Filter.equalTo("patientId", patientId)
+        );
+
+        List<MedicalRecord> medRecList = new ArrayList<>();
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            medRecList.add(new MedicalRecord(qds.getId(), qds.getData()));
+        }
+        return medRecList;
+    }
+
+    public static List<MedicalRecord> getMedRecBy_doctorId_status(String doctorId, MedicalRecord.Status status) {
+        List<QueryDocumentSnapshot> querySnapshot;
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.MEDICAL_RECORD,
+                Filter.equalTo("doctorId", doctorId),
+                Filter.equalTo("status", status.toString())
         );
 
         List<MedicalRecord> medRecList = new ArrayList<>();
