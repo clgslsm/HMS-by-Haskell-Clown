@@ -19,7 +19,7 @@ public class MedicalRecord {
     private TestResult testResult;
 
     public enum Status {
-        PENDING("Pending"), TESTING("Testing"), TESTED("Tested"), DIAGNOSED("Diagnosed"), CHECKED_OUT("Checked out");
+        PENDING("Pending"), TESTING("Testing"), TESTED("Tested"), DIAGNOSED("Diagnosed"), CHECKED_OUT("Checked_out");
         private final String value;
 
         Status(String value) {

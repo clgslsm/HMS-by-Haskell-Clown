@@ -104,6 +104,14 @@ public class MedRecDAO {
 
     //DELETE METHODS
     public static void deleteMedRec(String medRecId) {
+        MedicalRecord medrec = getMedRecById(medRecId);
+
+        if (medrec.getTestResult() != null){
+            if (medrec.getTestResult().getAnalysisFilePath() != null){
+                FileManager.deleteFile(medrec.getTestResult().getAnalysisFilePath());
+            }
+        }
+
         dbManager.deleteDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRecId);
     }
 
@@ -128,7 +136,7 @@ public class MedRecDAO {
         addMedRec(medrec);
     }
 
-    public static void updateTestResult_AnalysisFilePath(String medRecId, String analysisFilePath){
+    public static void updateTestResult_AnalysisFilePath(String medRecId, String analysisFilePath) {
         MedicalRecord medrec = getMedRecById(medRecId);
 
         if (medrec.getTestResult().getAnalysisFilePath() != null){
@@ -136,12 +144,13 @@ public class MedRecDAO {
         }
 
         String storagePath = FileManager.uploadFile(analysisFilePath);
-        medrec.mergeTestResult(new TestResult(
+        TestResult newTestresult = new TestResult(
                 null,
                 storagePath,
                 null,
                 null
-        ));
+        );
+        medrec.mergeTestResult(newTestresult);
 
         addMedRec(medrec);
     }

@@ -34,7 +34,7 @@ public class FileManager {
 
         FileInputStream serviceAccount;
         try {
-            serviceAccount = new FileInputStream("./serviceAccountKey.json");
+            serviceAccount = new FileInputStream("./serviceAccountKeyNew.json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -60,13 +60,15 @@ public class FileManager {
 
     public static String uploadFile(String localFilePath) {
         getInstance();
-        BlobInfo blobInfo = Blob.newBuilder(defaultBucket, storageDataPath + localFilePath)
+        String[] paths = separateFolderPathAndFileName(localFilePath);
+
+        BlobInfo blobInfo = Blob.newBuilder(defaultBucket, storageDataPath + paths[1])
                                 .build();
         Blob newBlob = null;
         try {
             newBlob = storage.create(blobInfo, Files.readAllBytes(Path.of(localFilePath)));
         } catch (IOException e) {
-            System.out.println("Cannot read file: " + e);
+            e.printStackTrace();
             return null;
         }
         return newBlob.getBlobId().getName();
@@ -140,7 +142,7 @@ public class FileManager {
     }
 
     public static String[] separateFolderPathAndFileName(String storagePath) {
-        String[] segments = storagePath.split("/");
+        String[] segments = storagePath.split("[\\\\/]");
         String fileName = segments[segments.length - 1];
         String folderPath = String.join("/", Arrays.copyOf(segments, segments.length - 1));
         return new String[]{folderPath, fileName};

@@ -47,7 +47,7 @@ public class DBManager {
         try {
             options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setStorageBucket("ltnc-48c50.appspot.com")
+                    .setStorageBucket("ltnc-new.appspot.com")
                     .build();
         } catch (IOException e) {
             throw new RuntimeException(e);

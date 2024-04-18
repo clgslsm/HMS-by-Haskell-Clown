@@ -23,7 +23,7 @@ public class TestResult {
         this.testType = (String) testResult.get("testType");
         this.diagnosis = (String) testResult.get("diagnosis");
         this.prescription = (String) testResult.get("prescription");
-        this.analysisFilePath = (String) testResult.get("analysis");
+        this.analysisFilePath = (String) testResult.get("analysisFilePath");
     }
     public String getTestType() {
         return testType;
@@ -56,14 +56,18 @@ public class TestResult {
 
     public void merge(TestResult newTestResult){
         if (newTestResult.testType != null) testType = newTestResult.testType;
-        if (newTestResult.analysisFilePath != null) testType = newTestResult.analysisFilePath;
-        if (newTestResult.diagnosis != null) testType = newTestResult.diagnosis;
-        if (newTestResult.prescription != null) testType = newTestResult.prescription;
+        if (newTestResult.analysisFilePath != null) analysisFilePath = newTestResult.analysisFilePath;
+        if (newTestResult.diagnosis != null) diagnosis = newTestResult.diagnosis;
+        if (newTestResult.prescription != null) prescription = newTestResult.prescription;
     }
 
     @Override
     public String toString() {
-        return "TestResult [testType=" + testType + "analysis=" + analysisFilePath + ", diagnosis=" + diagnosis + ", prescription=" +
-                prescription + "]";
+        return "TestResult{" +
+                "testType='" + testType + '\'' +
+                ", analysisFilePath='" + analysisFilePath + '\'' +
+                ", diagnosis='" + diagnosis + '\'' +
+                ", prescription='" + prescription + '\'' +
+                '}';
     }
 }
