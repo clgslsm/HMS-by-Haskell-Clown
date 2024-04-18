@@ -105,6 +105,8 @@ public class MedRecDAO {
 
     //DELETE METHODS
     public static void deleteMedRec(String medRecId) {
+        MedicalRecord medrec = getMedRecById(medRecId);
+        FileManager.deleteFile(medrec.getTestResult().getAnalysisFilePath());
         dbManager.deleteDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRecId);
     }
 
@@ -118,15 +120,39 @@ public class MedRecDAO {
 
     /**
      * Put a new TestResult object in. Only the fields that are not null in the input object will be updated.
+     * CANNOT CHANGE analysisFilePath, please use updateTestResult_AnalysisFilePath().
      * @param medRecId ID of the MedRec to update
      * @param newTestresult The TestResult object with new values for the fields. Use null for values not requiring changes.
      *
      */
     public void updateTestResult(String medRecId, TestResult newTestresult){
         MedicalRecord medrec = getMedRecById(medRecId);
+        newTestresult.setAnalysisFilePath(null);
         medrec.mergeTestResult(newTestresult);
 
         addMedRec(medrec);
+    }
+
+    public void updateTestResult_AnalysisFilePath(String medRecId, String analysisFilePath){
+        MedicalRecord medrec = getMedRecById(medRecId);
+
+        if (medrec.getTestResult().getAnalysisFilePath() != null){
+            FileManager.deleteFile(medrec.getTestResult().getAnalysisFilePath());
+        }
+
+        String storagePath = FileManager.uploadFile(analysisFilePath);
+        medrec.mergeTestResult(new TestResult(
+                null,
+                storagePath,
+                null,
+                null
+        ));
+
+        addMedRec(medrec);
+    }
+
+    public void viewAnalysisFile(String medRecId){
+        getMedRecById(medRecId).openAnalysisFile();
     }
 
     public void performCheckout(String medRecId){

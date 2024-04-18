@@ -32,6 +32,10 @@ public class TestResult {
         return analysisFilePath;
     }
 
+    public void setAnalysisFilePath(String analysisFilePath) {
+        this.analysisFilePath = analysisFilePath;
+    }
+
     public String getDiagnosis() {
         return diagnosis;
     }
@@ -50,7 +54,8 @@ public class TestResult {
     }
 
     public void openAnalysisFile(){
-        FileManager.openFileWithDefaultApp(analysisFilePath);
+        if (analysisFilePath != null)
+            FileManager.openFileWithDefaultApp(analysisFilePath);
     }
 
     public void merge(TestResult newTestResult){

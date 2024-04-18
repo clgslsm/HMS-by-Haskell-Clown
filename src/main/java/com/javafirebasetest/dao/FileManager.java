@@ -58,6 +58,9 @@ public class FileManager {
         return instance;
     }
 
+    /**
+     * Returns the remote file path if successful.
+     */
     public static String uploadFile(String localFilePath) {
         getInstance();
         BlobInfo blobInfo = Blob.newBuilder(defaultBucket, storageDataPath + localFilePath)

@@ -2,6 +2,7 @@ package com.javafirebasetest.dao;
 
 import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.javafirebasetest.entity.MedicalRecord;
 import com.javafirebasetest.entity.Patient;
 
 import java.security.NoSuchAlgorithmException;
@@ -107,7 +108,16 @@ public class PatientDAO {
     }
 
     //DELETE METHODS
+
+    /**
+     * Also delete all related MedRec
+     *
+     */
     public static void deletePatient(String patientID) {
+        List<MedicalRecord> medrecList = MedRecDAO.getMedRecByPatientId(patientID);
+        for (MedicalRecord medrec : medrecList){
+            MedRecDAO.deleteMedRec(medrec.getMedRecId());
+        }
         dbManager.deleteDocument(DBManager.CollectionPath.PATIENT, patientID);
     }
 }
