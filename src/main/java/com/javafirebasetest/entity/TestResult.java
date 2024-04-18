@@ -19,10 +19,11 @@ public class TestResult {
         this.prescription = prescription;
     }
     public TestResult(Map<String, Object> testResult) {
+        if (testResult == null) return;
         this.testType = (String) testResult.get("testType");
         this.diagnosis = (String) testResult.get("diagnosis");
         this.prescription = (String) testResult.get("prescription");
-        this.analysisFilePath = (String) testResult.get("analysisFilePath");
+        this.analysisFilePath = (String) testResult.get("analysis");
     }
     public String getTestType() {
         return testType;
@@ -30,10 +31,6 @@ public class TestResult {
 
     public String getAnalysisFilePath() {
         return analysisFilePath;
-    }
-
-    public void setAnalysisFilePath(String analysisFilePath) {
-        this.analysisFilePath = analysisFilePath;
     }
 
     public String getDiagnosis() {
@@ -54,8 +51,7 @@ public class TestResult {
     }
 
     public void openAnalysisFile(){
-        if (analysisFilePath != null)
-            FileManager.openFileWithDefaultApp(analysisFilePath);
+        FileManager.openFileWithDefaultApp(analysisFilePath);
     }
 
     public void merge(TestResult newTestResult){

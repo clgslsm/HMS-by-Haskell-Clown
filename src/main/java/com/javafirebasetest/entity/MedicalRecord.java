@@ -15,7 +15,7 @@ public class MedicalRecord {
     private Timestamp checkIn;
     private Timestamp checkOut;
     private Status status;
-    private int serviceRating;
+    private Long serviceRating;
     private TestResult testResult;
 
     public enum Status {
@@ -42,7 +42,7 @@ public class MedicalRecord {
 
     //    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
 //    public MedicalRecord(String medicalRecordID, String patientId, String doctorId, String receptionistId, Timestamp checkIn,
-//                         Timestamp checkOut, Status status, int serviceRating, TestResult testResult) {
+//                         Timestamp checkOut, Status status, Long serviceRating, TestResult testResult) {
 //        this.medicalRecordID = medicalRecordID;
 //        this.patientId = patientId;
 //        this.doctorId = doctorId;
@@ -55,7 +55,7 @@ public class MedicalRecord {
 //    }
 
     public MedicalRecord(String medRecId, String patientId, String doctorId, String receptionistId, Timestamp checkIn,
-                         Timestamp checkOut, Status status, int serviceRating, TestResult testResult) {
+                         Timestamp checkOut, Status status, Long serviceRating, TestResult testResult) {
         this.medRecId = medRecId;
         this.patientId = patientId;
         this.doctorId = doctorId;
@@ -76,7 +76,7 @@ public class MedicalRecord {
         this.checkIn = (Timestamp) medRec.get("checkIn");
         this.checkOut = (Timestamp) medRec.get("checkOut");
         this.status = Status.fromValue((String) medRec.get("status"));
-        this.serviceRating = (int) medRec.get("serviceRating");
+        this.serviceRating = (Long) medRec.get("serviceRating");
 
         this.testResult = new TestResult((Map<String, Object>) medRec.get("testResult"));
     }
@@ -108,7 +108,7 @@ public class MedicalRecord {
         return status;
     }
 
-    public int getServiceRating() {
+    public Long getServiceRating() {
         return serviceRating;
     }
 
@@ -146,17 +146,16 @@ public class MedicalRecord {
         map.put("receptionistId", getReceptionistId());
         map.put("checkIn", getCheckIn());
         map.put("checkOut", getCheckOut());
-        map.put("status", getStatus().toString());
+        map.put("status", getStatus());
         map.put("serviceRating", getServiceRating());
 
-        map.put("testResult", getTestResult().toMap());
-
+        map.put("testResult", (getTestResult() != null)? getTestResult().toMap() : null);
         return map;
     }
 
     public void advanceStatus(){
         if (status != Status.CHECKED_OUT)
-            status = Status.values()[status.ordinal() + 1];
+        status = Status.values()[status.ordinal() + 1];
     }
 
     public void openAnalysisFile() {

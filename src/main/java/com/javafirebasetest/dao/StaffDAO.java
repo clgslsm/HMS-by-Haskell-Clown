@@ -16,11 +16,12 @@ public class StaffDAO {
     //CRUD
 
     //CREATE METHODS
-    public static void addStaff(Staff staff) {
+    public static String addStaff(Staff staff) {
         if (staff.getStaffId() == null) {
-            dbManager.addDocument(DBManager.CollectionPath.STAFF, staff.toMap());
+            return dbManager.addDocument(DBManager.CollectionPath.STAFF, staff.toMap());
         } else {
             dbManager.updateDocument(DBManager.CollectionPath.STAFF, staff.getStaffId(), staff.toMap());
+            return staff.getStaffId();
         }
     }
 

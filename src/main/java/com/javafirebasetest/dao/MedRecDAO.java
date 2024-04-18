@@ -29,7 +29,7 @@ public class MedRecDAO {
     //READ METHODS
     public static MedicalRecord getMedRecById(String medRecId) {
         Map<String, Object> medRecData = dbManager.getDocumentById(DBManager.CollectionPath.MEDICAL_RECORD, medRecId).getData();
-        assert medRecData != null;
+        if (medRecData == null) return null;
         return new MedicalRecord(medRecId, medRecData);
     }
 
@@ -38,21 +38,6 @@ public class MedRecDAO {
         querySnapshot = dbManager.getDocumentsByConditions(
                 DBManager.CollectionPath.MEDICAL_RECORD,
                 Filter.equalTo("patientId", patientId)
-        );
-
-        List<MedicalRecord> medRecList = new ArrayList<>();
-        for (QueryDocumentSnapshot qds : querySnapshot) {
-            medRecList.add(new MedicalRecord(qds.getId(), qds.getData()));
-        }
-        return medRecList;
-    }
-
-    public static List<MedicalRecord> getMedRecBy_doctorId_status(String doctorId, MedicalRecord.Status status) {
-        List<QueryDocumentSnapshot> querySnapshot;
-        querySnapshot = dbManager.getDocumentsByConditions(
-                DBManager.CollectionPath.MEDICAL_RECORD,
-                Filter.equalTo("doctorId", doctorId),
-                Filter.equalTo("status", status.toString())
         );
 
         List<MedicalRecord> medRecList = new ArrayList<>();
@@ -119,13 +104,11 @@ public class MedRecDAO {
 
     //DELETE METHODS
     public static void deleteMedRec(String medRecId) {
-        MedicalRecord medrec = getMedRecById(medRecId);
-        FileManager.deleteFile(medrec.getTestResult().getAnalysisFilePath());
         dbManager.deleteDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRecId);
     }
 
     //FRONTEND HELPER FUNCTIONS
-    public void send(String medRecId){
+    public static void send(String medRecId){
         MedicalRecord medrec = getMedRecById(medRecId);
         medrec.advanceStatus();
 
@@ -134,20 +117,18 @@ public class MedRecDAO {
 
     /**
      * Put a new TestResult object in. Only the fields that are not null in the input object will be updated.
-     * CANNOT CHANGE analysisFilePath, please use updateTestResult_AnalysisFilePath().
      * @param medRecId ID of the MedRec to update
      * @param newTestresult The TestResult object with new values for the fields. Use null for values not requiring changes.
      *
      */
-    public void updateTestResult(String medRecId, TestResult newTestresult){
+    public static void updateTestResult(String medRecId, TestResult newTestresult){
         MedicalRecord medrec = getMedRecById(medRecId);
-        newTestresult.setAnalysisFilePath(null);
         medrec.mergeTestResult(newTestresult);
 
         addMedRec(medrec);
     }
 
-    public void updateTestResult_AnalysisFilePath(String medRecId, String analysisFilePath){
+    public static void updateTestResult_AnalysisFilePath(String medRecId, String analysisFilePath){
         MedicalRecord medrec = getMedRecById(medRecId);
 
         if (medrec.getTestResult().getAnalysisFilePath() != null){
@@ -165,11 +146,11 @@ public class MedRecDAO {
         addMedRec(medrec);
     }
 
-    public void viewAnalysisFile(String medRecId){
+    public static void viewAnalysisFile(String medRecId){
         getMedRecById(medRecId).openAnalysisFile();
     }
 
-    public void performCheckout(String medRecId){
+    public static void performCheckout(String medRecId){
         MedicalRecord medrec = getMedRecById(medRecId);
 
         if (medrec.getStatus() != MedicalRecord.Status.CHECKED_OUT)

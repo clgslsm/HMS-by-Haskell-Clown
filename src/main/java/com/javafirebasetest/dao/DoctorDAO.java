@@ -5,10 +5,7 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.entity.DeptType;
 import com.javafirebasetest.entity.Doctor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DoctorDAO {
     private static final DBManager dbManager = DBManager.getInstance();
@@ -83,6 +80,30 @@ public class DoctorDAO {
 
     public static void deleteDoctorById(String doctorId) {
         dbManager.deleteDocument(DBManager.CollectionPath.STAFF, doctorId);
+    }
+
+    //FRONTEND HELPER FUNCTIONS
+
+    public static Doctor getMatchFromDepartment(DeptType deptType) {
+        List<QueryDocumentSnapshot> querySnapshot;
+
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.STAFF,
+                Filter.equalTo("department", deptType.getValue())
+        );
+
+        List<Doctor> doctorList = new ArrayList<>();
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            doctorList.add(new Doctor(qds.getId(), qds.getData()));
+        }
+        doctorList.sort(new Comparator<Doctor>() {
+            @Override
+            public int compare(Doctor o1, Doctor o2) {
+                return Long.compare(o1.getPatientCount(), o2.getPatientCount());
+            }
+        });
+        if (doctorList.getFirst().getPatientCount() >= Doctor.PATIENT_LIMIT) return null;
+        return doctorList.getFirst();
     }
 
 }
