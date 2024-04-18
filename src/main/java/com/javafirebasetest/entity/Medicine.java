@@ -11,11 +11,8 @@ public class Medicine {
     private String medicineName;
     private LocalDate importDate;
     private LocalDate expiryDate;
-
-    //private String description;
     private int amount;
     private String unit;
-    //private int price;
     public Medicine() {}
     public Medicine(String medicineId, String medicineName, LocalDate importDate, LocalDate expiry,
                     int amount, String unit) {
@@ -23,10 +20,8 @@ public class Medicine {
         this.medicineName = medicineName;
         this.importDate = importDate;
         this.expiryDate = expiry;
-        //this.description = description;
         this.amount = amount;
         this.unit = unit;
-        //this.price = price;
     }
 
     public Medicine(String medicineId, Map<String, Object> medicine) {
@@ -34,10 +29,8 @@ public class Medicine {
         this.medicineName = (String) medicine.get("medicineName");
         this.importDate = LocalDate.parse((String) medicine.get("importDate"));
         this.expiryDate = LocalDate.parse((String) medicine.get("expiryDate"));
-        //this.description = (String) medicine.get("description");
         this.amount = ((Long) medicine.get("amount")).intValue();
         this.unit = (String) medicine.get("unit");
-        //this.price = ((Long) medicine.get("price")).intValue();
     }
 
     public String getMedicineId() {return medicineId;}

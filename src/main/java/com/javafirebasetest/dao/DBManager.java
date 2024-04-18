@@ -3,9 +3,11 @@ package com.javafirebasetest.dao;
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.*;
+import com.google.cloud.storage.Bucket;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import com.google.firebase.cloud.StorageClient;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,7 +38,7 @@ public class DBManager {
     private DBManager() {
         FileInputStream serviceAccount;
         try {
-            serviceAccount = new FileInputStream("./serviceAccountKey.json");
+            serviceAccount = new FileInputStream("./serviceAccountKeyNew.json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -45,6 +47,7 @@ public class DBManager {
         try {
             options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setStorageBucket("ltnc-48c50.appspot.com")
                     .build();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -63,12 +66,10 @@ public class DBManager {
         return instance;
     }
 
-    public void populateData() {
-    }
-
 
     // Add a document to a collection
     public String addDocument(CollectionPath collectionPath, Map<String, Object> data){
+        getInstance();
         CollectionReference colRef = db.collection(collectionPath.getValue());
         ApiFuture<DocumentReference> result = colRef.add(data);
 
@@ -83,6 +84,7 @@ public class DBManager {
     // Get a document by document ID
 
     public DocumentSnapshot getDocumentById(CollectionPath collectionPath, String documentId){
+        getInstance();
         DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
         ApiFuture<DocumentSnapshot> future = docRef.get();
         try {
@@ -95,6 +97,7 @@ public class DBManager {
 
     // Query documents based on certain conditions
     public List<QueryDocumentSnapshot> getDocumentsByConditions(CollectionPath collectionPath, Filter ... filters){
+        getInstance();
         ApiFuture<QuerySnapshot> future = db.collection(collectionPath.getValue()).where(makeFilter(filters)).get();
         QuerySnapshot querySnapshot = null;
 
@@ -110,6 +113,7 @@ public class DBManager {
 
     // Query all document
     public List<QueryDocumentSnapshot> getAllDocuments(CollectionPath collectionPath) {
+        getInstance();
         ApiFuture<QuerySnapshot> future = db.collection(collectionPath.getValue()).get();
 
         QuerySnapshot querySnapshot = null;
@@ -125,6 +129,7 @@ public class DBManager {
 
     // Update a document
     public void updateDocument(CollectionPath collectionPath, String documentId, Map<String, Object> newData){
+        getInstance();
         try {
             //TO ADD DOCUMENT WITH CUSTOM ID
             if (!db.collection(collectionPath.getValue()).document(documentId).get().get().exists()){
@@ -144,6 +149,7 @@ public class DBManager {
 
     // Delete a document
     public void deleteDocument(CollectionPath collectionPath, String documentId) {
+        getInstance();
         DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
         try{
             docRef.get().get();

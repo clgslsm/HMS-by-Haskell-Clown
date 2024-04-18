@@ -7,20 +7,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MedicalRecord {
-    private String medicalRecordID;
+    private String medRecId;
     private String patientId;
     //private DeptType department;
     private String doctorId;
     private String receptionistId;
     private Timestamp checkIn;
     private Timestamp checkOut;
-    //private String observation;
     private Status status;
     private int serviceRating;
     private TestResult testResult;
 
     public enum Status {
-        PENDING("Pending"), CHECKED("Checked"), CHECKEDOUT("CheckedOut");
+        PENDING("Pending"), TESTING("Testing"), TESTED("Tested"), DIAGNOSED("Diagnosed"), CHECKED_OUT("Checked out");
         private final String value;
 
         Status(String value) {
@@ -34,7 +33,7 @@ public class MedicalRecord {
         public static MedicalRecord.Status fromValue(String value) {
             for (MedicalRecord.Status bg : MedicalRecord.Status.values())
                 if (bg.value.equalsIgnoreCase(value)) return bg;
-            throw new IllegalArgumentException("Invalid blood group: " + value);
+            throw new IllegalArgumentException("Invalid Medical Record status: " + value);
         }
     }
 
@@ -42,22 +41,35 @@ public class MedicalRecord {
     }
 
     //    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
-    public MedicalRecord(String medicalRecordID, String patientId, String doctorId, String receptionistId, Timestamp checkIn,
+//    public MedicalRecord(String medicalRecordID, String patientId, String doctorId, String receptionistId, Timestamp checkIn,
+//                         Timestamp checkOut, Status status, int serviceRating, TestResult testResult) {
+//        this.medicalRecordID = medicalRecordID;
+//        this.patientId = patientId;
+//        this.doctorId = doctorId;
+//        this.receptionistId = receptionistId;
+//        this.checkIn = checkIn;
+//        this.checkOut = checkOut;
+//        this.status = status;
+//        this.serviceRating = serviceRating;
+//        this.testResult = testResult;
+//    }
+
+    public MedicalRecord(String medRecId, String patientId, String doctorId, String receptionistId, Timestamp checkIn,
                          Timestamp checkOut, Status status, int serviceRating, TestResult testResult) {
-        this.medicalRecordID = medicalRecordID;
+        this.medRecId = medRecId;
         this.patientId = patientId;
         this.doctorId = doctorId;
         this.receptionistId = receptionistId;
-        this.checkIn = checkIn;
+        this.checkIn = (checkIn == null)? Timestamp.now() : checkIn;
         this.checkOut = checkOut;
-        this.status = status;
+        this.status = (status == null)? Status.PENDING : status;
         this.serviceRating = serviceRating;
         this.testResult = testResult;
     }
 
     public MedicalRecord(String medRecId, Map<String, Object> medRec) {
         super();
-        this.medicalRecordID = medRecId;
+        this.medRecId = medRecId;
         this.patientId = (String) medRec.get("patientId");
         this.doctorId = (String) medRec.get("doctorId");
         this.receptionistId = (String) medRec.get("receptionistId");
@@ -68,78 +80,43 @@ public class MedicalRecord {
         this.testResult = (TestResult) medRec.get("testResult");
     }
 
-    public String getmedicalRecordId() {
-        return medicalRecordID;
-    }
-
-    public void setID(String medicalRecordId) {
-        this.medicalRecordID = medicalRecordId;
+    public String getMedRecId() {
+        return medRecId;
     }
 
     public String getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
-    }
-
     public String getDoctorId() {
         return doctorId;
-    }
-
-    public void setDid(String doctorId) {
-        this.doctorId = doctorId;
     }
 
     public String getReceptionistId() {
         return receptionistId;
     }
 
-    public void setReceptionistId(String receptionistId) {
-        this.receptionistId = receptionistId;
-    }
-
     public Timestamp getCheckIn() {
         return checkIn;
     }
-
-    public void setCheckIn(Timestamp checkIn) {
-        this.checkIn = checkIn;
-    }
-
     public Timestamp getCheckOut() {
         return checkOut;
-    }
-
-    public void setCheckOut(Timestamp checkOut) {
-        this.checkOut = checkOut;
     }
 
     public Status getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     public int getServiceRating() {
         return serviceRating;
-    }
-
-    public void setServiceRating(int serviceRating) {
-        if (serviceRating < 0 || serviceRating > 5)
-            throw new IllegalArgumentException("Invalid service rating: " + serviceRating + ". Must be between 0 and 5.");
-        this.serviceRating = serviceRating;
     }
 
     public TestResult getTestResult() {
         return testResult;
     }
 
-    public void setTestResult(TestResult testResult) {
-        this.testResult = testResult;
+    public void mergeTestResult(TestResult testResult) {
+        this.testResult.merge(testResult);
     }
     //endregion
 
@@ -168,16 +145,26 @@ public class MedicalRecord {
         map.put("receptionistId", getReceptionistId());
         map.put("checkIn", getCheckIn());
         map.put("checkOut", getCheckOut());
-        map.put("status", getStatus().getValue());
+        map.put("status", getStatus());
         map.put("serviceRating", getServiceRating());
-        map.put("testResult", getTestResult());
+        map.put("testResult", getTestResult().toMap());
 
         return map;
     }
 
+    public void advanceStatus(){
+        if (status != Status.CHECKED_OUT)
+        status = Status.values()[status.ordinal() + 1];
+    }
+
+    public void openAnalysisFile() {
+        testResult.openAnalysisFile();
+    }
+
+
     @Override
     public String toString() {
-        return "MedicalRecord [medicalRecordId=" + medicalRecordID + ", patientId=" + patientId + ", doctorId=" + doctorId +
+        return "MedicalRecord [medicalRecordId=" + medRecId + ", patientId=" + patientId + ", doctorId=" + doctorId +
                 ", receptionisId=" + receptionistId + ", checkIn=" + getformattedCheckIn() + ", checkOut=" + getformattedCheckOut() +
                 ", status=" + status.getValue() + ", serviceReview=" + serviceRating + ", testResult=" + testResult + "]";
     }

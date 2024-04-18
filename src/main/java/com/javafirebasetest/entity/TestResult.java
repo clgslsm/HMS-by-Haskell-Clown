@@ -1,23 +1,20 @@
 package com.javafirebasetest.entity;
+import com.javafirebasetest.dao.FileManager;
+
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.DosFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TestResult {
     private String testType;
-    private File analysis;
+    private String analysisFilePath;
     private String diagnosis;
     private String prescription;
 
     public TestResult() {}
-    public TestResult(String testType, File analysis, String diagnosis, String prescription) {
+    public TestResult(String testType, String analysisFilePath, String diagnosis, String prescription) {
         this.testType = testType;
-        this.analysis = analysis;
+        this.analysisFilePath = analysisFilePath;
         this.diagnosis = diagnosis;
         this.prescription = prescription;
     }
@@ -25,47 +22,47 @@ public class TestResult {
         this.testType = testType;
         this.diagnosis = (String) testResult.get("diagnosis");
         this.prescription = (String) testResult.get("prescription");
-        try {
-            this.analysis = new File((String) testResult.get("analysis"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        this.analysisFilePath = (String) testResult.get("analysis");
     }
     public String getTestType() {
         return testType;
     }
-    public void setTestType(String testType) {
-        this.testType = testType;
+
+    public String getAnalysisFilePath() {
+        return analysisFilePath;
     }
-    public File getAnalysis() {
-        return analysis;
-    }
-    public void setAnalysis(File analysis) {
-        this.analysis = analysis;
-    }
+
     public String getDiagnosis() {
         return diagnosis;
     }
-    public void setDiagnosis(String diagnosis) {
-        this.diagnosis = diagnosis;
-    }
+
     public String getPrescription() {
         return prescription;
     }
-    public void setPrescription(String prescription) {
-        this.prescription = prescription;
-    }
+
     public Map<String, Object> toMap() {
         Map<String, Object> testResultData = new HashMap<>();
         testResultData.put("testType", testType);
-        testResultData.put("analysis", analysis.getPath());
+        testResultData.put("analysisFilePath", analysisFilePath);
         testResultData.put("diagnosis", diagnosis);
         testResultData.put("prescription", prescription);
         return testResultData;
     }
+
+    public void openAnalysisFile(){
+        FileManager.openFileWithDefaultApp(analysisFilePath);
+    }
+
+    public void merge(TestResult newTestResult){
+        if (newTestResult.testType != null) testType = newTestResult.testType;
+        if (newTestResult.analysisFilePath != null) testType = newTestResult.analysisFilePath;
+        if (newTestResult.diagnosis != null) testType = newTestResult.diagnosis;
+        if (newTestResult.prescription != null) testType = newTestResult.prescription;
+    }
+
     @Override
     public String toString() {
-        return "TestResult [testType=" + testType + "analysis=" + analysis + ", diagnosis=" + diagnosis + ", prescription=" +
+        return "TestResult [testType=" + testType + "analysis=" + analysisFilePath + ", diagnosis=" + diagnosis + ", prescription=" +
                 prescription + "]";
     }
 }

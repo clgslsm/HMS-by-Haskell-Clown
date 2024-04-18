@@ -31,15 +31,13 @@ public class DoctorDAO {
     }
     public static List<Doctor> getDoctorByName(String doctorName) {
         List<QueryDocumentSnapshot> querySnapshot;
-        try {
-            querySnapshot = dbManager.getDocumentsByConditions(
-                    DBManager.CollectionPath.STAFF,
-                    Filter.greaterThanOrEqualTo("name", doctorName),
-                    Filter.lessThanOrEqualTo("name", doctorName + "\uf7ff")
-            );
-        } catch (ExecutionException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.STAFF,
+                Filter.greaterThanOrEqualTo("name", doctorName),
+                Filter.lessThanOrEqualTo("name", doctorName + "\uf7ff")
+        );
+
         List<Doctor> doctorList = new ArrayList<>();
         for (QueryDocumentSnapshot qds : querySnapshot) {
             doctorList.add(new Doctor(qds.getId(), qds.getData()));
