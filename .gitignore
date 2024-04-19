@@ -38,4 +38,10 @@ build/
 .DS_Store
 
 ### Custom ###
+<<<<<<< HEAD
 serviceAccountKeyNew.json
+=======
+serviceAccountKey.json
+serviceAccountKeyNew.json
+LocalData
+>>>>>>> 3d01b58b4a268a3f848fe76bcf7bfbf5cd41d4f8

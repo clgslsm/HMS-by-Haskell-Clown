@@ -127,7 +127,6 @@ public class ViewMedicalRecordPanel extends JPanel {
             observation.setEditable(true);
             Prescriptions.setEnabled(true);
             Test.setEnabled(true);
-            saveButton.setEnabled(true);
         }
 
         Prescriptions.addActionListener(new ActionListener() {
@@ -439,3 +438,4 @@ public class ViewMedicalRecordPanel extends JPanel {
         return result;
     }
 }
+
