@@ -50,42 +50,42 @@ class MedicinePanel extends JPanel {
             });
 
             // Fill in the form and store the information of the new patient
-            addMedicinePage.form.createBtn.addActionListener(_ ->{
-                String ID = addMedicinePage.form.IDInput.getText();
-                String name = addMedicinePage.form.nameInput.getText();
-                String gender;
-                if (addMedicinePage.form.male.isSelected())
-                    gender = "Male";
-                else if (addMedicinePage.form.female.isSelected())
-                    gender = "Female";
-                else gender = "Other";
-                String phone = addMedicinePage.form.phoneInput.getText();
-                String address = addMedicinePage.form.addressInput.getText();
-                String bloodGroup = addMedicinePage.form.bloodGroupInput.getText();
-                String dateOfBirth = addMedicinePage.form.DOBInput.getText();
-                System.out.println(MedicineForm.reformatDate(dateOfBirth));
-
-                // Creating the map
-                Map<String, Object> medicineInfo = new HashMap<>();
-                medicineInfo.put("name", name);
-                medicineInfo.put("gender", gender);
-                medicineInfo.put("phoneNumber", phone);
-                medicineInfo.put("address", address);
-                medicineInfo.put("bloodGroup", bloodGroup);
-                medicineInfo.put("birthDate", MedicineForm.reformatDate(dateOfBirth));
-                //Medicine newMedicine = new Medicine(ID, medicineInfo);
-//                data.add(newMedicine);
-//                try {
-//                    MedicineDAO.addMedicine(newMedicine);
-//                } catch (ExecutionException | InterruptedException ex) {
-//                    throw new RuntimeException(ex);
-//                }
-//                defaultPage.addMedicineToTable(newMedicine);
-//                System.out.println(data);
-
-                currentPage.removeLayoutComponent(addMedicinePage);
-                currentPage.show(this,"medicine-default-page");
-            });
+//            addMedicinePage.form.createBtn.addActionListener(_ ->{
+//                String ID = addMedicinePage.form.IDInput.getText();
+//                String name = addMedicinePage.form.nameInput.getText();
+//                String gender;
+//                if (addMedicinePage.form.male.isSelected())
+//                    gender = "Male";
+//                else if (addMedicinePage.form.female.isSelected())
+//                    gender = "Female";
+//                else gender = "Other";
+//                String phone = addMedicinePage.form.phoneInput.getText();
+//                String address = addMedicinePage.form.addressInput.getText();
+//                String bloodGroup = addMedicinePage.form.bloodGroupInput.getText();
+//                String dateOfBirth = addMedicinePage.form.DOBInput.getText();
+//                System.out.println(MedicineForm.reformatDate(dateOfBirth));
+//
+//                // Creating the map
+//                Map<String, Object> medicineInfo = new HashMap<>();
+//                medicineInfo.put("name", name);
+//                medicineInfo.put("gender", gender);
+//                medicineInfo.put("phoneNumber", phone);
+//                medicineInfo.put("address", address);
+//                medicineInfo.put("bloodGroup", bloodGroup);
+//                medicineInfo.put("birthDate", MedicineForm.reformatDate(dateOfBirth));
+//                //Medicine newMedicine = new Medicine(ID, medicineInfo);
+////                data.add(newMedicine);
+////                try {
+////                    MedicineDAO.addMedicine(newMedicine);
+////                } catch (ExecutionException | InterruptedException ex) {
+////                    throw new RuntimeException(ex);
+////                }
+////                defaultPage.addMedicineToTable(newMedicine);
+////                System.out.println(data);
+//
+//                currentPage.removeLayoutComponent(addMedicinePage);
+//                currentPage.show(this,"medicine-default-page");
+//            });
 
             currentPage.show(this, "add-medicine-page");
         });
@@ -213,7 +213,7 @@ class MedicineDefaultPage extends JLabel {
         viewPage.MedicineID.setIcon(new ImageIcon(image));
         viewPage.MedicineUnit.setText(medicine.getUnit());
         viewPage.medicineSupply.setText(medicine.getAmount().toString());
-        viewPage.howToUse.setText(medicine.getDescription());
+        viewPage.description.setText(medicine.getDescription());
         return viewPage;
     }
     static class CustomTableModel extends AbstractTableModel {
@@ -377,30 +377,155 @@ class MedicineDefaultPage extends JLabel {
 }
 class AddNewMedicinePage extends JPanel {
     JButton backButton = new RoundedButton(" Return ");
-    MedicineForm form = new MedicineForm();
+    JTextField MedicineNameInput;
+    JTextField MedicineIDInput;
+    JComboBox<String> MedicineUnitInput;
+    JTextField QuantityInput;
+    JTextArea descriptionInput;
     AddNewMedicinePage() {
-        JLabel title = new JLabel("Add New Medicine");
-        title.setFont(title.getFont().deriveFont(28.0F));
-
-        this.setBackground(Color.white);
-        this.setMaximumSize(new Dimension(1300,600));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 35));
+        this.setBackground(Color.WHITE);
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 25));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JPanel pageHeader = new JPanel();
-        pageHeader.setBackground(Color.white);
-        pageHeader.setLayout(new BoxLayout(pageHeader, BoxLayout.X_AXIS));
-        pageHeader.add(backButton);
-        backButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        backButton.setAlignmentY(0);
-        pageHeader.add(Box.createHorizontalGlue());
-        pageHeader.add(title);
-        title.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        title.setAlignmentY(Component.TOP_ALIGNMENT);
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        container.setOpaque(false);
+        container.setBorder(new EmptyBorder(10,10,10,10));
+        container.add(headerContainer());
+        container.add(Box.createVerticalStrut(30));
+        container.add(formContainer());
 
-        this.add(pageHeader);
-        this.add(new Box.Filler(new Dimension(100,30), new Dimension(100,30), new Dimension(100,30)));
-        this.add(form); // Registration form
+        add(container);
+    }
+    JPanel headerContainer(){
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setMaximumSize(new Dimension(1300,200));
+
+        JLabel titleContainer = new JLabel();
+        titleContainer.setLayout(new BoxLayout(titleContainer,BoxLayout.Y_AXIS));
+        titleContainer.setBackground(Color.white);
+
+        JPanel titleJoined = new JPanel();
+        titleJoined.setLayout(new BoxLayout(titleJoined,BoxLayout.X_AXIS));
+        titleJoined.setOpaque(false);
+
+        JLabel title = new JLabel("List of Medicines > ");
+        title.setFont(title.getFont().deriveFont(28F));
+        title.setForeground(new Color(0x3497F9));
+
+        JLabel titleMedicine = new JLabel("Add New Medicine");
+        titleMedicine.setFont(title.getFont().deriveFont(28F));
+        titleMedicine.setForeground(Color.BLACK);
+
+        titleJoined.add(title);
+        titleJoined.add(titleMedicine);
+        titleJoined.setAlignmentX(LEFT_ALIGNMENT);
+
+        JLabel subTitle = new JLabel("*All fields are mandatory, except mentioned as (option)");
+        subTitle.setOpaque(false);
+        subTitle.setFont(new Font("Poppins",Font.PLAIN,15));
+        subTitle.setAlignmentX(LEFT_ALIGNMENT);
+
+        titleContainer.add(titleJoined);
+        titleContainer.add(subTitle);
+        titleContainer.setMaximumSize(new Dimension(1300,150));
+
+        JPanel backButtonContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        backButtonContainer.setMaximumSize(new Dimension(1300,50));
+        backButtonContainer.setOpaque(false);
+        backButton.setMaximumSize(new Dimension(80,35));
+        backButton.setFont(new Font("Poppins",Font.PLAIN,15));
+        backButtonContainer.add(backButton);
+
+        JPanel container01 = new JPanel();
+        container01.setLayout(new BoxLayout(container01,BoxLayout.X_AXIS));
+        container01.setOpaque(false);
+        container01.add(titleContainer);
+
+        panel.add(backButtonContainer);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(container01);
+
+        return panel;
+    }
+    JPanel formContainer(){
+        JPanel form = new JPanel();
+        form.setOpaque(false);
+        form.setMaximumSize(new Dimension(600,600));
+        form.setLayout(new BoxLayout(form,BoxLayout.Y_AXIS));
+
+        // Medicine Name
+        JPanel MedicineNameBox = new JPanel();
+        MedicineNameBox.setOpaque(false);
+        MedicineNameBox.setLayout(new GridLayout(2,1,0,10));
+        JLabel MedicineNameLabel = new JLabel("Medicine Name");
+        MedicineNameLabel.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineNameInput = new RoundedTextField(40,20);
+        MedicineNameInput.setPreferredSize(new Dimension(300,40));
+        MedicineNameInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineNameBox.add(MedicineNameLabel);
+        MedicineNameBox.add(MedicineNameInput);
+
+        // Medicine ID
+        JPanel MedicineIDBox = new JPanel();
+        MedicineIDBox.setOpaque(false);
+        MedicineIDBox.setLayout(new GridLayout(2,1,0,10));
+        JLabel MedicineIDLabel = new JLabel("Medicine ID");
+        MedicineIDLabel.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineIDInput = new RoundedTextField(40,20);
+        MedicineIDInput.setPreferredSize(new Dimension(300,40));
+        MedicineIDInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineIDBox.add(MedicineIDLabel);
+        MedicineIDBox.add(MedicineIDInput);
+
+        // Contain 1
+        JPanel container1 = new JPanel();
+        container1.setMaximumSize(new Dimension(600,60));
+        container1.setOpaque(false);
+        container1.setLayout(new GridLayout(1,2,50,0));
+        container1.add(MedicineNameBox);
+        container1.add(MedicineIDBox);
+
+        // Medicine Unit
+        JPanel MedicineUnitBox = new JPanel();
+        MedicineUnitBox.setOpaque(false);
+        MedicineUnitBox.setLayout(new GridLayout(2,1,0,10));
+        JLabel MedicineUnitLabel = new JLabel("Medicine Group");
+        MedicineUnitLabel.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineUnitInput = new JComboBox<>();
+        MedicineUnitInput.setPreferredSize(new Dimension(300,40));
+        MedicineUnitInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineUnitInput.setOpaque(false);
+        MedicineUnitBox.add(MedicineUnitLabel);
+        MedicineUnitBox.add(MedicineUnitInput);
+
+        // Quantity in Number
+        JPanel QuantityBox = new JPanel();
+        QuantityBox.setOpaque(false);
+        QuantityBox.setLayout(new GridLayout(2,1,0,10));
+        JLabel QuantityLabel = new JLabel("Quantity in Number");
+        QuantityLabel.setFont(new Font("Poppins",Font.PLAIN,15));
+        QuantityInput = new RoundedTextField(40,20);
+        QuantityInput.setPreferredSize(new Dimension(100,40));
+        QuantityInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        QuantityBox.add(QuantityLabel);
+        QuantityBox.add(QuantityInput);
+
+        // Contain 1
+        JPanel container2 = new JPanel();
+        container2.setMaximumSize(new Dimension(600,60));
+        container2.setOpaque(false);
+        container2.setLayout(new GridLayout(1,2,50,0));
+        container2.add(MedicineUnitBox);
+        container2.add(QuantityBox);
+
+        form.add(container1);
+        form.add(Box.createVerticalStrut(30));
+        form.add(container2);
+
+        return form;
     }
 }
 class ViewMedicineInfoPage extends JPanel {
@@ -410,8 +535,7 @@ class ViewMedicineInfoPage extends JPanel {
     JLabel MedicineID;
     JLabel MedicineUnit;
     JLabel medicineSupply;
-    JTextArea howToUse;
-    JTextArea sideEffects;
+    JTextArea description;
     JButton deleteButton = new RoundedButton(" Delete Medicine ");
 
     ViewMedicineInfoPage(){
@@ -464,7 +588,7 @@ class ViewMedicineInfoPage extends JPanel {
 
         JLabel subTitle = new JLabel("List of medicines available for sales");
         subTitle.setOpaque(false);
-        subTitle.setFont(new Font("Arial",Font.BOLD,15));
+        subTitle.setFont(new Font("Poppins",Font.PLAIN,15));
         subTitle.setAlignmentX(LEFT_ALIGNMENT);
 
         titleContainer.add(titleJoined);
@@ -499,8 +623,8 @@ class ViewMedicineInfoPage extends JPanel {
     }
     JPanel bodyContainer(){
         JPanel panel = new JPanel();
-        panel.setMaximumSize(new Dimension(1300,600));
-        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+        panel.setMaximumSize(new Dimension(1300,500));
+        panel.setLayout(new GridLayout(3,1,0,30));
         panel.setOpaque(false);
 
         JPanel MedicineContainer01 = new JPanel();
@@ -585,58 +709,33 @@ class ViewMedicineInfoPage extends JPanel {
         MedicineContainer.add(Box.createHorizontalStrut(30));
         MedicineContainer.add(MedicineContainer02);
 
-        JPanel HowToUseBox = new JPanel();
-        HowToUseBox.setLayout(new BoxLayout(HowToUseBox,BoxLayout.Y_AXIS));
-        HowToUseBox.setOpaque(false);
+        JPanel DescriptionBox = new JPanel();
+        DescriptionBox.setLayout(new BoxLayout(DescriptionBox,BoxLayout.Y_AXIS));
+        DescriptionBox.setOpaque(false);
         TitledBorder border3 = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY),
-                "How to use", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
+                "Description", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
         border3.setTitleFont(new Font("Poppins", Font.BOLD, 20));
-        HowToUseBox.setBorder(border3);
+        DescriptionBox.setBorder(border3);
         String text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate";
-        howToUse = new JTextArea();
-        howToUse.setText(text);
-        howToUse.setEditable(false);
-        howToUse.setLineWrap(true);
-        howToUse.setWrapStyleWord(true);
-        howToUse.setEditable(false);
-        howToUse.setFont(new Font("Poppins",Font.PLAIN,15));
-        howToUse.setBorder(new EmptyBorder(10,30,10,30));
-        howToUse.setOpaque(false);
-        JScrollPane HowToUseScrollPane = new JScrollPane(howToUse);
-        HowToUseScrollPane.setOpaque(false);
-        HowToUseScrollPane.getViewport().setBackground(Color.WHITE);
-        HowToUseScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrollbar
-        HowToUseScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        HowToUseBox.add(HowToUseScrollPane);
-
-        JPanel SideEffectBox = new JPanel();
-        SideEffectBox.setLayout(new BoxLayout(SideEffectBox,BoxLayout.Y_AXIS));
-        SideEffectBox.setOpaque(false);
-        TitledBorder border4 = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY),
-                "Side Effects", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
-        border4.setTitleFont(new Font("Poppins", Font.BOLD, 20));
-        SideEffectBox.setBorder(border4);
-        sideEffects = new JTextArea();
-        sideEffects.setText(text);
-        sideEffects.setEditable(false);
-        sideEffects.setLineWrap(true);
-        sideEffects.setWrapStyleWord(true);
-        sideEffects.setEditable(false);
-        sideEffects.setFont(new Font("Poppins",Font.PLAIN,15));
-        sideEffects.setBorder(new EmptyBorder(20,30,20,30));
-        sideEffects.setOpaque(false);
-        JScrollPane SideEffectScrollPane = new JScrollPane(sideEffects);
-        SideEffectScrollPane.setOpaque(false);
-        SideEffectScrollPane.getViewport().setBackground(Color.WHITE);
-        SideEffectScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrollbar
-        SideEffectScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        SideEffectBox.add(SideEffectScrollPane);
+        description = new JTextArea();
+        description.setText(text);
+        description.setEditable(false);
+        description.setLineWrap(true);
+        description.setWrapStyleWord(true);
+        description.setEditable(false);
+        description.setFont(new Font("Poppins",Font.PLAIN,15));
+        description.setBorder(new EmptyBorder(10,30,10,30));
+        description.setOpaque(false);
+        description.setMaximumSize(new Dimension(1300,300));
+        JScrollPane DescriptionScrollPane = new JScrollPane(description);
+        DescriptionScrollPane.setOpaque(false);
+        DescriptionScrollPane.getViewport().setBackground(Color.WHITE);
+        DescriptionScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scrollbar
+        DescriptionScrollPane.setBorder(BorderFactory.createEmptyBorder());
+        DescriptionBox.add(DescriptionScrollPane);
 
         panel.add(MedicineContainer);
-        panel.add(Box.createVerticalStrut(30));
-        panel.add(HowToUseBox);
-        panel.add(Box.createVerticalStrut(30));
-        panel.add(SideEffectBox);
+        panel.add(DescriptionBox);
 
         return panel;
     }
