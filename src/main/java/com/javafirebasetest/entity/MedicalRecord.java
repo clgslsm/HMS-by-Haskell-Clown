@@ -19,7 +19,9 @@ public class MedicalRecord {
     private TestResult testResult;
 
     public enum Status {
+
         PENDING("Pending"), TESTING("Testing"), TESTED("Tested"), DIAGNOSED("Diagnosed"), CHECKED_OUT("Checked_out");
+
         private final String value;
 
         Status(String value) {
@@ -65,6 +67,14 @@ public class MedicalRecord {
         this.status = (status == null)? Status.PENDING : status;
         this.serviceRating = serviceRating;
         this.testResult = testResult;
+    }
+
+    public MedicalRecord(Doctor doctor, Patient patient) {
+        this.medicalRecordID = null;
+        this.patientId = patient.getPatientId();
+        this.department = doctor.getDepartment();
+        this.doctorId = doctor.getStaffId();
+        this.status = Status.PENDING;
     }
 
     public MedicalRecord(String medRecId, Map<String, Object> medRec) {

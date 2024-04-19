@@ -4,6 +4,7 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.entity.DeptType;
 import com.javafirebasetest.entity.Doctor;
+import com.javafirebasetest.entity.MedicalRecord;
 
 import java.util.*;
 
@@ -54,6 +55,20 @@ public class DoctorDAO {
         }
         return doctorList;
     }
+    public static Doctor getDoctorWithMinPatientCountByDepartment(DeptType deptType) {
+        List<Doctor> doctorList = getDoctorByDepartment(deptType);
+        int minPatientCount = Integer.MAX_VALUE;
+        Doctor doctorWithMinPatientCount = null;
+        for (Doctor doctor : doctorList) {
+            List<MedicalRecord> medRecList = MedRecDAO.getMedRecByDoctorId(doctor.getStaffId());
+            int patientCount = medRecList.size();
+            if (patientCount < minPatientCount) {
+                minPatientCount = patientCount;
+                doctorWithMinPatientCount = doctor;
+            }
+        }
+        return doctorWithMinPatientCount;
+    }
 
     public static List<Doctor> getAllDoctor() {
         List<QueryDocumentSnapshot> querySnapshot;
@@ -69,6 +84,28 @@ public class DoctorDAO {
         return doctorList;
     }
 
+    public static List<String> getAllDoctorID() {
+        List<QueryDocumentSnapshot> querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.STAFF,
+                Filter.equalTo("userMode", "Doctor")
+        );
+        List<String> doctorIDList = new ArrayList<>();
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            doctorIDList.add(qds.getId());
+        }
+        return doctorIDList;
+    }
+    public static void updateDoctorPatientCount(String doctorId) {
+        List<MedicalRecord> medRecList = MedRecDAO.getMedRecByDoctorId(doctorId);
+        int patientCount = medRecList.size();
+        updateDoctor(doctorId, "patientCount", patientCount);
+    }
+    public static void updateAllDoctorPatientCount() {
+        List<String> doctorIDList = getAllDoctorID();
+        for (String doctorId: doctorIDList) {
+            updateDoctorPatientCount(doctorId);
+        }
+    }
     //UPDATE METHODS
     public static void updateDoctor(String doctorId, Object... fieldsAndValues) {
         Map<String, Object> newData = new HashMap<>();
@@ -76,11 +113,13 @@ public class DoctorDAO {
             newData.put((String) fieldsAndValues[i], fieldsAndValues[i + 1]);
         }
         dbManager.updateDocument(DBManager.CollectionPath.STAFF, doctorId, newData);
-    }    //DELETE METHODS
+    }
 
+    //DELETE METHODS
     public static void deleteDoctorById(String doctorId) {
         dbManager.deleteDocument(DBManager.CollectionPath.STAFF, doctorId);
     }
+
 
     //FRONTEND HELPER FUNCTIONS
 
@@ -114,4 +153,5 @@ public class DoctorDAO {
 
         DoctorDAO.updateDoctor(doctorId, "patientCount", newCount);
     }
+
 }

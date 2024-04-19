@@ -1,31 +1,43 @@
 package com.javaswing;
 
+import com.javafirebasetest.entity.User;
+
 import javax.swing.*;
+import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.RoundRectangle2D;
 
 public class MainPage extends JFrame {
-    MainPage(){
+    MainPage(String role){
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("ABC Hospital @Receptionist");
         this.getContentPane().setBackground(new Color(0xF1F8FF));
         this.setLayout(new BorderLayout());
         this.setVisible(true);
-        this.add(new MainPageUIContainer());
+        this.add(new MainPageUIContainer(role));
         this.pack();
     }
 }
 
 class MainPageUIContainer extends JPanel {
+    String role;
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     CardLayout containerLayout = new CardLayout();
-    JPanel navContainer = NavigationContainer();
-    JPanel mainPageContainer = MainPageContainer();
-    MainPageUIContainer(){
+    JPanel navContainer;
+    JPanel mainPageContainer;
+    MainPageUIContainer(String user){
+        role = user;
+
         this.setLayout(new BorderLayout());
         this.setSize(new Dimension(screenSize.width, screenSize.height));
 
+        navContainer = NavigationContainer();
+        mainPageContainer  = MainPageContainer();
         this.add(navContainer, BorderLayout.WEST);
         this.add(mainPageContainer);
     }
@@ -34,7 +46,6 @@ class MainPageUIContainer extends JPanel {
         navigationContainer.setPreferredSize(new Dimension(screenSize.width * 4261 / 27320, screenSize.height));
         navigationContainer.setLayout(new BoxLayout(navigationContainer, BoxLayout.Y_AXIS));
         navigationContainer.setBackground(Color.WHITE);
-
         // Thêm nội dung vào control panel
         JLabel label = new JLabel("ABC HOSPITAL");
         label.setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/logo.jpg").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
@@ -46,46 +57,42 @@ class MainPageUIContainer extends JPanel {
 
         // Thêm các điều hướng
         NavButton patientSection = new NavButton("Patients");
-        NavButton doctorSection = new NavButton("Doctors");
+        NavButton staffSection = new NavButton("Staffs");
         NavButton medicineSection = new NavButton("Medicine");
         NavButton machineSection = new NavButton("Machine");
 
         patientSection.setSelected(true);
-        doctorSection.setSelected(false);
+        staffSection.setSelected(false);
         medicineSection.setSelected(false);
         machineSection.setSelected(false);
 
         patientSection.addActionListener(e -> {
-            System.out.println("Lua chon 1");
             patientSection.setSelected(true);
-            doctorSection.setSelected(false);
+            staffSection.setSelected(false);
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"patient-panel");
         });
 
-        doctorSection.addActionListener(e -> {
-            System.out.println("Lua chon 2");
+        staffSection.addActionListener(e -> {
             patientSection.setSelected(false);
-            doctorSection.setSelected(true);
+            staffSection.setSelected(true);
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
-            containerLayout.show(mainPageContainer, "doctor-panel");
+            containerLayout.show(mainPageContainer, "staff-panel");
         });
 
         medicineSection.addActionListener(e -> {
-            System.out.println("Lua chon 3");
             patientSection.setSelected(false);
-            doctorSection.setSelected(false);
+            staffSection.setSelected(false);
             medicineSection.setSelected(true);
             machineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"medicine-panel");
         });
 
         machineSection.addActionListener(e -> {
-            System.out.println("Lua chon 3");
             patientSection.setSelected(false);
-            doctorSection.setSelected(false);
+            staffSection.setSelected(false);
             medicineSection.setSelected(false);
             machineSection.setSelected(true);
             containerLayout.show(mainPageContainer,"machine-panel");
@@ -98,23 +105,28 @@ class MainPageUIContainer extends JPanel {
         cPanel.setBackground(Color.WHITE);
         cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 
-        cPanel.add(patientSection);
-        cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(Box.createVerticalStrut(10));
+        // (role != null && role.equals("Doctor")) {
+            cPanel.add(patientSection);
+            cPanel.add(Box.createVerticalStrut(10));
+        //}
+        //else {
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(doctorSection);
-        cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(staffSection);
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(medicineSection);
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(medicineSection);
+            cPanel.add(Box.createVerticalStrut(10));
 
-        cPanel.add(machineSection);
-        cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(Box.createVerticalStrut(10));
+
+            cPanel.add(machineSection);
+            cPanel.add(Box.createVerticalStrut(10));
+        //}
 
         navigationContainer.add(cPanel);
         return navigationContainer;
@@ -125,12 +137,12 @@ class MainPageUIContainer extends JPanel {
         container.setPreferredSize(new Dimension(screenSize.width * 23059 / 27320, screenSize.height));
 
         JPanel patientPanel = new PatientPanel();
-        JPanel doctorPanel = new DoctorPanel();
+        JPanel staffPanel = new StaffPanel();
         JPanel medicinePanel = new MedicinePanel();
         JPanel machinePanel = new MachinePanel();
 
         container.add(patientPanel, "patient-panel");
-        container.add(doctorPanel, "doctor-panel");
+        container.add(staffPanel, "staff-panel");
         container.add(medicinePanel, "medicine-panel");
         container.add(machinePanel, "machine-panel");
 
@@ -179,11 +191,103 @@ class NavButton extends JButton {
         }
     }
 }
-class BackButton extends JButton {
-    BackButton(){
-        setBackground(Color.white);
-        setBorder(BorderFactory.createEmptyBorder());
-        setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/back-icon.png").getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH)));
-        setSize(new Dimension(20,20));
+
+class RoundedButton extends JButton {
+    public RoundedButton(String text) {
+        super(text);
+        setContentAreaFilled(false);
+        setFocusable(false);
+        setFont(new Font("Courier",Font.PLAIN,16));
+        setForeground(Color.WHITE);
+        setBackground(new Color(0x3497F9));
+        setBounds(100, 100, 125, 60);
+        setBorder(new EmptyBorder(10,10,10,10));
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        if (getModel().isArmed()) {
+            g.setColor(Color.lightGray);
+        }
+        else {
+            g.setColor(getBackground());
+        }
+        Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.fillRoundRect(0,0,getWidth(), getHeight(), 20, 20);
+        super.paintComponent(g);
+    }
+
+    @Override
+    protected void paintBorder(Graphics g) {
+        g.setColor(getForeground());
+        Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.drawRoundRect(0,0,getWidth()-1, getHeight()-1, 20, 20);
+    }
+}
+class RoundedTextField extends JTextField {
+    private static final long serialVersionUID = 1L;
+    private int radius;
+
+    public RoundedTextField(int columns, int radius) {
+        super(columns);
+        this.radius = radius;
+        setFont(new Font("Courier",Font.PLAIN,16));
+        setOpaque(false);
+        setBorder(new LineBorder(Color.BLACK));
+        setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5)); // Thiết lập padding
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        // Vẽ nền
+        g.setColor(getBackground());
+        g.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
+
+        // Vẽ viền sau
+        ((Graphics2D) g).setStroke(new BasicStroke(0.5f)); // Thiết lập độ dày cho viền
+        g.setColor(Color.BLACK);
+        g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
+
+        // Gọi phương thức paintComponent của lớp cha để vẽ nội dung JTextField
+        super.paintComponent(g);
+    }
+
+    @Override
+    protected void paintBorder(Graphics g) {
+        // Không làm gì ở đây để ngăn việc vẽ viền mặc định của JTextField
+    }
+}
+
+class RoundedTextArea extends JTextArea {
+    private int radius;
+    private Color borderColor;
+
+    public RoundedTextArea(int rows, int columns, int radius, Color borderColor) {
+        super(rows, columns);
+        this.setFont(new Font("Courier",Font.PLAIN,16));
+        this.radius = radius;
+        this.borderColor = borderColor;
+        setOpaque(false); // Để hiển thị hình dạng bo góc
+
+        // Loại bỏ viền của JTextArea
+        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setStroke(new BasicStroke(0.5f));
+        // Vẽ hình chữ nhật bo góc
+        g2.setColor(getBackground());
+        g2.fill(new RoundRectangle2D.Double(0, 0, getWidth() - 1, getHeight() - 1, radius, radius));
+        // Vẽ viền bo góc
+        g2.setColor(borderColor);
+        g2.draw(new RoundRectangle2D.Double(0, 0, getWidth() - 1, getHeight() - 1, radius, radius));
+        g2.dispose();
+
+        // Gọi phương thức paintComponent của lớp cha để vẽ nội dung JTextArea
+        super.paintComponent(g);
     }
 }
