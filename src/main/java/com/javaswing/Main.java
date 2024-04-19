@@ -1,5 +1,9 @@
 package com.javaswing;
 
+
+import com.javafirebasetest.dao._BackendTest;
+
+
 import com.google.cloud.Timestamp;
 import com.javafirebasetest.LoginManager;
 import com.javafirebasetest.dao.DoctorDAO;
@@ -51,7 +55,7 @@ public class Main {
 //        LoginManager.logout();
 //
 //        System.out.println(LoginManager.getUserInstance());
-//>>>>>>> 7689022763cca0e69785073b79840111630456de
+
     }
 }
 
