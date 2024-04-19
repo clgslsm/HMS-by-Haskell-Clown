@@ -6,6 +6,7 @@ import io.netty.util.Timer;
 import javax.crypto.Mac;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -206,5 +207,52 @@ public class _BackendTest {
         MachineDAO.deleteMachine(machineId);
 
         System.out.println("Machine deleted, test successful");
+    }
+
+    public static void MedicineExportTest() throws InterruptedException {
+        List<Medicine> failedTests = MedicineDAO.getMedicineByName("Keo");
+        for (Medicine medicine : failedTests){
+            System.out.println("Failed test with id " + medicine.getMedicineId() + " deleted");
+            MachineDAO.deleteMachine(medicine.getMedicineId());
+        }
+
+        String medId = MedicineDAO.addMedicine(new Medicine(
+                null,
+                "Keo",
+                LocalDate.now(),
+                LocalDate.now().plusYears(2),
+                30L,
+                "Vien"
+        ));
+        Thread.sleep(SLEEP_TIME);
+
+        List<Medicine> medList = MedicineDAO.getOutOfStock();
+        System.out.println("Number of out-of-stock medicines: " + medList.size());
+
+        System.out.println("Can export 50 from 30 medicine?: " + MedicineDAO.export(medId, 50L));
+        Thread.sleep(SLEEP_TIME);
+
+        System.out.println("Amount left after a fail export: " + MedicineDAO.getMedicineById(medId).getAmount());
+
+        System.out.println("Try exporting 30: " + MedicineDAO.export(medId, 30L));
+        Thread.sleep(SLEEP_TIME);
+
+        System.out.println("Amount left after a successful export: " + MedicineDAO.getMedicineById(medId).getAmount());
+
+        medList = MedicineDAO.getOutOfStock();
+        System.out.println("Number of out-of-stock medicines: " + medList.size());
+
+        medList = MedicineDAO.getOutOfDate();
+        System.out.println("Number of out-of-date medicines: " + medList.size());
+
+        System.out.println("Sửa láo by changing the expiryDate to 2 years ago...");
+        MedicineDAO.updateMedicine(medId, "expiryDate", LocalDate.now().plusYears(-2).toString());
+        Thread.sleep(SLEEP_TIME);
+
+        medList = MedicineDAO.getOutOfDate();
+        System.out.println("Number of out-of-date medicines: " + medList.size());
+
+        MedicineDAO.deleteMedicine(medId);
+        System.out.println("Medicine deleted, test succesful");
     }
 }

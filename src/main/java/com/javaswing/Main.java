@@ -23,7 +23,7 @@ public class Main {
 //        MainPage mainPage = new MainPage("Doctor");
 //        Thread thread = new Thread(String.valueOf(mainPage));
 //        thread.start();
-        _BackendTest.MachineUseCountTest();
+        _BackendTest.MedicineExportTest();
     }
 }
 

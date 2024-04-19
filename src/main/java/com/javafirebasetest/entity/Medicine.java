@@ -11,11 +11,11 @@ public class Medicine {
     private String medicineName;
     private LocalDate importDate;
     private LocalDate expiryDate;
-    private int amount;
+    private Long amount;
     private String unit;
     public Medicine() {}
     public Medicine(String medicineId, String medicineName, LocalDate importDate, LocalDate expiry,
-                    int amount, String unit) {
+                    Long amount, String unit) {
         this.medicineId = medicineId;
         this.medicineName = medicineName;
         this.importDate = importDate;
@@ -29,7 +29,7 @@ public class Medicine {
         this.medicineName = (String) medicine.get("medicineName");
         this.importDate = LocalDate.parse((String) medicine.get("importDate"));
         this.expiryDate = LocalDate.parse((String) medicine.get("expiryDate"));
-        this.amount = ((Long) medicine.get("amount")).intValue();
+        this.amount = ((Long) medicine.get("amount"));
         this.unit = (String) medicine.get("unit");
     }
 
@@ -41,8 +41,8 @@ public class Medicine {
     public void setImportDate(LocalDate importDate) {this.importDate = importDate;}
     public LocalDate getExpiryDate() {return expiryDate;}
     public void setExpiryDate(LocalDate expiryDate) {this.expiryDate = expiryDate;}
-    public int getAmount() {return amount;}
-    public void setAmount(int amount) {this.amount = amount;}
+    public Long getAmount() {return amount;}
+    public void setAmount(Long amount) {this.amount = amount;}
     public String getUnit() {return unit;}
     public void setUnit(String unit) {this.unit = unit;}
     public String getformattedImportDate() { // Hiển thị ngày tháng theo định dạng "dd/mm/yyyy"
