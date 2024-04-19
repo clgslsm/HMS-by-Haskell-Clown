@@ -32,7 +32,7 @@ public class Patient {
         public static Patient.Gender fromValue(String value) {
             for (Patient.Gender g : Patient.Gender.values())
                 if (g.value.equalsIgnoreCase(value)) return g;
-            throw new IllegalArgumentException("Invalid gender: " + value);
+            throw new IllegalArgumentException(STR."Invalid gender: \{value}");
         }
     }
 
@@ -52,7 +52,7 @@ public class Patient {
         public static Patient.BloodGroup fromValue(String value) {
             for (Patient.BloodGroup bg : Patient.BloodGroup.values())
                 if (bg.value.equalsIgnoreCase(value)) return bg;
-            throw new IllegalArgumentException("Invalid blood group: " + value);
+            throw new IllegalArgumentException(STR."Invalid blood group: \{value}");
         }
     }
 
@@ -168,8 +168,10 @@ public class Patient {
 
     @Override
     public String toString() {
+
         return "Patient [patientId=" + patientId + ", name=" + name + ", birthDate=" + getformattedDate() +
                 ", address" + address + ", gender=" + gender.getValue() + ", phoneNumber=" + phoneNumber +
                 ", bloodGroup=" + bloodGroup.getValue() + ", healthInsuranceNumber=" + healthInsuranceNumber + "]";
+
     }
 }
