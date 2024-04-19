@@ -7,21 +7,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MedicalRecord {
-    public String medicalRecordID;
-    public String patientId;
-    public DeptType department;
-    public String doctorId;
-
-    public Timestamp checkIn;
-
-    public Timestamp checkOut;
-    public String observation;
-    public Status status;
-    public String serviceReview;
-    public String prescription;
+    private String medRecId;
+    private String patientId;
+    //private DeptType department;
+    private String doctorId;
+    private String receptionistId;
+    private Timestamp checkIn;
+    private Timestamp checkOut;
+    private Status status;
+    private Long serviceRating;
+    private TestResult testResult;
 
     public enum Status {
-        PENDING("Pending"), CHECKED("Checked"), CHECKOUT("CheckedOut");
+
+        PENDING("Pending"), TESTING("Testing"), TESTED("Tested"), DIAGNOSED("Diagnosed"), CHECKED_OUT("Checked_out");
+
         private final String value;
 
         Status(String value) {
@@ -35,127 +35,91 @@ public class MedicalRecord {
         public static MedicalRecord.Status fromValue(String value) {
             for (MedicalRecord.Status bg : MedicalRecord.Status.values())
                 if (bg.value.equalsIgnoreCase(value)) return bg;
-            throw new IllegalArgumentException("Invalid blood group: " + value);
+            throw new IllegalArgumentException("Invalid Medical Record status: " + value);
         }
     }
 
-    public MedicalRecord() {}
-
-    //    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
-    public MedicalRecord(String medicalRecordID, String patientId, DeptType department, String doctorId, Timestamp checkIn,
-                         Timestamp checkOut, String observation, Status status, String serviceReview, String prescription) {
-        this.medicalRecordID = medicalRecordID;
-        this.patientId = patientId;
-        this.department = department;
-        this.doctorId = doctorId;
-        this.checkIn = checkIn;
-        this.checkOut = checkOut;
-        this.observation = observation;
-        this.status = status;
-        this.serviceReview = serviceReview;
-        this.prescription = prescription;
+    public MedicalRecord() {
     }
 
-    public MedicalRecord(Doctor doctor, Patient patient) {
-        this.medicalRecordID = null;
-        this.patientId = patient.getPatientId();
-        this.department = doctor.getDepartment();
-        this.doctorId = doctor.getStaffId();
-        this.status = Status.PENDING;
+    //    String[] columnNames = {"Tên khoa", "Tên bác sĩ", "Thời gian vào", "Thời gian ra", "Chẩn đoán", "Trạng thái", "Đánh giá dịch vụ"};
+//    public MedicalRecord(String medicalRecordID, String patientId, String doctorId, String receptionistId, Timestamp checkIn,
+//                         Timestamp checkOut, Status status, Long serviceRating, TestResult testResult) {
+//        this.medicalRecordID = medicalRecordID;
+//        this.patientId = patientId;
+//        this.doctorId = doctorId;
+//        this.receptionistId = receptionistId;
+//        this.checkIn = checkIn;
+//        this.checkOut = checkOut;
+//        this.status = status;
+//        this.serviceRating = serviceRating;
+//        this.testResult = testResult;
+//    }
+
+    public MedicalRecord(String medRecId, String patientId, String doctorId, String receptionistId, Timestamp checkIn,
+                         Timestamp checkOut, Status status, Long serviceRating, TestResult testResult) {
+        this.medRecId = medRecId;
+        this.patientId = patientId;
+        this.doctorId = doctorId;
+        this.receptionistId = receptionistId;
+        this.checkIn = (checkIn == null)? Timestamp.now() : checkIn;
+        this.checkOut = checkOut;
+        this.status = (status == null)? Status.PENDING : status;
+        this.serviceRating = serviceRating;
+        this.testResult = testResult;
     }
 
     public MedicalRecord(String medRecId, Map<String, Object> medRec) {
         super();
-        this.medicalRecordID = medRecId;
+        this.medRecId = medRecId;
         this.patientId = (String) medRec.get("patientId");
-        this.department = DeptType.fromValue((String) medRec.get("department"));
         this.doctorId = (String) medRec.get("doctorId");
+        this.receptionistId = (String) medRec.get("receptionistId");
         this.checkIn = (Timestamp) medRec.get("checkIn");
         this.checkOut = (Timestamp) medRec.get("checkOut");
-        this.observation = (String) medRec.get("observation");
         this.status = Status.fromValue((String) medRec.get("status"));
-        this.serviceReview = (String) medRec.get("serviceReview");
-        this.prescription = (String) medRec.get("prescription");
+        this.serviceRating = (Long) medRec.get("serviceRating");
+
+        this.testResult = new TestResult((Map<String, Object>) medRec.get("testResult"));
     }
 
-    public String getmedicalRecordId() {
-        return medicalRecordID;
-    }
-
-    public void setID(String medicalRecordId) {
-        this.medicalRecordID = medicalRecordId;
+    public String getMedRecId() {
+        return medRecId;
     }
 
     public String getPatientId() {
         return patientId;
     }
 
-    public void setPatientId(String patientId) {
-        this.patientId = patientId;
-    }
-
-    public DeptType getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(DeptType department) {
-        this.department = department;
-    }
-
     public String getDoctorId() {
         return doctorId;
     }
 
-    public void setDid(String doctorId) {
-        this.doctorId = doctorId;
+    public String getReceptionistId() {
+        return receptionistId;
     }
 
     public Timestamp getCheckIn() {
         return checkIn;
     }
-
-    public void setCheckIn(Timestamp checkIn) {
-        this.checkIn = checkIn;
-    }
-
     public Timestamp getCheckOut() {
         return checkOut;
-    }
-
-    public void setCheckOut(Timestamp checkOut) {
-        this.checkOut = checkOut;
-    }
-
-    public String getObservation() {
-        return observation;
-    }
-
-    public void setObservation(String observation) {
-        this.observation = observation;
     }
 
     public Status getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public Long getServiceRating() {
+        return serviceRating;
     }
 
-    public String getServiceReview() {
-        return serviceReview;
+    public TestResult getTestResult() {
+        return testResult;
     }
 
-    public void setServiceReview(String serviceReview) {
-        this.serviceReview = serviceReview;
-    }
-
-    public String getPrescription() {
-        return prescription;
-    }
-
-    public void setPrescription(String prescription) {
-        this.prescription = prescription;
+    public void mergeTestResult(TestResult testResult) {
+        this.testResult.merge(testResult);
     }
     //endregion
 
@@ -180,23 +144,31 @@ public class MedicalRecord {
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("patientId", getPatientId());
-        map.put("department", getDepartment().getValue());
         map.put("doctorId", getDoctorId());
+        map.put("receptionistId", getReceptionistId());
         map.put("checkIn", getCheckIn());
         map.put("checkOut", getCheckOut());
-        map.put("observation", getObservation());
-        map.put("status", getStatus().getValue());
-        map.put("serviceReview", getServiceReview());
-        map.put("prescription", getPrescription());
+        map.put("status", getStatus());
+        map.put("serviceRating", getServiceRating());
 
+        map.put("testResult", (getTestResult() != null)? getTestResult().toMap() : null);
         return map;
     }
 
+    public void advanceStatus(){
+        if (status != Status.CHECKED_OUT)
+        status = Status.values()[status.ordinal() + 1];
+    }
+
+    public void openAnalysisFile() {
+        testResult.openAnalysisFile();
+    }
+
+
     @Override
     public String toString() {
-        return "MedicalRecord [medicalRecordId=" + medicalRecordID + ", patientId=" + patientId + ", department=" +
-                department.getValue() + ", doctorId=" + doctorId + ", checkIn=" + getformattedCheckIn() + ", checkOut=" +
-                getformattedCheckOut() + ", observation=" + observation + ", status=" + status.getValue() +
-                ", serviceReview=" + serviceReview + ", prescription=" + prescription + "]";
+        return "MedicalRecord [medicalRecordId=" + medRecId + ", patientId=" + patientId + ", doctorId=" + doctorId +
+                ", receptionisId=" + receptionistId + ", checkIn=" + getformattedCheckIn() + ", checkOut=" + getformattedCheckOut() +
+                ", status=" + status.getValue() + ", serviceReview=" + serviceRating + ", testResult=" + testResult + "]";
     }
 }

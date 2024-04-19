@@ -1,5 +1,6 @@
 package com.javafirebasetest;
 
+import com.javafirebasetest.dao.FileManager;
 import com.javafirebasetest.dao.UserDAO;
 import com.javafirebasetest.entity.User;
 
@@ -19,6 +20,7 @@ public class LoginManager {
             throw new RuntimeException("Not logged in");
         }
         userInstance = null;
+        FileManager.cleanUp();
     }
 
     public static User getUserInstance() {

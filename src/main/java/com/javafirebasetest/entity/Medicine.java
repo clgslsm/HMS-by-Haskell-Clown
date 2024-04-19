@@ -2,6 +2,7 @@ package com.javafirebasetest.entity;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DecimalStyle;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,24 +12,20 @@ public class Medicine {
     private String medicineName;
     private LocalDate importDate;
     private LocalDate expiryDate;
-    private String description;
     private Long amount;
     private String unit;
-    private Long price;
 
-    public Medicine() {
-    }
-
-    public Medicine(String medicineId, String medicineName, LocalDate importDate, LocalDate expiry, String description,
-                    Long amount, String unit, Long price) {
+    private String description;
+    public Medicine() {}
+    public Medicine(String medicineId, String medicineName, LocalDate importDate, LocalDate expiry,
+                    Long amount, String unit, String description) {
         this.medicineId = medicineId;
         this.medicineName = medicineName;
         this.importDate = importDate;
         this.expiryDate = expiry;
-        this.description = description;
         this.amount = amount;
         this.unit = unit;
-        this.price = price;
+        this.description = description;
     }
 
     public Medicine(String medicineId, Map<String, Object> medicine) {
@@ -36,10 +33,9 @@ public class Medicine {
         this.medicineName = (String) medicine.get("medicineName");
         this.importDate = LocalDate.parse((String) medicine.get("importDate"));
         this.expiryDate = LocalDate.parse((String) medicine.get("expiryDate"));
-        this.description = (String) medicine.get("description");
         this.amount = ((Long) medicine.get("amount"));
         this.unit = (String) medicine.get("unit");
-        this.price = ((Long) medicine.get("price"));
+        this.description = (String) medicine.get("description");
     }
 
     public String getMedicineId() {
@@ -58,10 +54,6 @@ public class Medicine {
         return expiryDate;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     public Long getAmount() {
         return amount;
     }
@@ -70,8 +62,8 @@ public class Medicine {
         return unit;
     }
 
-    public Long getPrice() {
-        return price;
+    public String getDescription() {
+        return description;
     }
 
     public String getformattedImportDate() { // Hiển thị ngày tháng theo định dạng "dd/mm/yyyy"
@@ -89,17 +81,22 @@ public class Medicine {
         map.put("medicineName", medicineName);
         map.put("importDate", importDate.toString());
         map.put("expiryDate", expiryDate.toString());
-        map.put("description", description);
         map.put("amount", amount);
         map.put("unit", unit);
-        map.put("price", price);
+        map.put("description", description);
         return map;
     }
 
     @Override
     public String toString() {
-        return "medicine [medicineId=" + medicineId + ", medicineName=" + medicineName + ", importDate=" +
-                getformattedImportDate() + ", expiryDate=" + getformattedExpiryDate() + ", description=" + description +
-                ", amount=" + amount + ", unit=" + unit + ", price=" + price + "]";
+        return "Medicine{" +
+                "medicineId='" + medicineId + '\'' +
+                ", medicineName='" + medicineName + '\'' +
+                ", importDate=" + importDate +
+                ", expiryDate=" + expiryDate +
+                ", amount=" + amount +
+                ", unit='" + unit + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }
