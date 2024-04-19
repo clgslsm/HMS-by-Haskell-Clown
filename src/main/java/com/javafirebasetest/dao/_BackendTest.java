@@ -3,8 +3,10 @@ package com.javafirebasetest.dao;
 import com.javafirebasetest.entity.*;
 import io.netty.util.Timer;
 
+import javax.crypto.Mac;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 public class _BackendTest {
@@ -153,5 +155,56 @@ public class _BackendTest {
             e.printStackTrace();
         }
 
+    }
+
+    public static void MachineUseCountTest() throws InterruptedException {
+        List<Machine> failedTests = MachineDAO.getMachineByName("May mat xa");
+        for (Machine machine : failedTests){
+            System.out.println("Failed test with id " + machine.getMachineId() + " deleted");
+            MachineDAO.deleteMachine(machine.getMachineId());
+        }
+
+        String machineId = MachineDAO.addMachine(new Machine(
+                null,
+                "May mat xa",
+                1L,
+                0L
+        ));
+
+        List<Machine> machineList = MachineDAO.getUsableMachine();
+        List<Machine> deadMachineList = MachineDAO.getUnusableMachine();
+
+        System.out.println("Usable count: " + machineList.size());
+        System.out.println("Unusable count: " + deadMachineList.size());
+
+        Thread.sleep(SLEEP_TIME);
+        System.out.println("isUsable before: " + MachineDAO.getMachineByID(machineId).isUsable());
+
+        MachineDAO.useMachine(machineId);
+        System.out.println("Machine used");
+
+        Thread.sleep(SLEEP_TIME);
+        System.out.println("isUsable after: " + MachineDAO.getMachineByID(machineId).isUsable());
+
+        machineList = MachineDAO.getUsableMachine();
+        deadMachineList = MachineDAO.getUnusableMachine();
+
+        System.out.println("Usable count: " + machineList.size());
+        System.out.println("Unusable count: " + deadMachineList.size());
+
+        MachineDAO.maintainMachine(machineId);
+
+        Thread.sleep(SLEEP_TIME);
+        System.out.println("isUsable after maintain: " + MachineDAO.getMachineByID(machineId).isUsable());
+
+        machineList = MachineDAO.getUsableMachine();
+        deadMachineList = MachineDAO.getUnusableMachine();
+
+        System.out.println("Usable count: " + machineList.size());
+        System.out.println("Unusable count: " + deadMachineList.size());
+
+        MachineDAO.deleteMachine(machineId);
+
+        System.out.println("Machine deleted, test successful");
     }
 }

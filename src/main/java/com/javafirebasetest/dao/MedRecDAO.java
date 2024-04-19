@@ -36,11 +36,6 @@ public class MedRecDAO {
         return output;
     }
 
-    public static MedicalRecord addMedRecByDoctorAndPatient(Doctor doctor, Patient patient) {
-        MedicalRecord medicalRecord = new MedicalRecord(doctor, patient);
-        addMedRec(medicalRecord);
-        return medicalRecord;
-    }
     //READ METHODS
     public static MedicalRecord getMedRecById(String medRecId) {
         Map<String, Object> medRecData = dbManager.getDocumentById(DBManager.CollectionPath.MEDICAL_RECORD, medRecId).getData();

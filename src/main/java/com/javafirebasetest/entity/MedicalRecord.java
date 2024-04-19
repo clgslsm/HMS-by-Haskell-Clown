@@ -69,14 +69,6 @@ public class MedicalRecord {
         this.testResult = testResult;
     }
 
-    public MedicalRecord(Doctor doctor, Patient patient) {
-        this.medicalRecordID = null;
-        this.patientId = patient.getPatientId();
-        this.department = doctor.getDepartment();
-        this.doctorId = doctor.getStaffId();
-        this.status = Status.PENDING;
-    }
-
     public MedicalRecord(String medRecId, Map<String, Object> medRec) {
         super();
         this.medRecId = medRecId;
