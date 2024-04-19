@@ -2,6 +2,7 @@ package com.javaswing;
 import com.javafirebasetest.dao.DoctorDAO;
 import com.javafirebasetest.dao.MedRecDAO;
 import com.javafirebasetest.dao.PatientDAO;
+import com.javafirebasetest.dao.StaffDAO;
 import com.javafirebasetest.entity.DeptType;
 import com.javafirebasetest.entity.Doctor;
 import com.javafirebasetest.entity.MedicalRecord;
@@ -29,7 +30,7 @@ class PatientPanel extends JPanel {
     ViewPatientInfoPage viewPatientInfoPage;
     ViewPatientInfoPage addPatientPage;
     ViewMedicalRecordPanel viewMedicalRecordPanel;
-    PatientPanel() {
+    PatientPanel(String userId) {
         CardLayout currentPage = new CardLayout();
         this.setLayout(currentPage);
         this.setBackground(Color.white);
@@ -40,9 +41,7 @@ class PatientPanel extends JPanel {
         // When we click "Add patient" => change to Patient Registration Page
         defaultPage.addPatientBtn.addActionListener(_ -> {
             // Create Patient Registration Page
-//            AddNewPatientPage addPatientPage = new AddNewPatientPage();
-//            this.add(addPatientPage, "add-patient-page");
-            addPatientPage = defaultPage.viewPage();
+            addPatientPage = defaultPage.viewPage(userId);
 
             this.add(addPatientPage, "add-patient-page");
             addPatientPage.form.saveButton.addActionListener(_->{
@@ -58,7 +57,7 @@ class PatientPanel extends JPanel {
                     System.out.println(addPatientPage.form.phone.getText());
                     System.out.println(Objects.requireNonNull(addPatientPage.form.gender.getSelectedItem()).toString());
                     System.out.println(Objects.requireNonNull(addPatientPage.form.bloodGroup.getSelectedItem()).toString());
-                    System.out.println(addPatientPage.form.DOB.mergeDate());
+                    System.out.println(CustomDatePicker.mergeDate());
 
                     Map<String, Object> patientInfo = new HashMap<>();
                     patientInfo.put("name", addPatientPage.form.name.getText());
@@ -66,7 +65,7 @@ class PatientPanel extends JPanel {
                     patientInfo.put("phoneNumber", addPatientPage.form.phone.getText());
                     patientInfo.put("address", addPatientPage.form.address.getText());
                     patientInfo.put("bloodGroup", Objects.requireNonNull(addPatientPage.form.bloodGroup.getSelectedItem()).toString());
-                    patientInfo.put("birthDate", addPatientPage.form.DOB.mergeDate());
+                    patientInfo.put("birthDate", CustomDatePicker.mergeDate());
 
                     Patient newPatient = new Patient(null, patientInfo);
                     newPatient.setPatientId(PatientDAO.addPatient(newPatient));
@@ -76,7 +75,7 @@ class PatientPanel extends JPanel {
                     addPatientPage.form.message.setText("New patient was added.");
                     addPatientPage.form.message.setVisible(true);
 
-                    addPatientPage.form.medicalRecord = addPatientPage.form.MedicalRecord(newPatient.getPatientId());
+                    addPatientPage.form.medicalRecord = addPatientPage.form.MedicalRecord(newPatient.getPatientId(), userId);
                     addPatientPage.form.add(addPatientPage.form.medicalRecord);
 
                     defaultPage.repaint();
@@ -95,13 +94,11 @@ class PatientPanel extends JPanel {
                                     System.out.println(STR."MR for row: \{row}");
 
                                     try {
-                                        viewMedicalRecordPanel = new ViewMedicalRecordPanel(addPatientPage.form.table.getValueAt(row,0).toString());
-                                    } catch (ExecutionException e) {
-                                        throw new RuntimeException(e);
-                                    } catch (InterruptedException e) {
+                                        viewMedicalRecordPanel = new ViewMedicalRecordPanel(addPatientPage.form.table.getValueAt(row,0).toString(), userId);
+                                    } catch (ExecutionException | InterruptedException e) {
                                         throw new RuntimeException(e);
                                     }
-                                    System.out.println(addPatientPage.form.table.getValueAt(row,0).toString());
+                                    //System.out.println(addPatientPage.form.table.getValueAt(row,0).toString());
                                     parentPanel.add(viewMedicalRecordPanel, "view-mr-page");
                                     currentPage.show(parentPanel, "view-mr-page");
 
@@ -122,38 +119,6 @@ class PatientPanel extends JPanel {
                 currentPage.show(this,"default-page");
                 defaultPage.updateTableUI();
             });
-//            addPatientPage.saveButton.addActionListener(_ -> {
-//                if (addPatientPage.name.getText().isEmpty() || addPatientPage.address.getText().isEmpty() || addPatientPage.phone.getText().isEmpty() ||
-//                        addPatientPage.gender.getSelectedItem() == null || addPatientPage.bloodGroup.getSelectedItem() == null || addPatientPage.DOB.mergeDate().isEmpty()) {
-//                    addPatientPage.message.setText("The information can not be left blank!");
-//                    addPatientPage.message.setVisible(true);
-//                } else {
-//                    addPatientPage.message.setVisible(false);
-//                    System.out.println(addPatientPage.name.getText());
-//                    System.out.println(addPatientPage.address.getText());
-//                    System.out.println(addPatientPage.phone.getText());
-//                    System.out.println(Objects.requireNonNull(addPatientPage.gender.getSelectedItem()).toString());
-//                    System.out.println(Objects.requireNonNull(addPatientPage.bloodGroup.getSelectedItem()).toString());
-//                    System.out.println(addPatientPage.DOB.mergeDate());
-//
-//                    Map<String, Object> patientInfo = new HashMap<>();
-//                    patientInfo.put("name", addPatientPage.name.getText());
-//                    patientInfo.put("gender", Objects.requireNonNull(addPatientPage.gender.getSelectedItem()).toString());
-//                    patientInfo.put("phoneNumber", addPatientPage.phone.getText());
-//                    patientInfo.put("address", addPatientPage.address.getText());
-//                    patientInfo.put("bloodGroup", Objects.requireNonNull(addPatientPage.bloodGroup.getSelectedItem()).toString());
-//                    patientInfo.put("birthDate", addPatientPage.DOB.mergeDate());
-//
-//                    Patient newPatient = new Patient(null, patientInfo);
-//                    newPatient.setPatientId(PatientDAO.addPatient(newPatient));
-//                    System.out.println(newPatient.getPatientId());
-//                    PatientDAO.addPatient(newPatient);
-//
-//                    currentPage.removeLayoutComponent(addPatientPage);
-//                    currentPage.show(this,"default-page");
-//                    defaultPage.updateTableUI();
-//                }
-//            });
             currentPage.show(this, "add-patient-page");
         });
 
@@ -173,39 +138,54 @@ class PatientPanel extends JPanel {
                         // Instead of simulating button click, print to terminal
                         System.out.println(STR."Button clicked for row: \{row}");
                         try {
-                            viewPatientInfoPage = defaultPage.viewPage(row);
-                            viewPatientInfoPage.form.table.addMouseListener(new java.awt.event.MouseAdapter()
-                            {
-                                @Override
-                                public void mouseClicked(java.awt.event.MouseEvent evt) {
-                                    int column = viewPatientInfoPage.form.table.getColumnModel().getColumnIndexAtX(evt.getX());
-                                    int row = evt.getY() / viewPatientInfoPage.form.table.getRowHeight();
+                            viewPatientInfoPage = defaultPage.viewPage(row, userId);
 
-                                    if (row < viewPatientInfoPage.form.table.getRowCount() && row >= 0 && column < viewPatientInfoPage.form.table.getColumnCount() && column >= 0) {
+                            //if (table != null) {
+                                viewPatientInfoPage.form.table.addMouseListener(new java.awt.event.MouseAdapter()
+                                {
+                                    @Override
+                                    public void mouseClicked(java.awt.event.MouseEvent evt) {
+                                        int column = viewPatientInfoPage.form.table.getColumnModel().getColumnIndexAtX(evt.getX());
+                                        int row = evt.getY() / viewPatientInfoPage.form.table.getRowHeight();
 
-                                        if (column == 5) {
-                                            // Instead of simulating button click, print to terminal
-                                            System.out.println(STR."MR for row: \{row}");
+                                        if (row < viewPatientInfoPage.form.table.getRowCount() && row >= 0 && column < viewPatientInfoPage.form.table.getColumnCount() && column >= 0) {
 
-                                            try {
-                                                viewMedicalRecordPanel = new ViewMedicalRecordPanel(viewPatientInfoPage.form.table.getValueAt(row,0).toString());
-                                            } catch (ExecutionException e) {
-                                                throw new RuntimeException(e);
-                                            } catch (InterruptedException e) {
-                                                throw new RuntimeException(e);
+                                            if (column == 5) {
+                                                // Instead of simulating button click, print to terminal
+                                                System.out.println(STR."MR for row: \{row}");
+
+                                                try {
+                                                    viewMedicalRecordPanel = new ViewMedicalRecordPanel(viewPatientInfoPage.form.table.getValueAt(row,0).toString(), userId);
+                                                } catch (ExecutionException | InterruptedException e) {
+                                                    throw new RuntimeException(e);
+                                                }
+                                                parentPanel.add(viewMedicalRecordPanel, "view-mr-page");
+                                                currentPage.show(parentPanel, "view-mr-page");
+
+                                                viewMedicalRecordPanel.backButton.addActionListener(_->{
+                                                    currentPage.removeLayoutComponent(viewMedicalRecordPanel);
+                                                    currentPage.show(parentPanel,"view-page");
+                                                });
                                             }
-                                            System.out.println(viewPatientInfoPage.form.table.getValueAt(row,0).toString());
-                                            parentPanel.add(viewMedicalRecordPanel, "view-mr-page");
-                                            currentPage.show(parentPanel, "view-mr-page");
-
-                                            viewMedicalRecordPanel.backButton.addActionListener(_->{
-                                                currentPage.removeLayoutComponent(viewMedicalRecordPanel);
-                                                currentPage.show(parentPanel,"view-page");
-                                            });
                                         }
                                     }
-                                }
-                            });
+                                });
+                            //} else {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            //}
                         } catch (ExecutionException | InterruptedException e) {
                             throw new RuntimeException(e);
                         }
@@ -355,20 +335,20 @@ class PatientDefaultPage extends JLabel {
     void deletePatient (int row){
         model.deleteRow(row);
     }
-    public ViewPatientInfoPage viewPage(int row) throws ExecutionException, InterruptedException {
+    public ViewPatientInfoPage viewPage(int row, String userId) throws ExecutionException, InterruptedException {
         // call patient ID
         Patient patient = PatientDAO.getPatientById(patientList.getValueAt(row,0).toString());
-        ViewPatientInfoPage viewPage = new ViewPatientInfoPage(patient.getPatientId());
+        ViewPatientInfoPage viewPage = new ViewPatientInfoPage(patient.getPatientId(), userId);
         viewPage.title.setText(STR."Information of \{patient.getName()}");
-        viewPage.title.setFont(new Font("Courier",Font.BOLD,25));
+        viewPage.title.setFont(new Font("Courier", Font.BOLD,30));
         viewPage.title.setForeground(Color.gray);
         viewPage.form.message.setVisible(false);
 
         return viewPage;
     }
-    public ViewPatientInfoPage viewPage() {
+    public ViewPatientInfoPage viewPage(String userId) {
         // call patient ID
-        ViewPatientInfoPage viewPage = new ViewPatientInfoPage();
+        ViewPatientInfoPage viewPage = new ViewPatientInfoPage(userId);
         viewPage.title.setText(STR."Patient Registration Form");
         viewPage.title.setFont(new Font("Courier",Font.BOLD,25));
         viewPage.title.setForeground(Color.gray);
@@ -376,13 +356,17 @@ class PatientDefaultPage extends JLabel {
 
         return viewPage;
     }
-    public void showSearchResult(String ID) throws ExecutionException, InterruptedException {
-        if (!ID.trim().isEmpty() && !ID.trim().equals("Search by patient ID")){
+    public void showSearchResult(String name) throws ExecutionException, InterruptedException {
+        if (!name.trim().isEmpty() && !name.trim().equals("Search by patient name")){
             try{
-            Patient res = PatientDAO.getPatientById(ID);
-            model.clearData();
-            addPatientToTable(res);}
+                List<Patient> res = PatientDAO.getPatientsByName(name);
+                model.clearData();
+                for (Patient p : res) {
+                    addPatientToTable(p);
+                }
+            }
             catch (Exception e) {
+                updateTableUI();
                 searchEngine.searchInput.setText("No patient found");
                 searchEngine.searchInput.setForeground(Color.red);
             }
@@ -599,11 +583,11 @@ class PatientDefaultPage extends JLabel {
             field.setFocusable(false);
             field.revalidate();
             field.setFont(new Font("Courier",Font.PLAIN,16));
-            field.setText("Search by patient id");
+            field.setText("Search by patient name");
             field.addMouseListener(new CustomMouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (field.getText().equals("Search by patient ID") || field.getText().equals("No patient found")) {
+                    if (field.getText().equals("Search by patient name") || field.getText().equals("No patient found")) {
                         field.setText("");
                         field.setForeground(Color.BLACK);
                     }
@@ -617,7 +601,7 @@ class PatientDefaultPage extends JLabel {
                     field.setFocusable(false);
                     if (field.getText().isEmpty()) {
                         field.setForeground(Color.GRAY);
-                        field.setText("Search by patient ID");
+                        field.setText("Search by patient name");
                     }
                 }
             });
@@ -649,7 +633,7 @@ class ViewPatientInfoPage extends JPanel {
     JButton backButton = new RoundedButton(" Return ");
     JLabel title = new JLabel("#MedicalID");
     ViewMode form;
-    ViewPatientInfoPage(String PatientID) throws ExecutionException, InterruptedException {
+    ViewPatientInfoPage(String PatientID, String userid) throws ExecutionException, InterruptedException {
         title.setFont(title.getFont().deriveFont(18.0F));
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
@@ -665,13 +649,13 @@ class ViewPatientInfoPage extends JPanel {
         title.setAlignmentX(Component.RIGHT_ALIGNMENT);
         pageHeader.add(Box.createHorizontalGlue());
 
-        form = new ViewMode(PatientID);
+        form = new ViewMode(PatientID, userid);
 
         this.add(pageHeader);
         this.add(new Box.Filler(new Dimension(100,15), new Dimension(100,15), new Dimension(100,15)));
         this.add(form); // Registration form
     }
-    ViewPatientInfoPage() {
+    ViewPatientInfoPage(String userId) {
         title.setFont(title.getFont().deriveFont(18.0F));
         this.setBackground(Color.white);
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
@@ -687,7 +671,7 @@ class ViewPatientInfoPage extends JPanel {
         title.setAlignmentX(Component.RIGHT_ALIGNMENT);
         pageHeader.add(Box.createHorizontalGlue());
 
-        form = new ViewMode();
+        form = new ViewMode(userId);
 
         this.add(pageHeader);
         this.add(new Box.Filler(new Dimension(100,15), new Dimension(100,15), new Dimension(100,15)));
@@ -709,14 +693,14 @@ class ViewPatientInfoPage extends JPanel {
         MedicalRecordTableModel model;
         JTable table;
         JLabel message = new JLabel("");
-        ViewMode(String PatientID) throws ExecutionException, InterruptedException {
+        ViewMode(String PatientID, String userId) throws ExecutionException, InterruptedException {
             setLayout(new GridLayout(1,3));
             PatientInfoForm = Form(PatientID);
             add(PatientInfoForm);
-            medicalRecord = MedicalRecord(PatientID);
+            medicalRecord = MedicalRecord(PatientID, userId);
             add(medicalRecord);
         }
-        ViewMode() {
+        ViewMode(String userId) {
             setLayout(new GridLayout(1,3));
             PatientInfoForm = Form();
             add(PatientInfoForm);
@@ -724,7 +708,7 @@ class ViewPatientInfoPage extends JPanel {
         JPanel Form(String id) throws ExecutionException, InterruptedException {
             Patient patient = PatientDAO.getPatientById(id);
             JLabel title = new JLabel("Personal Information");
-            title.setFont(new Font("Courier",Font.BOLD,25));
+            title.setFont(new Font("Courier",Font.BOLD,20));
             title.setForeground(Color.gray);
             title.setBounds(50, 0, 400, 50);
 
@@ -914,7 +898,7 @@ class ViewPatientInfoPage extends JPanel {
             form.add(cancelButton);
             return form;
         }
-        JPanel MedicalRecord(String PatientID) {
+        JPanel MedicalRecord(String PatientID, String userId) {
             JPanel medicalRecord = new JPanel();
             medicalRecord.setLayout(new BorderLayout());
             medicalRecord.setBackground(Color.white);
@@ -925,7 +909,7 @@ class ViewPatientInfoPage extends JPanel {
             header.setBounds(25, 10, 475, 30);
 
             JLabel headerLabel = new JLabel("Medical Record");
-            headerLabel.setFont(new Font("Courier",Font.BOLD,25));
+            headerLabel.setFont(new Font("Courier",Font.BOLD,20));
             headerLabel.setForeground(Color.gray);
             headerLabel.setBounds(450, 0, 400, 50);
 
@@ -935,28 +919,31 @@ class ViewPatientInfoPage extends JPanel {
             addAppointment.addActionListener(_->{
                 AddAppointmentPopup popup = new AddAppointmentPopup(medicalRecord);
                 if (popup.choice == 0){
-                    Doctor chosenDoctor = getDoctorWithMinPatientCountByDepartment(DeptType.fromValue((String) popup.dep.getSelectedItem()));
-                    if (chosenDoctor != null) {
-                        try {
-                            MedicalRecord newAppointment = MedRecDAO.addMedRecByDoctorAndPatient(chosenDoctor, PatientDAO.getPatientById(PatientID));
+                        Doctor chosenDoctor = DoctorDAO.getMatchFromDepartment(DeptType.fromValue((String) popup.dep.getSelectedItem()));
+                        if (chosenDoctor != null) {
+                            MedicalRecord newAppointment = new MedicalRecord(null,
+                                                                                    PatientID,
+                                                                                    chosenDoctor.getStaffId(),
+                                                                                    userId, null, null,
+                                                                                    MedicalRecord.Status.PENDING, 0L, null);
+                            MedRecDAO.addMedRec(newAppointment);
                             if (newAppointment != null) {
                                 ViewButtonRenderer buttonRenderer = new ViewButtonRenderer();
-                                Object[] rowData = new Object[]{null, newAppointment.getDepartment(), DoctorDAO.getDoctorById(newAppointment.getDoctorId()).getName(), newAppointment.getCheckIn(), newAppointment.getStatus(), buttonRenderer};
+                                Object[] rowData = new Object[]{newAppointment.getMedRecId(), DoctorDAO.getDoctorById(newAppointment.getDoctorId()).getDepartment(), DoctorDAO.getDoctorById(newAppointment.getDoctorId()).getName(), newAppointment.getCheckIn(), newAppointment.getStatus(), buttonRenderer};
                                 model.addRow(rowData);
                                 int lastRowIndex = model.getRowCount() - 1;
-                                model.setValueAt(newAppointment.getmedicalRecordId(), lastRowIndex, 0); // Set ID của cuộc hẹn mới vào dòng vừa thêm
+                                model.setValueAt(newAppointment.getMedRecId(), lastRowIndex, 0); // Set ID của cuộc hẹn mới vào dòng vừa thêm
                             }
-                        } catch (ExecutionException | InterruptedException e) {
-                            throw new RuntimeException(e);
                         }
-                    }
-                    else {
-                        JOptionPane.showOptionDialog(medicalRecord,"No available doctor","",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,null,0);
-                    }
+                        else {
+                            JOptionPane.showOptionDialog(medicalRecord,"No available doctor","",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,null,0);
+                        }
                 }
             });
             assert addAppointment != null;
-            header.add(addAppointment, BorderLayout.EAST);
+            if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")) {
+                header.add(addAppointment, BorderLayout.EAST);
+            }
             header.setBorder(new EmptyBorder(0,0,0,10));
 
             model = new MedicalRecordTableModel();
@@ -965,7 +952,7 @@ class ViewPatientInfoPage extends JPanel {
             if (!medicalRecordList.isEmpty()) {
                 for (MedicalRecord medRecord : medicalRecordList){
                     ViewButtonRenderer buttonRenderer = new ViewButtonRenderer();
-                    Object[] rowData = new Object[]{medRecord.getmedicalRecordId(), medRecord.getDepartment(), DoctorDAO.getDoctorById(medRecord.getDoctorId()).getName(), medRecord.getCheckIn(), medRecord.getStatus(), buttonRenderer};
+                    Object[] rowData = new Object[]{medRecord.getMedRecId(), DoctorDAO.getDoctorById(medRecord.getDoctorId()).getDepartment(), DoctorDAO.getDoctorById(medRecord.getDoctorId()).getName(), medRecord.getCheckIn(), medRecord.getStatus(), buttonRenderer};
                     model.addRow(rowData);
                 }
             }

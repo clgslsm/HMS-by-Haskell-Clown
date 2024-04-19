@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Doctor extends Staff {
+    public static Long PATIENT_LIMIT = 5L;
     private DeptType department;
     private Long patientCount;
 

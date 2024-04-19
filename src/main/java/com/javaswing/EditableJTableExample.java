@@ -1,10 +1,10 @@
+package com.javaswing;
+
 import javax.swing.*;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -40,18 +40,8 @@ public class EditableJTableExample {
         // Add the scroll pane to the frame
         frame.add(scrollPane, BorderLayout.CENTER);
 
-        // Add a cell editor listener to the table
-        table.getDefaultEditor(Object.class).addCellEditorListener(new CellEditorListener() {
-            @Override
-            public void editingStopped(ChangeEvent e) {
-                saveData(table);
-            }
+        // Add a mouse listener to the table to handle row deletion
 
-            @Override
-            public void editingCanceled(ChangeEvent e) {
-                // Do nothing when editing is canceled
-            }
-        });
 
         // Add a window listener to handle saving data when the window closes
         frame.addWindowListener(new WindowAdapter() {

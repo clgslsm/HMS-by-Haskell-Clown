@@ -31,34 +31,22 @@ class MachinePanel extends JPanel {
 
         // When we click "Add Doctor" => change to Doctor Registration Page
         defaultPage.addMachineBtn.addActionListener(_ -> {
-            String[] status = new String[Machine.Status.values().length];
-            int i = 0;
-            for (Machine.Status st : Machine.Status.values()) {
-                status[i] = st.getValue();
-                i++;
-            }
-            JComboBox<String> sta = new JComboBox<>(status);
-            sta.setBackground(Color.white);
-            sta.setBorder(BorderFactory.createEmptyBorder());
-            sta.setBounds(385-250,130,70,20);
             JTextField nameField = new JTextField(30);
 
             Object[] message = {
                     "Name of machine:", nameField,
-                    "Status:", sta
             };
 
             int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.OK_CANCEL_OPTION);
 
             if (option == JOptionPane.OK_OPTION) {
-                String s = Objects.requireNonNull(sta.getSelectedItem()).toString();
                 String name = nameField.getText();
 
                 // Kiểm tra xem có ô nào bị bỏ trống không
-                if (s.isEmpty() || name.isEmpty()) {
+                if (name.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "The input box cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Name: " + name + "\nStatus: " + s , "Information", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Name: " + name, "Information", JOptionPane.INFORMATION_MESSAGE);
                     //Machine newMachine = new Machine();
                     //Doctor newDoctor = new Doctor("12", name, );
 ////                data.add(newDoctor);
@@ -225,7 +213,7 @@ class MachineDefaultPage extends JLabel {
     }
     void addMachineToTable (Machine machine){
         ButtonRenderer buttonRenderer = new ButtonRenderer();
-        Object[] rowData = new Object[]{machine.getMachineId(), machine.getMachineName(), machine.getPurchaseDate(), machine.getMachineStatus(), machine.getUsageHistory(), buttonRenderer};
+        Object[] rowData = new Object[]{machine.getMachineId(), machine.getMachineName(), buttonRenderer};
         model.addRow(rowData);
     }
     public void showSearchResult(String name) throws ExecutionException, InterruptedException {
