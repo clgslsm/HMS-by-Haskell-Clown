@@ -7,6 +7,7 @@ import net.sourceforge.barbecue.BarcodeFactory;
 import net.sourceforge.barbecue.BarcodeImageHandler;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
@@ -382,6 +383,8 @@ class AddNewMedicinePage extends JPanel {
     JComboBox<String> MedicineUnitInput;
     JTextField QuantityInput;
     JTextArea descriptionInput;
+    JButton SaveButton = new RoundedButton(" Save ");
+    JButton ResetButton = new RoundedButton(" Reset ");
     AddNewMedicinePage() {
         this.setBackground(Color.WHITE);
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 25));
@@ -394,6 +397,8 @@ class AddNewMedicinePage extends JPanel {
         container.add(headerContainer());
         container.add(Box.createVerticalStrut(30));
         container.add(formContainer());
+        container.add(Box.createVerticalStrut(30));
+        container.add(footerContainer());
 
         add(container);
     }
@@ -401,7 +406,7 @@ class AddNewMedicinePage extends JPanel {
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setMaximumSize(new Dimension(1300,200));
+        panel.setMaximumSize(new Dimension(1300,160));
 
         JLabel titleContainer = new JLabel();
         titleContainer.setLayout(new BoxLayout(titleContainer,BoxLayout.Y_AXIS));
@@ -430,7 +435,7 @@ class AddNewMedicinePage extends JPanel {
 
         titleContainer.add(titleJoined);
         titleContainer.add(subTitle);
-        titleContainer.setMaximumSize(new Dimension(1300,150));
+        titleContainer.setMaximumSize(new Dimension(1300,130));
 
         JPanel backButtonContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
         backButtonContainer.setMaximumSize(new Dimension(1300,50));
@@ -453,7 +458,7 @@ class AddNewMedicinePage extends JPanel {
     JPanel formContainer(){
         JPanel form = new JPanel();
         form.setOpaque(false);
-        form.setMaximumSize(new Dimension(600,600));
+        form.setMaximumSize(new Dimension(600,400));
         form.setLayout(new BoxLayout(form,BoxLayout.Y_AXIS));
 
         // Medicine Name
@@ -521,11 +526,50 @@ class AddNewMedicinePage extends JPanel {
         container2.add(MedicineUnitBox);
         container2.add(QuantityBox);
 
+        // Description
+        JPanel DescriptionBox = new JPanel();
+        DescriptionBox.setOpaque(false);
+        DescriptionBox.setLayout(new BoxLayout(DescriptionBox,BoxLayout.Y_AXIS));
+        DescriptionBox.setMaximumSize(new Dimension(700,200));
+        JPanel DescriptionLabelBox = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        DescriptionLabelBox.setOpaque(false);
+        JLabel DescriptionLabel = new JLabel("Description");
+        DescriptionLabelBox.add(DescriptionLabel);
+        DescriptionLabel.setFont(new Font("Poppins",Font.PLAIN,15));
+        descriptionInput = new RoundedTextArea(10,100,20,Color.BLACK);
+        descriptionInput.setMinimumSize(new Dimension(700,100));
+        descriptionInput.setLineWrap(true);
+        descriptionInput.setWrapStyleWord(true);
+        descriptionInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        DescriptionBox.add(DescriptionLabelBox);
+        DescriptionBox.add(descriptionInput);
+
+
         form.add(container1);
         form.add(Box.createVerticalStrut(30));
         form.add(container2);
+        form.add(Box.createVerticalStrut(30));
+        form.add(DescriptionBox);
 
         return form;
+    }
+    JPanel footerContainer(){
+        JPanel panel = new JPanel(new FlowLayout());
+        panel.setOpaque(false);
+        panel.setMaximumSize(new Dimension(600,50));
+
+        SaveButton.setMaximumSize(new Dimension(100,50));
+        ResetButton.setMaximumSize(new Dimension(100,50));
+        ResetButton.setBackground(Color.WHITE);
+        ResetButton.setBorder(new CompoundBorder(
+                BorderFactory.createLineBorder(new Color(0x3497F9)),
+                new EmptyBorder(10,10,10,10)
+        ));
+        ResetButton.setForeground(new Color(0x3497F9));
+
+        panel.add(ResetButton);
+        panel.add(SaveButton);
+        return panel;
     }
 }
 class ViewMedicineInfoPage extends JPanel {
@@ -623,8 +667,8 @@ class ViewMedicineInfoPage extends JPanel {
     }
     JPanel bodyContainer(){
         JPanel panel = new JPanel();
-        panel.setMaximumSize(new Dimension(1300,500));
-        panel.setLayout(new GridLayout(3,1,0,30));
+        panel.setMaximumSize(new Dimension(1300,550));
+        panel.setLayout(new GridLayout(3,1,0,20));
         panel.setOpaque(false);
 
         JPanel MedicineContainer01 = new JPanel();
