@@ -244,7 +244,9 @@ public class _DBPopulator {
         // Set unit to "hộp"
         String unit = "Viên";
 
-        return new Medicine(medicineId, medicineName, importDate, expiryDate, amount, unit);
+        String description = "Viên sủi An thần được quảng cáo có tác dụng làm giảm chứng rối loạn tiền đình, đau đầu, giúp máu được lưu thông bình thường, tăng cường trí nhớ và tốt cho hệ tim mạch và não bộ; nâng cao đề kháng, kích thích ăn ngon, ngủ ngon.";
+
+        return new Medicine(medicineId, medicineName, importDate, expiryDate, amount, unit, description);
     }
 
     private static String generateRandomMedicineName() {
@@ -305,11 +307,11 @@ public class _DBPopulator {
 
     }
 
-    public static void populate() {
+    public static void populate(boolean clearDBFlag) {
         try {
-            clearDB();
+            if (clearDBFlag)
+                clearDB();
             //UNUSED
-//            populateDept();
             populateDoctor();
             populateStaff();
             populateUser();

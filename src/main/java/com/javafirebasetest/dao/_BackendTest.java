@@ -222,7 +222,9 @@ public class _BackendTest {
                 LocalDate.now(),
                 LocalDate.now().plusYears(2),
                 30L,
-                "Vien"
+                "Vien",
+                "Viên sủi An thần được quảng cáo có tác dụng làm giảm chứng rối loạn tiền đình, đau đầu, giúp máu được lưu thông bình thường, tăng cường trí nhớ và tốt cho hệ tim mạch và não bộ; nâng cao đề kháng, kích thích ăn ngon, ngủ ngon.\n" +
+                        "\n"
         ));
         Thread.sleep(SLEEP_TIME);
 

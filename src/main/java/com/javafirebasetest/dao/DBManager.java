@@ -85,9 +85,10 @@ public class DBManager {
 
     public DocumentSnapshot getDocumentById(CollectionPath collectionPath, String documentId){
         getInstance();
-        DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
-        ApiFuture<DocumentSnapshot> future = docRef.get();
         try {
+            if (documentId == null) return null;
+            DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
+            ApiFuture<DocumentSnapshot> future = docRef.get();
             return future.get();
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("DBManager getDocumentById - cannot get document (ID does not exist?) " + e);

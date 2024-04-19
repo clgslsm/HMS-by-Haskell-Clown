@@ -38,9 +38,13 @@ public class MedRecDAO {
 
     //READ METHODS
     public static MedicalRecord getMedRecById(String medRecId) {
-        Map<String, Object> medRecData = dbManager.getDocumentById(DBManager.CollectionPath.MEDICAL_RECORD, medRecId).getData();
-        if (medRecData == null) return null;
-        return new MedicalRecord(medRecId, medRecData);
+        try {
+            Map<String, Object> medRecData = dbManager.getDocumentById(DBManager.CollectionPath.MEDICAL_RECORD, medRecId).getData();
+            if (medRecData == null) return null;
+            return new MedicalRecord(medRecId, medRecData);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static List<MedicalRecord> getMedRecByPatientId(String patientId) {

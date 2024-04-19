@@ -23,7 +23,9 @@ public class Main {
 //        MainPage mainPage = new MainPage("Doctor");
 //        Thread thread = new Thread(String.valueOf(mainPage));
 //        thread.start();
-        _BackendTest.MedicineExportTest();
+
+//        _BackendTest.MedicineExportTest();
+        _DBPopulator.populate(true);
     }
 }
 
