@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class _BackendTest {
-    private static final int SLEEP_TIME = 500;
+    private static final int SLEEP_TIME = 1000;
     public static void FileManagerTest(){
         FileManager fileManager = FileManager.getInstance();
         File localFile = new File("C:/Users/ACER/Desktop/Screenshot 2024-04-17 131533.png");
@@ -51,6 +51,8 @@ public class _BackendTest {
             //All docs in department have PATIENT_LIMIT patients
             if (chosenDoc == null) return;
 
+            System.out.println("Original patient count: " + chosenDoc.getPatientCount());
+
             String medrecId = MedRecDAO.addMedRec(new MedicalRecord(
                     "testId",
                     "r3ngmqsLeoOIq9I8oD0S",
@@ -66,10 +68,10 @@ public class _BackendTest {
             Thread.sleep(SLEEP_TIME);
 
             System.out.println(MedRecDAO.getMedRecById(medrecId) + "\n");
+            System.out.println("Changed patient count: " + DoctorDAO.getDoctorById(chosenDoc.getStaffId()).getPatientCount());;
             System.out.println("MedRec added, press enter to advance.");
             System.in.read();
 
-            System.out.println("MedRec sent to Doctor, now with status (status shouldnt change):");
             System.out.println(MedRecDAO.getMedRecById(medrecId) + "\n");
             System.out.print("Enter TestType: ");
             String testType = scanner.nextLine();
@@ -132,8 +134,7 @@ public class _BackendTest {
             System.in.read();
 
             Thread.sleep(SLEEP_TIME);
-            MedRecDAO.send(medrecId);
-            System.out.println("MedRec sent the last time (doesnt move away from Recept, but still update status to Check_out, now with status:");
+
             Thread.sleep(SLEEP_TIME);
             System.out.println(MedRecDAO.getMedRecById(medrecId) + "\n");
             Thread.sleep(SLEEP_TIME);
@@ -147,6 +148,7 @@ public class _BackendTest {
             MedRecDAO.deleteMedRec(medrecId);
 
             System.out.println("MedRec deleted, analysis file deleted along, test successful.");
+            System.out.println("Afterward patient count: " + chosenDoc.getPatientCount());
         } catch (Exception e) {
             e.printStackTrace();
         }

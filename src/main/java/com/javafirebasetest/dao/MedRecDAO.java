@@ -18,12 +18,18 @@ public class MedRecDAO {
 
     //CREATE METHODS
     public static String addMedRec(MedicalRecord medRec) {
+        String output = medRec.getMedRecId();
+
+        if (MedRecDAO.getMedRecById(output) == null){
+            DoctorDAO.updatePatientCount(medRec.getDoctorId(), 1);
+        }
+
         if (medRec.getMedRecId() == null) {
-            return dbManager.addDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRec.toMap());
+            output = dbManager.addDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRec.toMap());
         } else {
             dbManager.updateDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRec.getMedRecId(), medRec.toMap());
-            return medRec.getMedRecId();
         }
+        return output;
     }
 
     //READ METHODS
@@ -106,6 +112,8 @@ public class MedRecDAO {
     public static void deleteMedRec(String medRecId) {
         MedicalRecord medrec = getMedRecById(medRecId);
 
+        String relatedDocId = medrec.getDoctorId();
+
         if (medrec.getTestResult() != null){
             if (medrec.getTestResult().getAnalysisFilePath() != null){
                 FileManager.deleteFile(medrec.getTestResult().getAnalysisFilePath());
@@ -113,6 +121,8 @@ public class MedRecDAO {
         }
 
         dbManager.deleteDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRecId);
+
+        DoctorDAO.updatePatientCount(relatedDocId, -1);
     }
 
     //FRONTEND HELPER FUNCTIONS
@@ -162,8 +172,10 @@ public class MedRecDAO {
     public static void performCheckout(String medRecId){
         MedicalRecord medrec = getMedRecById(medRecId);
 
-        if (medrec.getStatus() != MedicalRecord.Status.CHECKED_OUT)
+        if (medrec.getStatus() != MedicalRecord.Status.DIAGNOSED)
             throw new RuntimeException("Medrec with id " + medRecId + " is not ready to checkout!");
         updateMedRec(medRecId, "checkOut", Timestamp.now());
+        MedRecDAO.send(medRecId);
+        DoctorDAO.updatePatientCount(medrec.getDoctorId(), -1);
     }
 }

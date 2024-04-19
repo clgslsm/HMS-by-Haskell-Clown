@@ -278,11 +278,10 @@ public class _DBPopulator {
 
         List<Patient> patientList = PatientDAO.getAllPatients();
         List<Staff> receptList = StaffDAO.getStaffByUserMode(User.Mode.RECEPTIONIST);
-        List<Doctor> doctorList = DoctorDAO.getAllDoctor();
         for (Patient patient : patientList) {
             for (int i = 0; i < rand.nextInt(2) + 1; ++i) {
                 Staff recep = receptList.get(rand.nextInt(receptList.size()));
-                Doctor doc = doctorList.get(rand.nextInt(doctorList.size()));
+                Doctor doc = DoctorDAO.getMatchFromDepartment(DeptType.values()[rand.nextInt(17)]);
 
                 MedicalRecord medrec = new MedicalRecord(
                         null,
@@ -308,8 +307,8 @@ public class _DBPopulator {
 
     public static void populate() {
         try {
-//            clearDB();
-//            //UNUSED
+            clearDB();
+            //UNUSED
 //            populateDept();
             populateDoctor();
             populateStaff();
