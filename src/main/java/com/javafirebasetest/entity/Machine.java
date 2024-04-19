@@ -6,10 +6,10 @@ public class Machine {
 
     private String machineId;
     private String machineName;
-    private int avaiUse;
-    private int useCount;
+    private Long avaiUse;
+    private Long useCount;
     public Machine() {}
-    public Machine(String machineId, String machineName, int avaiUse, int useCount) {
+    public Machine(String machineId, String machineName, Long avaiUse, Long useCount) {
         this.machineId = machineId;
         this.machineName = machineName;
         this.avaiUse = avaiUse;
@@ -19,14 +19,14 @@ public class Machine {
         super();
         this.machineId = machineId;
         this.machineName = (String) machine.get("machineName");
-        this.avaiUse = ((int) machine.get("avaiUse"));
-        this.useCount = ((int) machine.get("useCount"));
+        this.avaiUse = ((Long) machine.get("avaiUse"));
+        this.useCount = ((Long) machine.get("useCount"));
     }
 
     public String getMachineId() {return machineId;}
     public String getMachineName() {return machineName;}
-    public int getAvaiUse() {return avaiUse;}
-    public int getUseCount() {return useCount;}
+    public Long getAvaiUse() {return avaiUse;}
+    public Long getUseCount() {return useCount;}
     public Map<String, Object> toMap() {
         Map<String, Object> machineData = new HashMap<>();
         machineData.put("machineName", machineName);

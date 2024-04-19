@@ -35,17 +35,15 @@ public class MachineDAO {
     }
 
     public static List<Machine> getUsableMachine() {
-        List<QueryDocumentSnapshot> querySnapshot;
-        querySnapshot = dbManager.getDocumentsByConditions(
-                DBManager.CollectionPath.MACHINE,
-                Filter.equalTo("useCount", 0)
-        );
+        List<Machine> machineData = getAllMachines();
+        List<Machine> resultMachineData = new ArrayList<>();
 
-        List<Machine> machineData = new ArrayList<>();
-        for (QueryDocumentSnapshot qds : querySnapshot) {
-            machineData.add(new Machine(qds.getId(), qds.getData()));
+        for (Machine machine : machineData){
+            if (machine.isUsable())
+                resultMachineData.add(machine);
         }
-        return machineData;
+
+        return resultMachineData;
     }
 
     public static List<Machine> getUnusableMachine() {
@@ -54,7 +52,7 @@ public class MachineDAO {
         List<Machine> resultMachineData = new ArrayList<>();
 
         for (Machine machine : machineData){
-            if (machine.isUsable())
+            if (!machine.isUsable())
                 resultMachineData.add(machine);
         }
 

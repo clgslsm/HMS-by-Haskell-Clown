@@ -88,7 +88,7 @@ public class MedicineDAO {
     * Returns false when the amount in storage is not enough.
     * Returns true when exported successfully
     * */
-    public boolean export(String medicineId, int amount){
+    public static boolean export(String medicineId, Long amount){
         Medicine med = getMedicineById(medicineId);
 
         if (med.getAmount() < amount) return false;
