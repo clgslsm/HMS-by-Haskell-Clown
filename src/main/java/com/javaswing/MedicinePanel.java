@@ -611,10 +611,9 @@ class AddNewMedicinePage extends JPanel {
                         MedicineNameInput.getText().trim(),
                         convertStringToLocalDate(MedicineImportInput.getText().trim()),
                         convertStringToLocalDate(MedicineExpiredDayInput.getText().trim()),
-                        descriptionInput.getText().trim(),
                         Long.parseLong(QuantityInput.getText().trim()),
                         "Viên",
-                        0L
+                        descriptionInput.getText().trim()
                 );
                 MedicineDAO.addMedicine(medicine);
                 MedicineDefaultPage.refreshMedicineTable();
@@ -772,10 +771,9 @@ class EditDetailMedicinePage extends AddNewMedicinePage {
                         MedicineNameInput.getText().trim(),
                         convertStringToLocalDate(MedicineImportInput.getText().trim()),
                         convertStringToLocalDate(MedicineExpiredDayInput.getText().trim()),
-                        descriptionInput.getText().trim(),
                         Long.parseLong(QuantityInput.getText().trim()),
                         "Viên",
-                        0L
+                        descriptionInput.getText().trim()
                 );
                 System.out.println(medicine.getImportDate());
                 MedicineDAO.addMedicine(medicine);
