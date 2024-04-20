@@ -15,7 +15,7 @@ public class Patient {
     private String address;
     private String phoneNumber;
     private BloodGroup bloodGroup;
-    private String hearthInsuranceNumber;
+    private String healthInsuranceNumber;
 
     public enum Gender {
         MALE("Male"), FEMALE("Female"), OTHER("Other");
@@ -61,7 +61,7 @@ public class Patient {
     }
 
     public Patient(String patientId, String name, LocalDate birthDate, Gender gender,
-                   String address, String phoneNumber, BloodGroup bloodGroup, String hearthInsuranceNumber) {
+                   String address, String phoneNumber, BloodGroup bloodGroup, String healthInsuranceNumber) {
         super();
         this.patientId = patientId;
         this.name = name;
@@ -70,7 +70,7 @@ public class Patient {
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.bloodGroup = bloodGroup;
-        this.hearthInsuranceNumber = hearthInsuranceNumber;
+        this.healthInsuranceNumber = healthInsuranceNumber;
     }
 
     public Patient(String patientId, Map<String, Object> patient) {
@@ -82,7 +82,7 @@ public class Patient {
         this.address = (String) patient.get("address"); // Assuming address is stored as String in the map
         this.phoneNumber = (String) patient.get("phoneNumber"); // Assuming phoneNumber is stored as String in the map
         this.bloodGroup = BloodGroup.fromValue((String) patient.get("bloodGroup")); // Assuming bloodGroup is stored as String in the map
-        this.hearthInsuranceNumber = (String) patient.get("hearthInsuranceNumber");
+        this.healthInsuranceNumber = (String) patient.get("healthInsuranceNumber");
     }
 
     public String getPatientId() {
@@ -140,8 +140,8 @@ public class Patient {
     public void setBloodGroup(BloodGroup bloodGroup) {
         this.bloodGroup = bloodGroup;
     }
-    public String getHearthInsuranceNumber() {return hearthInsuranceNumber;}
-    public void setHearthInsuranceNumber(String hearthInsuranceNumber) {this.hearthInsuranceNumber = hearthInsuranceNumber;}
+    public String getHealthInsuranceNumber() {return healthInsuranceNumber;}
+    public void setHealthInsuranceNumber(String healthInsuranceNumber) {this.healthInsuranceNumber = healthInsuranceNumber;}
 
     public String getformattedDate() { // Hiển thị ngày tháng theo định dạng "dd/mm/yyyy"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -162,12 +162,16 @@ public class Patient {
         map.put("address", getAddress());
         map.put("phoneNumber", getPhoneNumber());
         map.put("bloodGroup", getBloodGroup().value);
-        map.put("hearthInsuranceNumber", getHearthInsuranceNumber());
+        map.put("healthInsuranceNumber", getHealthInsuranceNumber());
         return map;
     }
 
     @Override
     public String toString() {
-        return STR."Patient [patientId=\{patientId}, name=\{name}, birthDate=\{getformattedDate()}, address\{address}, gender=\{gender.getValue()}, phoneNumber=\{phoneNumber}, bloodGroup=\{bloodGroup.getValue()}, hearthInsuranceNumber=\{hearthInsuranceNumber}]";
+
+        return "Patient [patientId=" + patientId + ", name=" + name + ", birthDate=" + getformattedDate() +
+                ", address" + address + ", gender=" + gender.getValue() + ", phoneNumber=" + phoneNumber +
+                ", bloodGroup=" + bloodGroup.getValue() + ", healthInsuranceNumber=" + healthInsuranceNumber + "]";
+
     }
 }

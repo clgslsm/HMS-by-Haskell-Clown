@@ -1,5 +1,7 @@
 package com.javaswing;
 
+import com.javafirebasetest.dao.StaffDAO;
+import com.javafirebasetest.entity.Staff;
 import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
@@ -100,7 +102,7 @@ public class LoginPage implements ActionListener {
                 User user = getUserByUsernamePassword(userName, password);
                 if (user != null) {
                     messageLabel.setText("OK");
-                    MainPage newMainPage = new MainPage(user.getUserMode().getValue());
+                    MainPage newMainPage = new MainPage(user);
                     frame.setVisible(false);
                 } else {
                     messageLabel.setText("Username or password incorrect.");

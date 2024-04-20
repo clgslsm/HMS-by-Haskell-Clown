@@ -1,5 +1,10 @@
 package com.javaswing;
 
+
+import com.javafirebasetest.dao._BackendTest;
+import com.javafirebasetest.dao._DBPopulator;
+
+
 import com.google.cloud.Timestamp;
 import com.javafirebasetest.LoginManager;
 import com.javafirebasetest.dao.DoctorDAO;
@@ -15,11 +20,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
-        MainPage mainPage = new MainPage("Doctor");
-        Thread thread = new Thread(String.valueOf(mainPage));
-        thread.start();
         //SwingUtilities.invokeLater((Runnable) new MainPage("Doctor"));
-//        SwingUtilities.invokeLater((Runnable) new LoginPage());
+        SwingUtilities.invokeLater((Runnable) new LoginPage());
 //        System.out.println(DoctorDAO.getAllDoctorID());
 //          Doctor doctor = DoctorDAO.getDoctorWithMinPatientCountByDepartment(DeptType.PLASTIC_SURGERY);
 //          Patient patient = PatientDAO.getPatientById("A216");
@@ -52,6 +54,12 @@ public class Main {
 //
 //        System.out.println(LoginManager.getUserInstance());
 //>>>>>>> 7689022763cca0e69785073b79840111630456de
+//        MainPage mainPage = new MainPage("Doctor");
+//        Thread thread = new Thread(String.valueOf(mainPage));
+//        thread.start();
+
+//        _BackendTest.MedicineExportTest();
+        _DBPopulator.populate(true);
     }
 }
 
