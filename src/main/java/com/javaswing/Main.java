@@ -25,7 +25,8 @@ public class Main {
 //        thread.start();
 
 //        _BackendTest.MedicineExportTest();
-        _DBPopulator.populate(true);
+//        _DBPopulator.populate(true);
+        _BackendTest.MedrecTest("C:\\Users\\ACER\\Desktop\\smileyFace.png");
     }
 }
 

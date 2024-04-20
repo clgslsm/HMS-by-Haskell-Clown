@@ -136,32 +136,24 @@ public class MedRecDAO {
     //FRONTEND HELPER FUNCTIONS
     public static void send(String medRecId){
         MedicalRecord medrec = getMedRecById(medRecId);
+
+        if (medrec.getStatus() == MedicalRecord.Status.DIAGNOSED){
+            medrec.setCheckOut(Timestamp.now());
+        }
+
         medrec.advanceStatus();
 
         addMedRec(medrec);
     }
 
-    /**
-     * Put a new TestResult object in. Only the fields that are not null in the input object will be updated.
-     * @param medRecId ID of the MedRec to update
-     * @param newTestresult The TestResult object with new values for the fields. Use null for values not requiring changes.
-     *
-     */
-    public static void updateTestResult(String medRecId, TestResult newTestresult){
-        MedicalRecord medrec = getMedRecById(medRecId);
-        medrec.mergeTestResult(newTestresult);
-
-        addMedRec(medrec);
-    }
-
-    public static void updateTestResult_AnalysisFilePath(String medRecId, String analysisFilePath) {
+    private static void updateTestResult_AnalysisFilePath(String medRecId, String analysisFilePath) {
         MedicalRecord medrec = getMedRecById(medRecId);
 
         if (medrec.getTestResult().getAnalysisFilePath() != null){
             FileManager.deleteFile(medrec.getTestResult().getAnalysisFilePath());
         }
 
-        String storagePath = FileManager.uploadFile(analysisFilePath);
+        String storagePath = FileManager.uploadFile(analysisFilePath, medRecId);
         TestResult newTestresult = new TestResult(
                 null,
                 storagePath,
@@ -173,17 +165,30 @@ public class MedRecDAO {
         addMedRec(medrec);
     }
 
+    /**
+     * Put a new TestResult object in. Only the fields that are not null in the input object will be updated.
+     * @param medRecId ID of the MedRec to update
+     * @param newTestresult The TestResult object with new values for the fields. Use null for values not requiring changes.
+     *
+     */
+    public static void updateTestResult(String medRecId, TestResult newTestresult){
+        if (newTestresult.getAnalysisFilePath() != null){
+            updateTestResult_AnalysisFilePath(medRecId, newTestresult.getAnalysisFilePath());
+            return;
+        }
+
+        MedicalRecord medrec = getMedRecById(medRecId);
+        medrec.mergeTestResult(newTestresult);
+
+        addMedRec(medrec);
+    }
+
     public static void viewAnalysisFile(String medRecId){
         getMedRecById(medRecId).openAnalysisFile();
     }
 
-    public static void performCheckout(String medRecId){
-        MedicalRecord medrec = getMedRecById(medRecId);
-
-        if (medrec.getStatus() != MedicalRecord.Status.DIAGNOSED)
-            throw new RuntimeException("Medrec with id " + medRecId + " is not ready to checkout!");
-        updateMedRec(medRecId, "checkOut", Timestamp.now());
-        MedRecDAO.send(medRecId);
-        DoctorDAO.updatePatientCount(medrec.getDoctorId(), -1);
+    public static void updateServiceRating(String medrecId, int reviewStars){
+        updateMedRec(medrecId, "serviceRating", reviewStars);
     }
+
 }
