@@ -20,9 +20,11 @@ public class MachineDAO {
 
     public static List<Machine> getMachineByName(String machineName) {
         List<QueryDocumentSnapshot> querySnapshot;
+
         querySnapshot = dbManager.getDocumentsByConditions(
                 DBManager.CollectionPath.MACHINE,
-                Filter.equalTo("machineName", machineName)
+                Filter.greaterThanOrEqualTo("machineName", machineName),
+                Filter.lessThanOrEqualTo("machineName", machineName + "\uf7ff")
         );
 
         List<Machine> machineData = new ArrayList<>();
@@ -32,33 +34,31 @@ public class MachineDAO {
         return machineData;
     }
 
-    public static List<Machine> getMachineByStatus(String machineStatus) {
-        List<QueryDocumentSnapshot> querySnapshot;
-        querySnapshot = dbManager.getDocumentsByConditions(
-                DBManager.CollectionPath.MACHINE,
-                Filter.equalTo("machineStatus", machineStatus)
-        );
+    public static List<Machine> getUsableMachine() {
+        List<Machine> machineData = getAllMachines();
+        List<Machine> resultMachineData = new ArrayList<>();
 
-        List<Machine> machineData = new ArrayList<>();
-        for (QueryDocumentSnapshot qds : querySnapshot) {
-            machineData.add(new Machine(qds.getId(), qds.getData()));
+        for (Machine machine : machineData){
+            if (machine.isUsable())
+                resultMachineData.add(machine);
         }
-        return machineData;
+
+        return resultMachineData;
     }
 
-    public static List<Machine> getMachineByUsageHistory(String machineUsageHistory) {
-        List<QueryDocumentSnapshot> querySnapshot;
-        querySnapshot = dbManager.getDocumentsByConditions(
-                DBManager.CollectionPath.MACHINE,
-                Filter.equalTo("usageHistory", machineUsageHistory)
-        );
+    public static List<Machine> getUnusableMachine() {
 
-        List<Machine> machineData = new ArrayList<>();
-        for (QueryDocumentSnapshot qds : querySnapshot) {
-            machineData.add(new Machine(qds.getId(), qds.getData()));
+        List<Machine> machineData = getAllMachines();
+        List<Machine> resultMachineData = new ArrayList<>();
+
+        for (Machine machine : machineData){
+            if (!machine.isUsable())
+                resultMachineData.add(machine);
         }
-        return machineData;
+
+        return resultMachineData;
     }
+
 
     public static List<Machine> getAllMachines() {
         List<QueryDocumentSnapshot> querySnapshot;
@@ -94,5 +94,21 @@ public class MachineDAO {
         dbManager.deleteDocument(DBManager.CollectionPath.MACHINE, machineId);
     }
 
+    //FRONTEND HELPER FUNCTIONS
+    public static boolean useMachine(String machineId){
+        Machine machine = getMachineByID(machineId);
 
+        if (machine.isUsable()){
+            updateMachine(machineId, "useCount", machine.getUseCount() + 1);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public static void maintainMachine(String machineId){
+        Machine machine = getMachineByID(machineId);
+        updateMachine(machineId, "useCount", 0);
+    }
 }

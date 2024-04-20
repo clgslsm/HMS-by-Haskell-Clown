@@ -45,7 +45,8 @@ public class PatientDAO {
         List<QueryDocumentSnapshot> querySnapshot;
         querySnapshot = dbManager.getDocumentsByConditions(
                 DBManager.CollectionPath.PATIENT,
-                Filter.equalTo("name", name)
+                Filter.greaterThanOrEqualTo("name", name),
+                Filter.lessThanOrEqualTo("name", name + "uf7ff")
         );
 
         List<Patient> patientList = new ArrayList<>();
@@ -82,6 +83,21 @@ public class PatientDAO {
         }
 
         return patientData;
+    }
+
+    public static Patient getPatientByHIN(String healthInsurance) {
+        List<QueryDocumentSnapshot> querySnapshot;
+        querySnapshot = dbManager.getDocumentsByConditions(
+                DBManager.CollectionPath.PATIENT,
+                Filter.equalTo("healthInsuranceNumber", healthInsurance)
+        );
+
+        List<Patient> patientData = new ArrayList<>();
+        for (QueryDocumentSnapshot qds : querySnapshot) {
+            patientData.add(new Patient(qds.getId(), qds.getData()));
+        }
+
+        return patientData.getFirst();
     }
 
     public static List<Patient> getAllPatients() {

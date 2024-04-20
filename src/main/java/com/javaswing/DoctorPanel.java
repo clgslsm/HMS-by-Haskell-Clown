@@ -179,7 +179,7 @@ class DoctorDefaultPage extends JLabel {
         List<MedicalRecord> medicalRecords = MedRecDAO.getMedRecByDoctorId(doctorList.getValueAt(row, 0).toString());
         MedicalRecord medicalRecord = medicalRecords.getFirst();
         viewPage.title.setText(STR."#\{medicalRecord.getPatientId()}");
-        viewPage.form.name.setText(medicalRecord.doctorId);
+        //viewPage.form.name.setText(medicalRecord.doctorId);
         return viewPage;
     }
 
