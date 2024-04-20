@@ -13,7 +13,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.text.MaskFormatter;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -39,52 +39,6 @@ class MedicinePanel extends JPanel {
         this.setBackground(Color.white);
 
         defaultPage = new MedicineDefaultPage(this);
-
-        // When we click "Add Medicine" => change to Medicine Registration Page
-        defaultPage.addMedicineBtn.addActionListener(_ -> {
-            // Create Medicine Registration Page
-            AddNewMedicinePage addMedicinePage = new AddNewMedicinePage(this);
-            this.add(addMedicinePage, "add-medicine-page");
-
-            // Get back to default page
-            addMedicinePage.backButton.addActionListener(_ ->{
-                currentPage.removeLayoutComponent(addMedicinePage);
-                currentPage.show(this,"default-page");
-            });
-
-            currentPage.show(this, "add-medicine-page");
-        });
-
-        // See full information and medical records of a specific patient
-        MedicinePanel medicinePanel = this;
-        defaultPage.medicineList.addMouseListener(new java.awt.event.MouseAdapter()
-        {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                int column = defaultPage.medicineList.getColumnModel().getColumnIndexAtX(evt.getX());
-                int row = evt.getY() / defaultPage.medicineList.getRowHeight();
-
-                if (row < defaultPage.medicineList.getRowCount() && row >= 0 && column < defaultPage.medicineList.getColumnCount() && column >= 0) {
-                    Object value = defaultPage.medicineList.getValueAt(row, column);
-                    if (value instanceof JButton) {
-                        // Instead of simulating button click, print to terminal
-                        System.out.println(STR."Button clicked for row: \{row}");
-                        try {
-                            viewMedicineInfoPage = defaultPage.viewPage(row);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                        medicinePanel.add(viewMedicineInfoPage, "view-page");
-                        currentPage.show(medicinePanel, "view-page");
-
-                        viewMedicineInfoPage.backButton.addActionListener(_ ->{
-                            currentPage.removeLayoutComponent(viewMedicineInfoPage);
-                            currentPage.show(medicinePanel,"default-page");
-                        });
-                    }
-                }
-            }
-        });
 
         // Always show default page
         this.add(defaultPage, "default-page");
@@ -116,6 +70,13 @@ class MedicineDefaultPage extends JLabel {
         titleContainer.add(subTitle);
         header.setBackground(Color.white);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
+
+        addMedicineBtn.addActionListener(_->{
+            // Create Add New Medicine Page
+            AddNewMedicinePage addMedicinePage = new AddNewMedicinePage(panel);
+            panel.add(addMedicinePage, "add-medicine-page");
+            panel.currentPage.show(panel, "add-medicine-page");
+        });
 
         header.add(titleContainer);
         header.add(Box.createHorizontalGlue());
@@ -153,6 +114,32 @@ class MedicineDefaultPage extends JLabel {
         for (int i = 0; i < medicineList.getColumnCount() - 1; i++) {
             medicineList.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
+
+        // See full information and medical records of a specific patient
+        medicineList.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int column = medicineList.getColumnModel().getColumnIndexAtX(evt.getX());
+                int row = evt.getY() / medicineList.getRowHeight();
+
+                if (row < medicineList.getRowCount() && row >= 0 && column < medicineList.getColumnCount() && column >= 0) {
+                    Object value = medicineList.getValueAt(row, column);
+                    if (value instanceof JButton) {
+                        // Instead of simulating button click, print to terminal
+                        ViewMedicineInfoPage viewMedicineInfoPage;
+                        System.out.println(STR."Button clicked for row: \{row}");
+                        try {
+                            viewMedicineInfoPage = viewPage(row);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        panel.add(viewMedicineInfoPage, "view-page");
+                        panel.currentPage.show(panel, "view-page");
+                    }
+                }
+            }
+        });
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(medicineList);
@@ -356,6 +343,9 @@ class AddNewMedicinePage extends JPanel {
     JTextArea descriptionInput;
     JTextField MedicineImportInput;
     JTextField MedicineExpiredDayInput;
+    JLabel emptyName = CannotBeLeftEmpty();
+    JLabel emptyQuantity = CannotBeLeftEmpty();
+    JLabel emptyExpiryDate = CannotBeLeftEmpty();
     JButton SaveButton = new RoundedButton(" Save ");
     JButton ResetButton = new RoundedButton(" Reset ");
     AddNewMedicinePage(MedicinePanel panel) {
@@ -368,15 +358,28 @@ class AddNewMedicinePage extends JPanel {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.setOpaque(false);
         container.setBorder(new EmptyBorder(10,10,10,10));
-        container.add(headerContainer());
+        // Get back to default page
+        backButton.addActionListener(_ ->{
+            this.panel.currentPage.removeLayoutComponent(this);
+            this.panel.currentPage.show(this,"default-page");
+        });
+        container.add(headerContainer("Add New Medicine"));
         container.add(Box.createVerticalStrut(30));
         container.add(formContainer());
         container.add(Box.createVerticalStrut(30));
         container.add(footerContainer());
 
-        add(container);
+        JScrollPane scrollPane = new JScrollPane(container);
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        add(scrollPane);
     }
-    JPanel headerContainer(){
+
+    AddNewMedicinePage() {
+    }
+
+    JPanel headerContainer(String medicineTitle){
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -394,7 +397,7 @@ class AddNewMedicinePage extends JPanel {
         title.setFont(title.getFont().deriveFont(28F));
         title.setForeground(new Color(0x3497F9));
 
-        JLabel titleMedicine = new JLabel("Add New Medicine");
+        JLabel titleMedicine = new JLabel(medicineTitle);
         titleMedicine.setFont(title.getFont().deriveFont(28F));
         titleMedicine.setForeground(Color.BLACK);
 
@@ -438,27 +441,28 @@ class AddNewMedicinePage extends JPanel {
         // Medicine Name
         JPanel MedicineNameBox = new JPanel();
         MedicineNameBox.setOpaque(false);
-        MedicineNameBox.setLayout(new GridLayout(2,1,0,10));
+        MedicineNameBox.setMaximumSize(new Dimension(600,100));
+        MedicineNameBox.setLayout(new GridLayout(3,1,0,5));
         JLabel MedicineNameLabel = new JLabel("Medicine Name");
         MedicineNameLabel.setFont(new Font("Poppins",Font.PLAIN,15));
         MedicineNameInput = new RoundedTextField(40,20);
-        MedicineNameInput.setPreferredSize(new Dimension(300,40));
-        MedicineNameInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineNameInput.setPreferredSize(new Dimension(300,50));
+        MedicineNameInput.setFont(new Font("Courier",Font.PLAIN,15));
+        emptyName.setVisible(false);
         MedicineNameBox.add(MedicineNameLabel);
         MedicineNameBox.add(MedicineNameInput);
+        MedicineNameBox.add(emptyName);
 
         // Medicine ID
-        Medicine medicine = new Medicine(null,"",LocalDate.now(),LocalDate.now(),"", 0L,"",0L);
         JPanel MedicineIDBox = new JPanel();
         MedicineIDBox.setOpaque(false);
-        MedicineIDBox.setLayout(new GridLayout(2,1,0,10));
-        JLabel MedicineIDLabel = new JLabel("Medicine ID");
+        MedicineIDBox.setLayout(new GridLayout(3,1,0,5));
+        JLabel MedicineIDLabel = new JLabel("Medicine ID (optional)");
         MedicineIDLabel.setFont(new Font("Poppins",Font.PLAIN,15));
         MedicineIDInput = new RoundedTextField(40,20);
-        MedicineIDInput.setText(MedicineDAO.addMedicine(medicine));
-        MedicineIDInput.setEnabled(false);
-        MedicineIDInput.setPreferredSize(new Dimension(300,40));
-        MedicineIDInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineIDInput.setText("");
+        MedicineIDInput.setPreferredSize(new Dimension(300,50));
+        MedicineIDInput.setFont(new Font("Courier",Font.PLAIN,15));
         MedicineIDBox.add(MedicineIDLabel);
         MedicineIDBox.add(MedicineIDInput);
 
@@ -473,12 +477,12 @@ class AddNewMedicinePage extends JPanel {
         // Medicine Unit
         JPanel MedicineUnitBox = new JPanel();
         MedicineUnitBox.setOpaque(false);
-        MedicineUnitBox.setLayout(new GridLayout(2,1,0,10));
-        JLabel MedicineUnitLabel = new JLabel("Medicine Group");
+        MedicineUnitBox.setLayout(new GridLayout(3,1,0,5));
+        JLabel MedicineUnitLabel = new JLabel("Unit");
         MedicineUnitLabel.setFont(new Font("Poppins",Font.PLAIN,15));
         MedicineUnitInput = new JComboBox<>();
         MedicineUnitInput.setPreferredSize(new Dimension(300,40));
-        MedicineUnitInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineUnitInput.setFont(new Font("Courier",Font.PLAIN,15));
         MedicineUnitInput.setBackground(Color.white);
         MedicineUnitInput.setBorder(BorderFactory.createEmptyBorder());
         MedicineUnitInput.setOpaque(false);
@@ -486,16 +490,38 @@ class AddNewMedicinePage extends JPanel {
         MedicineUnitBox.add(MedicineUnitInput);
 
         // Quantity in Number
+        PlainDocument doc = new PlainDocument() {
+            @Override
+            public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+                if (str == null) {
+                    return;
+                }
+                char[] chars = str.toCharArray();
+                boolean isNumeric = true;
+                for (char c : chars) {
+                    if (!Character.isDigit(c)) {
+                        isNumeric = false;
+                        break;
+                    }
+                }
+                if (isNumeric) {
+                    super.insertString(offs, new String(chars), a);
+                }
+            }
+        };
         JPanel QuantityBox = new JPanel();
         QuantityBox.setOpaque(false);
-        QuantityBox.setLayout(new GridLayout(2,1,0,10));
+        QuantityBox.setLayout(new GridLayout(3,1,0,5));
         JLabel QuantityLabel = new JLabel("Quantity in Number");
         QuantityLabel.setFont(new Font("Poppins",Font.PLAIN,15));
         QuantityInput = new RoundedTextField(40,20);
-        QuantityInput.setPreferredSize(new Dimension(100,40));
-        QuantityInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        QuantityInput.setDocument(doc);
+        QuantityInput.setPreferredSize(new Dimension(100,50));
+        QuantityInput.setFont(new Font("Courier",Font.PLAIN,15));
+        emptyQuantity.setVisible(false);
         QuantityBox.add(QuantityLabel);
         QuantityBox.add(QuantityInput);
+        QuantityBox.add(emptyQuantity);
 
         // Contain 2
         JPanel container2 = new JPanel();
@@ -508,29 +534,31 @@ class AddNewMedicinePage extends JPanel {
         // Medicine ImportDate
         JPanel MedicineImportBox = new JPanel();
         MedicineImportBox.setOpaque(false);
-        MedicineImportBox.setLayout(new GridLayout(2,1,0,10));
+        MedicineImportBox.setLayout(new GridLayout(3,1,0,5));
         JLabel MedicineImportLabel = new JLabel("Import Date");
         MedicineImportLabel.setFont(new Font("Poppins",Font.PLAIN,15));
         MedicineImportInput = new RoundedTextField(40,20);
-        MedicineImportInput.setPreferredSize(new Dimension(300,40));
-        MedicineImportInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineImportInput.setPreferredSize(new Dimension(300,50));
+        MedicineImportInput.setFont(new Font("Courier",Font.PLAIN,15));
         MedicineImportInput.setEnabled(false);
         MedicineImportInput.setText(convertLocalDateToString(LocalDate.now()));
         MedicineImportBox.add(MedicineImportLabel);
         MedicineImportBox.add(MedicineImportInput);
 
-        // Medicine ExpiredDate
+        // Medicine ExpiryDate
         JPanel MedicineExpiredDayBox = new JPanel();
         MedicineExpiredDayBox.setOpaque(false);
-        MedicineExpiredDayBox.setLayout(new GridLayout(2,1,0,10));
-        JLabel MedicineExpiredDayLabel = new JLabel("Expired Date");
+        MedicineExpiredDayBox.setLayout(new GridLayout(3,1,0,5));
+        JLabel MedicineExpiredDayLabel = new JLabel("Expiry Date");
         MedicineExpiredDayLabel.setFont(new Font("Poppins",Font.PLAIN,15));
         MedicineExpiredDayInput = new RoundedTextField(40,20);
         MedicineExpiredDayInput.setToolTipText("Enter a date in the format DD-MM-YYYY");
-        MedicineExpiredDayInput.setPreferredSize(new Dimension(300,40));
-        MedicineExpiredDayInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        MedicineExpiredDayInput.setPreferredSize(new Dimension(300,50));
+        MedicineExpiredDayInput.setFont(new Font("Courier",Font.PLAIN,15));
+        emptyExpiryDate.setVisible(false);
         MedicineExpiredDayBox.add(MedicineExpiredDayLabel);
         MedicineExpiredDayBox.add(MedicineExpiredDayInput);
+        MedicineExpiredDayBox.add(emptyExpiryDate);
 
         // Contain 3
         JPanel container3 = new JPanel();
@@ -550,21 +578,21 @@ class AddNewMedicinePage extends JPanel {
         JLabel DescriptionLabel = new JLabel("Description (optional)");
         DescriptionLabelBox.add(DescriptionLabel);
         DescriptionLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        descriptionInput = new RoundedTextArea(5,100,20,Color.BLACK);
-        descriptionInput.setMinimumSize(new Dimension(700,100));
+        descriptionInput = new RoundedTextArea(3,100,20,Color.BLACK);
+        descriptionInput.setMinimumSize(new Dimension(700,80));
         descriptionInput.setLineWrap(true);
         descriptionInput.setWrapStyleWord(true);
-        descriptionInput.setFont(new Font("Poppins",Font.PLAIN,15));
+        descriptionInput.setFont(new Font("Courier",Font.PLAIN,15));
         DescriptionBox.add(DescriptionLabelBox);
         DescriptionBox.add(descriptionInput);
 
 
         form.add(container1);
-        form.add(Box.createVerticalStrut(20));
+        form.add(Box.createVerticalStrut(10));
         form.add(container2);
-        form.add(Box.createVerticalStrut(20));
+        form.add(Box.createVerticalStrut(10));
         form.add(container3);
-        form.add(Box.createVerticalStrut(20));
+        form.add(Box.createVerticalStrut(10));
         form.add(DescriptionBox);
 
         return form;
@@ -576,20 +604,23 @@ class AddNewMedicinePage extends JPanel {
 
         SaveButton.setMaximumSize(new Dimension(100,50));
         SaveButton.addActionListener(_->{
-            Medicine medicine = new Medicine(
-                    MedicineIDInput.getText(),
-                    MedicineNameInput.getText(),
-                    convertStringToLocalDate(MedicineImportInput.getText()),
-                    convertStringToLocalDate(MedicineExpiredDayInput.getText()),
-                    descriptionInput.getText(),
-                    Long.parseLong(QuantityInput.getText()),
-                    "Viên",
-                    0L
-            );
-            MedicineDAO.addMedicine(medicine);
-            MedicineDefaultPage.refreshMedicineTable();
-            this.panel.currentPage.removeLayoutComponent(this);
-            this.panel.currentPage.show(this.panel,"default-page");
+            if (!checkEmptyTextField())
+            {
+                Medicine medicine = new Medicine(
+                        MedicineIDInput.getText().trim().isEmpty()? null : MedicineIDInput.getText().trim(),
+                        MedicineNameInput.getText().trim(),
+                        convertStringToLocalDate(MedicineImportInput.getText().trim()),
+                        convertStringToLocalDate(MedicineExpiredDayInput.getText().trim()),
+                        descriptionInput.getText().trim(),
+                        Long.parseLong(QuantityInput.getText().trim()),
+                        "Viên",
+                        0L
+                );
+                MedicineDAO.addMedicine(medicine);
+                MedicineDefaultPage.refreshMedicineTable();
+                this.panel.currentPage.removeLayoutComponent(this);
+                this.panel.currentPage.show(this.panel,"default-page");
+            }
         });
         ResetButton.setMaximumSize(new Dimension(100,50));
         ResetButton.setBackground(Color.WHITE);
@@ -611,6 +642,11 @@ class AddNewMedicinePage extends JPanel {
         QuantityInput.setText("");
         descriptionInput.setText("");
     }
+    JLabel CannotBeLeftEmpty(){
+        JLabel label = new JLabel("Cannot be left empty");
+        label.setForeground(Color.red);
+        return label;
+    }
     static String convertLocalDateToString(LocalDate date){
         DateTimeFormatter dateFormatter4 = DateTimeFormatter
                 .ofPattern("dd-LL-yyyy");
@@ -620,6 +656,154 @@ class AddNewMedicinePage extends JPanel {
         // dd-LL-yyyy pattern
         return LocalDate.parse(date,DateTimeFormatter.ofPattern("dd-LL-yyyy"));
     }
+    Boolean checkEmptyTextField() {
+        Boolean check = false;
+        if (MedicineNameInput.getText().trim().isEmpty()){
+            alertEmptyTextField(MedicineNameInput);
+            emptyName.setVisible(true);
+            check = true;
+        }
+        else {
+            alertUnEmptyTextField(MedicineNameInput);
+            emptyName.setVisible(false);
+        }
+
+        if (QuantityInput.getText().trim().isEmpty()){
+            alertEmptyTextField(QuantityInput);
+            emptyQuantity.setVisible(true);
+            check = true;
+        }
+        else {
+            alertUnEmptyTextField(QuantityInput);
+            emptyQuantity.setVisible(false);
+        }
+
+        if (MedicineExpiredDayInput.getText().trim().isEmpty()){
+            alertEmptyTextField(MedicineExpiredDayInput);
+            emptyExpiryDate.setVisible(true);
+            check = true;
+        }
+        else {
+            alertUnEmptyTextField(MedicineExpiredDayInput);
+            emptyExpiryDate.setVisible(false);
+        }
+
+        return check;
+    }
+    void alertEmptyTextField(JTextComponent component){
+        Color ALERT_COLOR = new Color(0xffdbdd);
+        component.setBackground(ALERT_COLOR);
+    }
+    void alertUnEmptyTextField(JTextComponent component){
+        component.setBackground(Color.WHITE);
+    }
+}
+class EditDetailMedicinePage extends AddNewMedicinePage {
+    ViewMedicineInfoPage page;
+    Medicine medicine;
+    EditDetailMedicinePage(MedicinePanel panel, ViewMedicineInfoPage page) {
+        this.panel = panel;
+        this.page = page;
+        medicine = MedicineDAO.getMedicineById(page.medicineid);
+        System.out.println("Hello");
+        this.setBackground(Color.WHITE);
+        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 25));
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        container.setOpaque(false);
+        container.setBorder(new EmptyBorder(10,10,10,10));
+        container.add(headerContainer("Edit Details"));
+        container.add(Box.createVerticalStrut(30));
+        container.add(formContainer());
+        container.add(Box.createVerticalStrut(30));
+        container.add(footerContainer());
+
+        JScrollPane scrollPane = new JScrollPane(container);
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        add(scrollPane);
+    }
+
+    EditDetailMedicinePage(MedicinePanel panel) {
+        super(panel);
+    }
+
+    @Override
+    JPanel headerContainer(String medicineTitle) {
+        return super.headerContainer(medicineTitle);
+    }
+    @Override
+    JPanel formContainer(){
+        JPanel form = super.formContainer();
+        MedicineNameInput.setText(medicine.getMedicineName());
+        MedicineIDInput.setText(medicine.getMedicineId());
+        QuantityInput.setText(medicine.getAmount().toString());
+        MedicineImportInput.setEnabled(true);
+        MedicineImportInput.setText(convertLocalDateToString(medicine.getImportDate()));
+        MedicineExpiredDayInput.setText(convertLocalDateToString(medicine.getExpiryDate()));
+        descriptionInput.setText(medicine.getDescription());
+        return form;
+    }
+    @Override
+    void resetInfo(){
+        System.out.println(medicine.getMedicineName());
+        MedicineNameInput.setText(medicine.getMedicineName());
+        MedicineIDInput.setText(medicine.getMedicineId());
+        QuantityInput.setText(medicine.getAmount().toString());
+        MedicineImportInput.setEnabled(true);
+        MedicineImportInput.setText(convertLocalDateToString(medicine.getImportDate()));
+        MedicineExpiredDayInput.setText(convertLocalDateToString(medicine.getExpiryDate()));
+        descriptionInput.setText(medicine.getDescription());
+    }
+    JPanel footerContainer(){
+        JPanel panel = new JPanel(new FlowLayout());
+        panel.setOpaque(false);
+        panel.setMaximumSize(new Dimension(600,50));
+
+        SaveButton.setMaximumSize(new Dimension(100,50));
+        SaveButton.addActionListener(_->{
+            if (!checkEmptyTextField())
+            {
+                Medicine medicine = new Medicine(
+                        MedicineIDInput.getText().trim().isEmpty()? null : MedicineIDInput.getText().trim(),
+                        MedicineNameInput.getText().trim(),
+                        convertStringToLocalDate(MedicineImportInput.getText().trim()),
+                        convertStringToLocalDate(MedicineExpiredDayInput.getText().trim()),
+                        descriptionInput.getText().trim(),
+                        Long.parseLong(QuantityInput.getText().trim()),
+                        "Viên",
+                        0L
+                );
+                System.out.println(medicine.getImportDate());
+                MedicineDAO.addMedicine(medicine);
+                try {
+                    page.updateInfo(medicine);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                this.panel.currentPage.removeLayoutComponent(this);
+                System.out.println("view");
+                this.panel.currentPage.show(this.panel,"view-page");
+                MedicineDefaultPage.refreshMedicineTable();
+            }
+        });
+        ResetButton.setMaximumSize(new Dimension(100,50));
+        ResetButton.setBackground(Color.WHITE);
+        ResetButton.setBorder(new CompoundBorder(
+                BorderFactory.createLineBorder(new Color(0x3497F9)),
+                new EmptyBorder(10,10,10,10)
+        ));
+        ResetButton.setForeground(new Color(0x3497F9));
+        ResetButton.addActionListener(_->resetInfo());
+
+        panel.add(ResetButton);
+        panel.add(SaveButton);
+        return panel;
+    }
+
 }
 class ViewMedicineInfoPage extends JPanel {
     MedicinePanel panel;
@@ -633,7 +817,7 @@ class ViewMedicineInfoPage extends JPanel {
     JLabel medicineSupply;
     JTextArea description;
     JButton deleteButton = new RoundedButton(" Delete Medicine ");
-
+    Boolean hasEdited = false;
     ViewMedicineInfoPage(MedicinePanel panel){
         this.panel = panel;
         this.setBackground(Color.WHITE);
@@ -695,16 +879,18 @@ class ViewMedicineInfoPage extends JPanel {
         subTitle.setAlignmentX(LEFT_ALIGNMENT);
 
         JPanel ExpireDateBox = new JPanel(new GridLayout(2,1));
-        ExpireDateBox.setMaximumSize(new Dimension(130,80));
+        ExpireDateBox.setMaximumSize(new Dimension(100,80));
         ExpireDateBox.setOpaque(false);
         ExpireDateBox.setBorder(BorderFactory.createLineBorder(Color.red));
         ExpireDateBox.setAlignmentX(LEFT_ALIGNMENT);
         JLabel ExpireDateLabel = new JLabel("Expiry date");
         ExpireDateLabel.setFont(new Font("Courier",Font.PLAIN,13));
         ExpireDateLabel.setForeground(Color.red);
+        ExpireDateLabel.setAlignmentX(CENTER_ALIGNMENT);
         ExpDate = new JLabel("");
         ExpDate.setForeground(Color.red);
         ExpDate.setFont(new Font("Courier",Font.PLAIN,13));
+        ExpDate.setAlignmentX(CENTER_ALIGNMENT);
         ExpireDateBox.add(ExpireDateLabel);
         ExpireDateBox.add(ExpDate);
 
@@ -721,6 +907,13 @@ class ViewMedicineInfoPage extends JPanel {
         backButtonContainer.setOpaque(false);
         backButton.setMaximumSize(new Dimension(80,35));
         backButton.setFont(new Font("Courier",Font.PLAIN,15));
+        backButton.addActionListener(_ ->{
+            if (hasEdited){
+                MedicineDefaultPage.refreshMedicineTable();
+            }
+            panel.currentPage.removeLayoutComponent(this);
+            panel.currentPage.show(panel,"default-page");
+        });
         backButtonContainer.add(backButton);
 
         JPanel container01 = new JPanel();
@@ -730,6 +923,12 @@ class ViewMedicineInfoPage extends JPanel {
         editButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
         editButton.setMaximumSize(new Dimension(125,35));
         editButton.setFont(new Font("Courier",Font.PLAIN,15));
+        editButton.addActionListener(_->{
+            hasEdited = true;
+            EditDetailMedicinePage editPage = editDetail();
+            panel.add(editPage,"edit-page");
+            panel.currentPage.show(panel,"edit-page");
+        });
 
         container01.add(titleContainer);
         container01.add(editButton);
@@ -862,135 +1061,19 @@ class ViewMedicineInfoPage extends JPanel {
         barcode.setFont(new Font("Poppins",Font.BOLD,17));
         return BarcodeImageHandler.getImage(barcode);
     }
-}
-class MedicineForm extends JPanel{
-    JButton createBtn;
-    JTextField IDInput;
-    JTextField nameInput ;
-    JTextField phoneInput ;
-    JRadioButton male;
-    JRadioButton female;
-    JRadioButton otherGender;
-    ButtonGroup gender;
-    JFormattedTextField DOBInput;
-    JTextArea addressInput;
-    JTextField bloodGroupInput;
-    MedicineForm() {
-        JPanel form = Form();
-        setLayout(new BorderLayout());
-        setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
-//        setSize(700,400);
-        add(form);
-        setVisible(true);
+    public void updateInfo(Medicine medicine) throws Exception {
+        titleMedicine.setText(medicine.getMedicineName());
+        BufferedImage image = ViewMedicineInfoPage.generateEAN13BarcodeImage(medicine.getMedicineId());
+        MedicineID.setIcon(new ImageIcon(image));
+        medicineid = medicine.getMedicineId();
+        MedicineUnit.setText(medicine.getUnit());
+        medicineSupply.setText(medicine.getAmount().toString());
+        description.setText(medicine.getDescription());
+        ExpDate.setText(medicine.getformattedExpiryDate());
     }
-
-    public JPanel Form (){
-        // Patient's ID
-        JLabel IDLabel = new JLabel("Medical ID");
-        IDLabel.setBounds(300,20 + 20,95,20);
-        IDInput = new JTextField();
-        IDInput.setBounds(385,20 + 20,100,20);
-
-        // Patient's name
-        JLabel nameLabel = new JLabel("Name");
-        nameLabel.setBounds(300,50+ 20,95,20);
-        nameInput = new JTextField();
-        nameInput.setBounds(385,50+ 20,200,20);
-
-        //  Patient's phone number
-        JLabel phoneLabel = new JLabel("Phone");
-        phoneLabel.setBounds(300,80+ 20,95,20);
-        phoneInput = new JTextField();
-        phoneInput.setBounds(385,80+ 20,200,20);
-
-        // Patient's gender
-        JLabel genderLabel = new JLabel("Gender");
-        genderLabel.setBounds(300,110+ 20,95,20);
-        male = new JRadioButton("Male");
-        male.setBounds(380,110+ 20,60,20);
-        male.setBackground(Color.white);
-        female = new JRadioButton("Female");
-        female.setBounds(440,110+ 20,70,20);
-        female.setBackground(Color.white);
-        otherGender = new JRadioButton("Other");
-        otherGender.setBounds(515,110+ 20,70,20);
-        otherGender.setBackground(Color.white);
-        gender = new ButtonGroup();
-        gender.add(male);
-        gender.add(female);
-        gender.add(otherGender);
-
-        // Date of birth (DOB)
-        JLabel DOBLabel = new JLabel("Date of birth");
-        DOBLabel.setBounds(300,140+ 20,100,20);
-        DOBInput = new JFormattedTextField(createFormatter());
-        DOBInput.setText("01-01-1980");
-        DOBInput.setBounds(385, 140+ 20, 70, 20);
-
-        // Address
-        JLabel addressLabel = new JLabel("Address");
-        addressLabel.setBounds(300,170+ 20,100,20);
-        addressInput = new JTextArea();
-        addressInput.setBounds(385, 170+ 20, 200, 80);
-        addressInput.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        addressInput.setLineWrap(true);
-
-        // Patient's blood group
-        JLabel bloodGroupLabel = new JLabel("Blood type");
-        bloodGroupLabel.setBounds(300,270+ 20,100,20);
-        bloodGroupInput = new JTextField();
-        bloodGroupInput.setBounds(385,270+ 20,70,20);
-
-        // Create button
-        createBtn = new JButton("CREATE");
-        createBtn.setBackground(new Color(0x3497F9));
-        createBtn.setForeground(Color.white);
-        createBtn.setBounds(400,380-10,100,30);
-
-        JPanel form = new JPanel();
-        form.setBackground(Color.white);
-        form.setLayout(null);
-        form.add(nameLabel);
-        form.add(nameInput);
-        form.add(phoneLabel);
-        form.add(phoneInput);
-        form.add(genderLabel);
-        form.add(male);
-        form.add(female);
-        form.add(otherGender);
-        form.add(DOBLabel);
-        form.add(DOBInput);
-        form.add(addressLabel);
-        form.add(addressInput);
-        form.add(IDLabel);
-        form.add(IDInput);
-        form.add(bloodGroupLabel);
-        form.add(bloodGroupInput);
-        form.add(createBtn);
-
-        return form;
-    }
-
-    protected MaskFormatter createFormatter() {
-        MaskFormatter formatter = null;
-        try {
-            formatter = new MaskFormatter("##-##-####");
-        } catch (java.text.ParseException exc) {
-            System.err.println(STR."formatter is bad: \{exc.getMessage()}");
-            System.exit(-1);
-        }
-        return formatter;
-    }
-
-    public static String reformatDate(String inputDate) {
-        SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MM-yyyy");
-        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date date = inputFormat.parse(inputDate);
-            return outputFormat.format(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
+    EditDetailMedicinePage editDetail(){
+        EditDetailMedicinePage page = new EditDetailMedicinePage(panel,this);
+        page.resetInfo();
+        return page;
     }
 }
