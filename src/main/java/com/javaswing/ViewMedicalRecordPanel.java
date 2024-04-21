@@ -18,21 +18,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class ViewMedicalRecordPanel extends JPanel {
     JLabel message = new JLabel("");
     JButton backButton = new RoundedButton(" Return ");
-    JTextArea observation;
+    JTextArea diagnosis;
+    JTextField rating;
     JRadioButton Prescriptions = new JRadioButton("Prescriptions");
     JRadioButton Test = new JRadioButton("Test");
     JComboBox<String> medicineButton;
     JTextField quantity;
     JTextArea testDecription;
-    JTextArea testResult;
+    RoundedButton testResult;
     RoundedButton saveButton;
     String pre = "";
+    String filePath = "";
     MedicalRecord mr;
     ViewMedicalRecordPanel(String id, String userId) throws ExecutionException, InterruptedException {
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
@@ -111,23 +114,22 @@ public class ViewMedicalRecordPanel extends JPanel {
         bloodGroup.setFont(new Font("Courier",Font.PLAIN,16));
         bloodGroup.setBounds(200,190,100,20);
 
-        JLabel observationLabel = new JLabel("Observation");
-        observationLabel.setFont(new Font("Courier",Font.PLAIN,16));
-        observationLabel.setBounds(100,230,100,20);
-        observation = new RoundedTextArea(1, 1,20, Color.gray);
-        observation.setBounds(200, 230, 300, 200);
-        observation.setLineWrap(true);
+        JLabel ratingLabel = new JLabel("Service rating");
+        ratingLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        ratingLabel.setBounds(100,230,100,20);
+        rating = new RoundedTextField(1, 20);
+        rating.setBounds(200, 230, 230, 20);
 
-        observation.setEditable(false);
+        JLabel diagnosisLabel = new JLabel("Diagnosis");
+        diagnosisLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        diagnosisLabel.setBounds(100,270,100,20);
+        diagnosis = new RoundedTextArea(1, 1,20, Color.gray);
+        diagnosis.setBounds(200, 270, 300, 200);
+        diagnosis.setLineWrap(true);
+
+        diagnosis.setEditable(false);
         Prescriptions.setEnabled(false);
         Test.setEnabled(false);
-        saveButton.setEnabled(true);
-
-        if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Doctor")) {
-            observation.setEditable(true);
-            Prescriptions.setEnabled(true);
-            Test.setEnabled(true);
-        }
 
         Prescriptions.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -144,12 +146,12 @@ public class ViewMedicalRecordPanel extends JPanel {
             }
         });
 
-        Prescriptions.setBounds(100, 440, 150, 25);
+        Prescriptions.setBounds(100, 480, 150, 25);
         Prescriptions.setBackground(Color.white);
         Prescriptions.setFocusable(false);
         Prescriptions.setFocusPainted(false);
         Prescriptions.setFont(new Font("Courier",Font.PLAIN,16));
-        Test.setBounds(350, 440, 150, 25);
+        Test.setBounds(350, 480, 150, 25);
         Test.setBackground(Color.white);
         Test.setFocusable(true);
         Test.setFocusPainted(false);
@@ -157,11 +159,11 @@ public class ViewMedicalRecordPanel extends JPanel {
 
         message.setFont(new Font("Courier",Font.PLAIN,16));
         message.setForeground(Color.red);
-        message.setBounds(200, 470, 300, 25);
+        message.setBounds(200, 520, 300, 25);
 
         // Save Button
         saveButton = new RoundedButton(" Save ");
-        saveButton.setBounds(200, 500, 80, 25);
+        saveButton.setBounds(200, 550, 80, 25);
 
         JPanel form = new JPanel();
         form.setBackground(Color.white);
@@ -177,8 +179,10 @@ public class ViewMedicalRecordPanel extends JPanel {
         form.add(DOB);
         form.add(bloodGroupLabel);
         form.add(bloodGroup);
-        form.add(observationLabel);
-        form.add(observation);
+        form.add(ratingLabel);
+        form.add(rating);
+        form.add(diagnosisLabel);
+        form.add(diagnosis);
         form.add(Prescriptions);
         form.add(Test);
         form.add(message);
@@ -299,9 +303,25 @@ public class ViewMedicalRecordPanel extends JPanel {
         JLabel resLabel = new JLabel("Result");
         resLabel.setFont(new Font("Courier",Font.PLAIN,16));
         resLabel.setBounds(100,520,100,20);
-        testResult = new RoundedTextArea(1, 1,20, Color.gray);
-        testResult.setBounds(200, 520, 300, 100);
-        testResult.setLineWrap(true);
+        testResult = new RoundedButton("Choose result file");
+        testResult.setBounds(200, 520, 200, 100);
+        if (mr.getStatus().getValue().equals("Tested")) {
+            testResult.setText("View the result");
+        }
+
+        testResult.addActionListener(_->{
+            if (mr.getStatus().getValue().equals("Testing")) {
+                JFileChooser fileChooser = new JFileChooser();
+                int returnValue = fileChooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    filePath= selectedFile.getAbsolutePath();
+                }
+            }
+            else if (mr.getStatus().getValue().equals("Tested")) {
+                mr.openAnalysisFile();
+            }
+        });
 
         Prescriptions.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -315,7 +335,6 @@ public class ViewMedicalRecordPanel extends JPanel {
                     testResult.setEnabled(false);
                     addMedicineToPrecription.setEnabled(true);
                     testDecription.setBackground(Color.gray);
-                    testResult.setBackground(Color.gray);
                 }
             }
         });
@@ -329,69 +348,113 @@ public class ViewMedicalRecordPanel extends JPanel {
                     quantity.setEditable(false);
                     // Cho phép chỉnh sửa các trường liên quan đến Test
                     testDecription.setEnabled(true);
-                    testResult.setEnabled(true);
                     addMedicineToPrecription.setEnabled(false);
                     testDecription.setBackground(Color.white);
-                    testResult.setBackground(Color.white);
+
+                    if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Doctor")) {
+                        testResult.setEnabled(false);
+                    }
+                    else if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Technician")) {
+                        testResult.setEnabled(true);
+                    }
                 }
             }
         });
 
+        diagnosis.setEditable(false);
+        Prescriptions.setEnabled(false);
+        Test.setEnabled(false);
+        rating.setEditable(false);
+
+        medicineButton.setEnabled(false);
+        quantity.setEditable(false);
+        testDecription.setEnabled(false);
+        testResult.setEnabled(false);
+        addMedicineToPrecription.setEnabled(false);
+        testDecription.setBackground(Color.gray);
+
+        saveButton.setEnabled(false);
+        
+        // Trạng thái chờ, receptionist được xem, không được chỉnh sửa và lưu
+        //                 doctor được chỉnh sửa và lưu 
+        if (mr.getStatus().getValue().equals("Pending") && StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")) {
+            // chỉ xem
+        }
+        if (mr.getStatus().getValue().equals("Pending") && StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Doctor")) {
+            diagnosis.setEditable(true);
+            Prescriptions.setEnabled(true);
+            Test.setEnabled(true);
+            
+            saveButton.setEnabled(true);
+        }
+        // Trạng thái chờ xét nghiệm, chỉ tech mới được sửa test result
+        else if (mr.getStatus().getValue().equals("Testing") && StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Technician")) {
+            testResult.setEnabled(true);
+
+            saveButton.setEnabled(true);
+            Test.setSelected(true);
+            Prescriptions.setSelected(false);
+        }
+        // Trạng thái xét nghiệm xong, chỉ bác sĩ được sửa đơn thuốc
+        else if (mr.getStatus().getValue().equals("Tested") && StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Doctor")) {
+            medicineButton.setEnabled(true);
+            quantity.setEditable(true);
+            addMedicineToPrecription.setEnabled(true);
+            testResult.setEnabled(true);
+            diagnosis.setEditable(true);
+            
+            saveButton.setEnabled(true);
+            Prescriptions.setSelected(true);
+            Test.setSelected(false);
+        }
+        // Trạng thái chẩn bệnh xong, chỉ recep chỉnh rating
+        else if (mr.getStatus().getValue().equals("Diagnosed") && StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")) {
+            rating.setEditable(true);
+            
+            saveButton.setEnabled(true);
+        }
+
+        if (mr.getTestResult().getDiagnosis() != null) {
+            diagnosis.setText(mr.getTestResult().getDiagnosis());
+        }
+        if (mr.getTestResult().getTestType() != null) {
+            testDecription.setText(mr.getTestResult().getTestType());
+        }
+        if (mr.getTestResult().getPrescription() != null) {
+            Object[][] ob = parseStringToObjectArray(mr.getTestResult().getPrescription());
+            for (Object[] objects : ob) {
+                model.addRow(objects);
+                System.out.println(objects[0]);
+            }
+        }
+
         saveButton.addActionListener(_->{
             saveData(table);
-            MedicalRecord.Status st = MedicalRecord.Status.PENDING;
-            TestResult t = new TestResult();
-            if (StaffDAO.getStaffById(userId).getUserMode().equals("Doctor") && Prescriptions.isSelected()) {
-                st = MedicalRecord.Status.DIAGNOSED;
+            TestResult t = null;
+            if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Doctor") && Prescriptions.isSelected()) {
+                t = new TestResult(null, null, diagnosis.getText(), pre);
+                assert t != null;
+                MedRecDAO.updateTestResult(mr.getMedRecId(), t);
+            }
+            else if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Doctor")&& Test.isSelected()) {
+                t  = new TestResult(testDecription.getText(), null,null, null);
+                assert t != null;
+                MedRecDAO.updateTestResult(mr.getMedRecId(), t);
+            }
+            else if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Technician")) {
+                t  = new TestResult(null, filePath,null, null);
+                assert t != null;
+                MedRecDAO.updateTestResult(mr.getMedRecId(), t);
+            }
+            else if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")) {
+                MedRecDAO.updateServiceRating(mr.getMedRecId(), Integer.parseInt(rating.getText()));
+            }
 
-            }
-            else if (StaffDAO.getStaffById(userId).getUserMode().equals("Doctor") && Test.isSelected()) {
-                st = MedicalRecord.Status.TESTING;
-            }
-            else if (StaffDAO.getStaffById(userId).getUserMode().equals("Technician")) {
-                st = MedicalRecord.Status.TESTED;
-            }
-            else if (StaffDAO.getStaffById(userId).getUserMode().equals("Receptionist")) {
-                st = MedicalRecord.Status.CHECKED_OUT;
-            }
-            MedRecDAO.updateMedRec(mr.getMedRecId(),
-
-                    "prescription", pre,
-                    "status", st);
+            MedRecDAO.send(mr.getMedRecId());
+            System.out.println(MedRecDAO.getMedRecById(mr.getMedRecId()).getStatus().getValue());
             message.setText("Medical record has been update");
             message.setVisible(true);
         });
-
-//        if (mr.getObservation() != null) {
-//            observation.setText(mr.getObservation());
-//        }
-//        if (mr.getPrescription() != null) {
-//            Prescriptions.setSelected(true);
-//            Test.setSelected(false);
-//            medicineButton.setEnabled(true);
-//            quantity.setEditable(true);
-//            // Vô hiệu hóa các trường liên quan đến Test
-//            testDecription.setEnabled(false);
-//            testResult.setEnabled(false);
-//            addMedicineToPrecription.setEnabled(true);
-//            testDecription.setBackground(Color.gray);
-//            testResult.setBackground(Color.gray);
-//            Object[][] ob = parseStringToObjectArray(mr.getPrescription());
-//            for (int j=0; j<ob.length; j++) {
-//                model.addRow(ob[j]);
-//                System.out.println(ob[j][0]);
-//            }
-//        }
-//        if (mr.getObservation() == null && mr.getPrescription() == null) {
-//            medicineButton.setEnabled(false);
-//            quantity.setEditable(false);
-//            // Cho phép chỉnh sửa các trường liên quan đến Test
-//            testDecription.setEnabled(false);
-//            testResult.setEnabled(false);
-//            addMedicineToPrecription.setEnabled(false);
-//            testDecription.setBackground(Color.gray);
-//            testResult.setBackground(Color.gray);
-//        }
 
         exam.add(title1);
         exam.add(medicineLabel);
