@@ -123,6 +123,10 @@ public class MedicalRecord {
     }
 
     public void mergeTestResult(TestResult testResult) {
+        if (this.testResult == null) {
+            this.testResult = testResult;
+            return;
+        }
         this.testResult.merge(testResult);
     }
     //endregion
@@ -165,6 +169,7 @@ public class MedicalRecord {
     }
 
     public void openAnalysisFile() {
+        if (testResult == null || testResult.getAnalysisFilePath() == null) return;
         testResult.openAnalysisFile();
     }
 

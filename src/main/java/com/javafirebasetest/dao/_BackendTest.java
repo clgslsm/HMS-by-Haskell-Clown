@@ -91,36 +91,36 @@ public class _BackendTest {
             System.out.println("MedRec test result updated, now with status:");
             System.out.println(MedRecDAO.getMedRecById(medrecId) + "\n");
 
-            MedRecDAO.send(medrecId);
-            Thread.sleep(SLEEP_TIME);
-            System.out.println("MedRec sent to Tech, now with status:");
-            System.out.println(MedRecDAO.getMedRecById(medrecId) + "\n");
-
-            System.out.println("Press enter to advance.");
-            System.in.read();
-
-            //may ban frontend lam 1 cai cho de lay file nha, xong truyen path vo thoi
-            MedRecDAO.updateTestResult(medrecId, new TestResult(
-                    null,
-                    localFilePath,
-                    null,
-                    null
-            ));
-            Thread.sleep(SLEEP_TIME * 2);
-            System.out.println("MedRec AnalysisFilePath updated, now with status:");
-            System.out.println(MedRecDAO.getMedRecById(medrecId) + "\n");
-
-            MedRecDAO.send(medrecId);
-            Thread.sleep(SLEEP_TIME);
-            System.out.println("MedRec sent back to Doctor, now with status:");
-            System.out.println(MedRecDAO.getMedRecById(medrecId) + "\n");
-
-            System.out.println("Press enter to advance.");
-            System.in.read();
-
-            System.out.println("Opening analysis file...");
-
-            MedRecDAO.getMedRecById(medrecId).openAnalysisFile();
+            MedRecDAO.send(medrecId, true);
+//            Thread.sleep(SLEEP_TIME);
+//            System.out.println("MedRec sent to Tech, now with status:");
+//            System.out.println(MedRecDAO.getMedRecById(medrecId) + "\n");
+//
+//            System.out.println("Press enter to advance.");
+//            System.in.read();
+//
+//            //may ban frontend lam 1 cai cho de lay file nha, xong truyen path vo thoi
+//            MedRecDAO.updateTestResult(medrecId, new TestResult(
+//                    null,
+//                    localFilePath,
+//                    null,
+//                    null
+//            ));
+//            Thread.sleep(SLEEP_TIME * 2);
+//            System.out.println("MedRec AnalysisFilePath updated, now with status:");
+//            System.out.println(MedRecDAO.getMedRecById(medrecId) + "\n");
+//
+//            MedRecDAO.send(medrecId);
+//            Thread.sleep(SLEEP_TIME);
+//            System.out.println("MedRec sent back to Doctor, now with status:");
+//            System.out.println(MedRecDAO.getMedRecById(medrecId) + "\n");
+//
+//            System.out.println("Press enter to advance.");
+//            System.in.read();
+//
+//            System.out.println("Opening analysis file...");
+//
+//            MedRecDAO.getMedRecById(medrecId).openAnalysisFile();
 
             System.out.println("Press enter to advance.");
             System.in.read();
