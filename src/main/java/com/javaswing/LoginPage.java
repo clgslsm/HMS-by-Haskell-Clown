@@ -13,12 +13,11 @@ import static com.javafirebasetest.dao.UserDAO.getUserByUsername;
 import static com.javafirebasetest.dao.UserDAO.getUserByUsernamePassword;
 
 public class LoginPage implements ActionListener {
-
     JFrame frame = new JFrame();
     JButton loginButton = new RoundedButton("Login");
     JButton resetButton = new RoundedButton("Reset");
-    JTextField userNameField = new JTextField();
-    JPasswordField userPasswordField = new JPasswordField();
+    JTextField userNameField = new JTextField("Pharmacist22");
+    JPasswordField userPasswordField = new JPasswordField("Pharmacist22");
     JLabel userNameLabel = new JLabel("User name:");
     JLabel userPasswordLabel = new JLabel("Password:");
     JLabel messageLabel = new JLabel();

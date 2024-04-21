@@ -1,11 +1,9 @@
 package com.javaswing;
 import com.javafirebasetest.dao.MedicineDAO;
-import com.javafirebasetest.dao.PatientDAO;
 import com.javafirebasetest.entity.*;
 import net.sourceforge.barbecue.Barcode;
 import net.sourceforge.barbecue.BarcodeFactory;
 import net.sourceforge.barbecue.BarcodeImageHandler;
-
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -18,16 +16,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 class MedicinePanel extends JPanel {
     ArrayList<Medicine> data = new ArrayList<>();
@@ -47,6 +40,8 @@ class MedicinePanel extends JPanel {
 }
 class MedicineDefaultPage extends JLabel {
     JButton addMedicineBtn = AddMedicineButton();
+    MedicineSearchEngine searchEngine = new MedicineSearchEngine();
+    private JComboBox<String> filter = filterMedicine();
     static CustomTableModel model;
     JTable medicineList;
     static JLabel title = new JLabel("List of Medicines");
@@ -89,8 +84,10 @@ class MedicineDefaultPage extends JLabel {
 
         model = new CustomTableModel();
         medicineList = new JTable(model); // UI for patient list
+//        medicineTableRowSorter = new TableRowSorter(model);
         refreshMedicineTable();
 
+//        medicineList.setRowSorter(medicineTableRowSorter);
         medicineList.getTableHeader().setPreferredSize(new Dimension(medicineList.getTableHeader().getWidth(), 40));
         medicineList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
         medicineList.getTableHeader().setOpaque(false);
@@ -151,7 +148,54 @@ class MedicineDefaultPage extends JLabel {
         space.setBackground(Color.white);
         space.setSize(new Dimension(40, 40));
         this.add(space);
+        this.add(SearchFilterContainer());
+        this.add(Box.createVerticalStrut(20));
         this.add(body);
+    }
+    JPanel SearchFilterContainer(){
+        JPanel pan =  new JPanel();
+        pan.setOpaque(false);
+        pan.setLayout(new BoxLayout(pan,BoxLayout.X_AXIS));
+
+        searchEngine.setAlignmentX(LEFT_ALIGNMENT);
+        searchEngine.searchButton.addActionListener(_-> {
+            try {
+                showSearchResult(searchEngine.searchInput.getText());
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        filter.addActionListener(_->{
+            String choice = filter.getSelectedItem().toString();
+            if (choice.equals("All medicine")){
+                System.out.println("Option 1");
+                refreshMedicineTable();
+            }
+            else if (choice.equals("Medicine near to expiry")){
+                model.clearData();
+                System.out.println("Option 2");
+                List<Medicine> medicines = MedicineDAO.getAllMedicine();
+                for(Medicine medicine : medicines){
+                    if (checkNearExpiryMedicine(medicine))
+                        addMedicineToTable(medicine);
+                }
+            }
+            else if (choice.equals("Out of stock")){
+                model.clearData();
+                System.out.println("Option 3");
+                List<Medicine> medicines = MedicineDAO.getAllMedicine();
+                for(Medicine medicine : medicines){
+                    if (checkOutOfStock(medicine))
+                        addMedicineToTable(medicine);
+                }
+            }
+        });
+
+        pan.add(searchEngine);
+        pan.add(Box.createHorizontalGlue());
+        pan.add(filter);
+        return pan;
     }
     static void addMedicineToTable(Medicine medicine){
         ButtonRenderer buttonRenderer = new ButtonRenderer();
@@ -175,14 +219,11 @@ class MedicineDefaultPage extends JLabel {
     static class CustomTableModel extends AbstractTableModel {
         // Data for each column
         private Object[][] data = {};
-
         // Column names
         private final String[] columnNames = {"Name","Medicine ID","Import Date","Expiry Date", "Stock in Qty","Unit", ""};
-
         // Data types for each column
         @SuppressWarnings("rawtypes")
         private final Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,String.class,String.class, JButton.class};
-
         @Override
         public int getRowCount() {
             return data.length;
@@ -331,6 +372,40 @@ class MedicineDefaultPage extends JLabel {
         }
         title.setText("List of Medicines (%d)".formatted(allMedicins.size()));
         System.out.println("Refresh Medicine Table");
+    }
+    private void showSearchResult(String name) throws ExecutionException, InterruptedException {
+        if (!name.trim().isEmpty() && !name.trim().equals("Search by medicine name")){
+            try{
+                List<Medicine> res = MedicineDAO.getMedicineByName(name);
+                model.clearData();
+                for (Medicine m : res) {
+                    addMedicineToTable(m);
+                }
+            }
+            catch (Exception e) {
+                refreshMedicineTable();
+                searchEngine.searchInput.setText("No medicine found");
+                searchEngine.searchInput.setForeground(Color.red);
+            }
+        }
+        else refreshMedicineTable();
+    }
+    private JComboBox<String> filterMedicine(){
+        String[] choice = {"All medicine", "Medicine near to expiry", "Out of stock"};
+        JComboBox<String> filter = new JComboBox<>(choice);
+        filter.setMaximumSize(new Dimension(250,50));
+        filter.setBackground(Color.WHITE);
+        filter.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        filter.setForeground(Color.gray);
+        filter.setFont(new Font("Poppins", Font.ITALIC, 14));
+        filter.setSelectedItem("All medicine");
+        return filter;
+    }
+    private Boolean checkNearExpiryMedicine(Medicine medicine){
+        return (!medicine.getExpiryDate().isAfter(LocalDate.now().plusDays(14)));
+    }
+    private Boolean checkOutOfStock(Medicine medicine){
+        return medicine.getAmount() == 0;
     }
 }
 class AddNewMedicinePage extends JPanel {
@@ -1073,5 +1148,59 @@ class ViewMedicineInfoPage extends JPanel {
         EditDetailMedicinePage page = new EditDetailMedicinePage(panel,this);
         page.resetInfo();
         return page;
+    }
+}
+class MedicineSearchEngine extends JPanel {
+    JTextField searchInput = SearchBox();
+    JButton searchButton = SearchButton();
+    MedicineSearchEngine(){
+        setOpaque(false);
+        setMaximumSize(new Dimension(350, 45));
+        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        add(searchInput);
+        add(Box.createHorizontalStrut(10));
+        add(searchButton);
+    }
+    JTextField SearchBox(){
+        RoundedTextField field = new RoundedTextField(20, 20);
+        field.setMaximumSize(new Dimension(1500, 35));
+        field.setBackground(Color.white);
+        field.setForeground(Color.GRAY);
+        field.setFocusable(false);
+        field.revalidate();
+        field.setFont(new Font("Courier",Font.PLAIN,16));
+        field.setText("Search by medicine name");
+        field.addMouseListener(new CustomMouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (field.getText().equals("Search by medicine name") || field.getText().equals("No medicine found")) {
+                    field.setText("");
+                    field.setForeground(Color.BLACK);
+                }
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                field.setFocusable(true);
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                field.setFocusable(false);
+                if (field.getText().isEmpty()) {
+                    field.setForeground(Color.GRAY);
+                    field.setText("Search by medicine name");
+                }
+            }
+        });
+        return field;
+    }
+    JButton SearchButton(){
+        JButton button = new RoundedButton("Search");
+        button.setFont(new Font("Courier",Font.PLAIN,13));
+        button.setFocusable(false);
+        button.setForeground(Color.WHITE);
+        button.setBackground(new Color(0x3497F9));
+        button.setBounds(100, 100, 125, 60);
+        button.setBorder(new EmptyBorder(10,10,10,10));
+        return button;
     }
 }

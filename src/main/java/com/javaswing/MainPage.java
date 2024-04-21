@@ -14,7 +14,7 @@ import java.awt.geom.RoundRectangle2D;
 public class MainPage extends JFrame {
     MainPage(User user){
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setTitle("ABC Hospital @Receptionist");
+        this.setTitle("ABC Hospital @%s".formatted(user.getUsername()));
         this.getContentPane().setBackground(new Color(0xF1F8FF));
         this.setLayout(new BorderLayout());
         this.setVisible(true);
@@ -22,7 +22,6 @@ public class MainPage extends JFrame {
         this.pack();
     }
 }
-
 class MainPageUIContainer extends JPanel {
     User user;
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -60,12 +59,14 @@ class MainPageUIContainer extends JPanel {
         NavButton staffSection = new NavButton("Staffs");
         NavButton medicineSection = new NavButton("Medicine");
         NavButton machineSection = new NavButton("Machine");
+        NavButton exportMedicineSection = new NavButton("Export Medicine");
 
         defaultSection.setSelected(true);
         patientSection.setSelected(false);
         staffSection.setSelected(false);
         medicineSection.setSelected(false);
         machineSection.setSelected(false);
+        exportMedicineSection.setSelected(false);
 
         defaultSection.addActionListener(_->{
             defaultSection.setSelected(true);
@@ -73,6 +74,7 @@ class MainPageUIContainer extends JPanel {
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
+            exportMedicineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"staff-default-panel");
         });
 
@@ -82,6 +84,7 @@ class MainPageUIContainer extends JPanel {
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
+            exportMedicineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"patient-panel");
         });
 
@@ -91,6 +94,7 @@ class MainPageUIContainer extends JPanel {
             staffSection.setSelected(true);
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
+            exportMedicineSection.setSelected(false);
             containerLayout.show(mainPageContainer, "staff-panel");
         });
 
@@ -100,6 +104,7 @@ class MainPageUIContainer extends JPanel {
             staffSection.setSelected(false);
             medicineSection.setSelected(true);
             machineSection.setSelected(false);
+            exportMedicineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"medicine-panel");
         });
 
@@ -109,7 +114,18 @@ class MainPageUIContainer extends JPanel {
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
             machineSection.setSelected(true);
+            exportMedicineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"machine-panel");
+        });
+
+        exportMedicineSection.addActionListener(_->{
+            defaultSection.setSelected(false);
+            patientSection.setSelected(false);
+            staffSection.setSelected(false);
+            medicineSection.setSelected(false);
+            machineSection.setSelected(false);
+            exportMedicineSection.setSelected(true);
+            containerLayout.show(mainPageContainer,"export-medicine-panel");
         });
 
         navigationContainer.add(label);
@@ -143,6 +159,8 @@ class MainPageUIContainer extends JPanel {
         else if (user != null && user.getUserMode().getValue().equals("Pharmacist")) {
             cPanel.add(medicineSection);
             cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(exportMedicineSection);
+            cPanel.add(Box.createVerticalStrut(10));
         }
 
         navigationContainer.add(cPanel);
@@ -157,12 +175,14 @@ class MainPageUIContainer extends JPanel {
         JPanel patientPanel = new PatientPanel(user.getStaffId());
         JPanel staffPanel = new StaffPanel();
         JPanel medicinePanel = new MedicinePanel();
+        JPanel exportMedicinePanel = new ExportMedicinePanel();
         JPanel machinePanel = new MachinePanel();
 
         container.add(defaultPanel, "staff-default-panel");
         container.add(patientPanel, "patient-panel");
         container.add(staffPanel, "staff-panel");
         container.add(medicinePanel, "medicine-panel");
+        container.add(exportMedicinePanel,"export-medicine-panel");
         container.add(machinePanel, "machine-panel");
 
         containerLayout.show(container, "staff-default-panel");
@@ -170,7 +190,6 @@ class MainPageUIContainer extends JPanel {
         return container;
     }
 }
-
 class NavButton extends JButton {
     public NavButton(String text) {
         super(text);
@@ -210,7 +229,6 @@ class NavButton extends JButton {
         }
     }
 }
-
 class RoundedButton extends JButton {
     public RoundedButton(String text) {
         super(text);
@@ -278,7 +296,6 @@ class RoundedTextField extends JTextField {
         // Không làm gì ở đây để ngăn việc vẽ viền mặc định của JTextField
     }
 }
-
 class RoundedTextArea extends JTextArea {
     private int radius;
     private Color borderColor;
