@@ -118,6 +118,10 @@ public class MedicalRecord {
         return testResult;
     }
 
+    public void setCheckOut(Timestamp checkOut) {
+        this.checkOut = checkOut;
+    }
+
     public void mergeTestResult(TestResult testResult) {
         this.testResult.merge(testResult);
     }

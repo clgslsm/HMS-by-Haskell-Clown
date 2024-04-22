@@ -30,7 +30,7 @@
             <artifactId>barbecue</artifactId>
             <version>1.5-beta1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.itextpdf/itext-core -->
+        <!-- https://mvnrepository.com/artifact/com.itextpdf/itextpdf -->
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>

@@ -436,7 +436,7 @@ class AddNewMedicinePage extends JPanel {
         // Get back to default page
         backButton.addActionListener(_ ->{
             this.panel.currentPage.removeLayoutComponent(this);
-            this.panel.currentPage.show(this,"default-page");
+            this.panel.currentPage.show(this.panel,"default-page");
         });
         container.add(headerContainer("Add New Medicine"));
         container.add(Box.createVerticalStrut(30));
