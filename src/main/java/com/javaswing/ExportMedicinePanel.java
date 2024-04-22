@@ -1,11 +1,14 @@
 package com.javaswing;
 import com.itextpdf.text.*;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.javafirebasetest.dao.MedicineDAO;
 import com.javafirebasetest.entity.Medicine;
+import com.javafirebasetest.entity.User;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -20,10 +23,7 @@ import java.awt.*;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +33,7 @@ import java.util.List;
 import static com.javaswing.MedicineDefaultPage.refreshMedicineTable;
 
 class ExportMedicinePanel extends JPanel {
+    private User user;
     private JTextField MedicineNameInput;
     private JTextField MedicineIDInput;
     private JTextField MedicineExpiryDateInput;
@@ -48,7 +49,8 @@ class ExportMedicinePanel extends JPanel {
     private MedicineCartTableModel cartModel;
     private Medicine localMedicine;
     private List<Medicine> cart;
-    ExportMedicinePanel() {
+    ExportMedicinePanel(User user) {
+        this.user = user;
         this.setMaximumSize(new Dimension(1000, 700));
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 35));
         this.setBackground(Color.WHITE);
@@ -469,8 +471,31 @@ class ExportMedicinePanel extends JPanel {
         cartModel.clearData();
     }
     private void exportBill(){
+        // Specify the path of the folder you want to create
+        String folderPath = "C:/bill";
+
+        // Create a File object with the folder path
+        File folder = new File(folderPath);
+
+        // Check if the folder already exists
+        if (!folder.exists()) {
+            // If the folder does not exist, create it
+            boolean created = folder.mkdir();
+
+            // Check if the folder creation was successful
+            if (created) {
+                System.out.println("Folder created successfully.");
+            } else {
+                System.out.println("Failed to create folder.");
+            }
+        } else {
+            System.out.println("Folder already exists.");
+        }
+
         String path= STR."C://bill//Bill_\{generateBillID()}.pdf";
-        Document doc = new Document(PageSize.HALFLETTER);
+        Rectangle one = new Rectangle(180,600);
+        Document doc = new Document(one);
+        doc.setMargins(10, 10, 30, 30);
         try {
             PdfWriter.getInstance(doc, new FileOutputStream(path));
             doc.open();
@@ -493,14 +518,14 @@ class ExportMedicinePanel extends JPanel {
             // Add Bill ID and date
             String billID = generateBillID();
             String currentDate = getCurrentDate();
-            Paragraph billInfo = new Paragraph("Bill ID: " + billID + "\nDate: " + currentDate,font);
+            Paragraph billInfo = new Paragraph("Bill ID: " + billID + "\nDate: " + currentDate + "\nStaff: " + user.getUsername(),font);
             billInfo.setAlignment(Paragraph.ALIGN_CENTER);
             doc.add(billInfo);
             doc.add(lineSeparator);
 
             // Add table
             PdfPTable tb1 = new PdfPTable(2);
-            tb1.setWidthPercentage(45);
+            tb1.setWidthPercentage(95);
             tb1.getDefaultCell().setBackgroundColor(null);
             tb1.getDefaultCell().setPadding(5);
             tb1.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_CENTER);

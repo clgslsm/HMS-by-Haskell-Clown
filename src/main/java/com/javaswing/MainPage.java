@@ -175,7 +175,7 @@ class MainPageUIContainer extends JPanel {
         JPanel patientPanel = new PatientPanel(user.getStaffId());
         JPanel staffPanel = new StaffPanel();
         JPanel medicinePanel = new MedicinePanel();
-        JPanel exportMedicinePanel = new ExportMedicinePanel();
+        JPanel exportMedicinePanel = new ExportMedicinePanel(user);
         JPanel machinePanel = new MachinePanel();
 
         container.add(defaultPanel, "staff-default-panel");
