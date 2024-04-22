@@ -1,27 +1,44 @@
 package com.javaswing;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfDocument;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.javafirebasetest.dao.MedicineDAO;
 import com.javafirebasetest.entity.Medicine;
-
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
+import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+
+import static com.javaswing.MedicineDefaultPage.refreshMedicineTable;
 
 class ExportMedicinePanel extends JPanel {
     private JTextField MedicineNameInput;
     private JTextField MedicineIDInput;
     private JTextField MedicineExpiryDateInput;
     private JTextField UnitNumberInput;
+    private JLabel StockLabel;
+    private long stock = 0;
     private JButton AddToCartButton;
     private JButton PurchaseButton;
     private JTextField SearchInput;
@@ -32,7 +49,7 @@ class ExportMedicinePanel extends JPanel {
     private Medicine localMedicine;
     private List<Medicine> cart;
     ExportMedicinePanel() {
-        this.setMaximumSize(new Dimension(1300, 700));
+        this.setMaximumSize(new Dimension(1000, 700));
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 35));
         this.setBackground(Color.WHITE);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -73,12 +90,13 @@ class ExportMedicinePanel extends JPanel {
         container.add(formContainer());
         container.add(Box.createVerticalStrut(50));
         container.add(cartContainer());
+        container.add(Box.createVerticalStrut(50));
 
         body.add(Box.createHorizontalStrut(50));
         body.add(searchContainer());
         body.add(Box.createHorizontalGlue());
         body.add(container);
-        body.add(Box.createHorizontalStrut(50));
+        body.add(Box.createHorizontalStrut(30));
         return body;
     }
     JPanel searchContainer(){
@@ -97,6 +115,7 @@ class ExportMedicinePanel extends JPanel {
         MedicineSearchTable.setTableHeader(null);
         MedicineSearchTable.setOpaque(false);
         MedicineSearchTable.setSelectionBackground(new Color(0xF1F8FF));
+        MedicineSearchTable.setMaximumSize(new Dimension(200,600));
         hideColumn(MedicineSearchTable,1);
         MedicineSearchTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -109,6 +128,8 @@ class ExportMedicinePanel extends JPanel {
                 MedicineNameInput.setText(localMedicine.getMedicineName());
                 MedicineIDInput.setText(medicineID);
                 MedicineExpiryDateInput.setText(AddNewMedicinePage.convertLocalDateToString(localMedicine.getExpiryDate()));
+                stock = localMedicine.getAmount();
+                StockLabel.setText(STR."Stock: \{stock}");
             }
         });
         JScrollPane scrollPane = new JScrollPane(MedicineSearchTable);
@@ -120,9 +141,9 @@ class ExportMedicinePanel extends JPanel {
         }
 
         SearchInput = new RoundedTextField(40,20);
-        SearchInput.setMinimumSize(new Dimension(300,35));
-        SearchInput.setPreferredSize(new Dimension(300,40));
-        SearchInput.setMaximumSize(new Dimension(300,40));
+        SearchInput.setMinimumSize(new Dimension(200,35));
+        SearchInput.setPreferredSize(new Dimension(200,40));
+        SearchInput.setMaximumSize(new Dimension(200,40));
         SearchInput.setFont(new Font("Courier",Font.PLAIN,15));
         SearchInput.setText("Search by medicine name");
         SearchInput.setForeground(Color.gray);
@@ -177,7 +198,7 @@ class ExportMedicinePanel extends JPanel {
         container.add(SearchInput);
         container.add(Box.createVerticalStrut(20));
         container.add(scrollPane);
-        container.add(Box.createVerticalStrut(100));
+        container.add(Box.createVerticalStrut(30));
 
         return container;
     }
@@ -266,6 +287,28 @@ class ExportMedicinePanel extends JPanel {
         UnitNumberInput = new RoundedTextField(40,20);
         UnitNumberInput.setText("");
         UnitNumberInput.setDocument(doc);
+        UnitNumberInput.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                long noUnit = (UnitNumberInput.getText().isEmpty())? 0 : Long.parseLong(UnitNumberInput.getText());
+                long remain = stock - noUnit;
+                StockLabel.setText(STR."Stock: \{remain}");
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                long noUnit = (UnitNumberInput.getText().isEmpty())? 0 : Long.parseLong(UnitNumberInput.getText());
+                long remain = stock - noUnit;
+                StockLabel.setText(STR."Stock: \{remain}");
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                long noUnit = (UnitNumberInput.getText().isEmpty())? 0 : Long.parseLong(UnitNumberInput.getText());
+                long remain = stock - noUnit;
+                StockLabel.setText(STR."Stock: \{remain}");
+            }
+        });
         UnitNumberInput.setPreferredSize(new Dimension(100,50));
         UnitNumberInput.setFont(new Font("Courier",Font.PLAIN,15));
         UnitNumberBox.add(UnitNumberLabel);
@@ -284,12 +327,32 @@ class ExportMedicinePanel extends JPanel {
         AddToCartBox.setOpaque(false);
         AddToCartButton = new RoundedButton(" Add To Cart ");
         AddToCartButton.setMaximumSize(new Dimension(125,50));
+        AddToCartButton.addActionListener(_->{
+            long noUnit = (UnitNumberInput.getText().isEmpty()) ? 0 : Long.parseLong(UnitNumberInput.getText());
+            if (noUnit > 0){
+                AddMedicineToCart();
+                resetForm();
+                JOptionPane.showOptionDialog(this,"Successfully added to cart",null,JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE,null,null,null);
+            }
+            else
+                JOptionPane.showOptionDialog(this,"No of Units must be greater than 0",null,JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE,null,null,null);
+        });
         AddToCartBox.add(AddToCartButton);
+
+        JPanel StockBox = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        StockBox.setMaximumSize(new Dimension(600,50));
+        StockBox.setOpaque(false);
+        StockLabel = new JLabel(STR."Stock: \{stock}");
+        StockLabel.setFont(new Font("Courier",Font.ITALIC,15));
+        StockLabel.setForeground(Color.gray);
+        StockBox.add(StockLabel);
 
         form.add(container1);
         form.add(Box.createVerticalStrut(15));
         form.add(container2);
-        form.add(Box.createVerticalStrut(30));
+        form.add(Box.createVerticalStrut(15));
+        form.add(StockBox);
+        form.add(Box.createVerticalStrut(5));
         form.add(AddToCartBox);
 
         return form;
@@ -317,12 +380,43 @@ class ExportMedicinePanel extends JPanel {
         MedicineCartTable.setRowHeight(36);
         MedicineCartTable.getColumn("").setCellRenderer(new PatientDefaultPage.DeleteButtonRenderer());
         MedicineCartTable.getColumn("").setCellEditor(new PatientDefaultPage.DeleteButtonEditor(new JCheckBox()));
+        MedicineCartTable.getColumn("").setPreferredWidth(10);
+        MedicineCartTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int column = MedicineCartTable.getColumnModel().getColumnIndexAtX(e.getX());
+                int row = e.getY() / MedicineCartTable.getRowHeight();
+                Object deleteBtn = cartModel.getValueAt(row,column);
+                if (deleteBtn instanceof JButton){
+                    cartModel.deleteRow(row);
+                }
+            }
+        });
+        // Center-align the content in each column
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < MedicineCartTable.getColumnCount() - 1; i++) {
+            MedicineCartTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(MedicineCartTable);
 
         JPanel purchaseButtonBox = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         purchaseButtonBox.setOpaque(false);
         PurchaseButton = new RoundedButton(" Purchase & Print ");
+        PurchaseButton.addActionListener(_->{
+            int rowCount = MedicineCartTable.getRowCount();
+            exportBill();
+            for (int row = 0; row < rowCount; row++) {
+                String medicineid = cartModel.getValueAt(row,1).toString();
+                Medicine medicine = MedicineDAO.getMedicineById(medicineid);
+                MedicineDAO.updateMedicine(medicineid,
+                        "amount",medicine.getAmount()-Long.parseLong(cartModel.getValueAt(row,2).toString()));
+            }
+            resetExport();
+            refreshSearch();
+            refreshMedicineTable();
+        });
         purchaseButtonBox.add(PurchaseButton);
 
         panel.add(scrollPane);
@@ -334,14 +428,130 @@ class ExportMedicinePanel extends JPanel {
     void AddMedicineToTable(Medicine medicine){
         String format = STR."\{medicine.getMedicineName()}-\{medicine.getAmount()}-\{medicine.getformattedExpiryDate()}";
         Object[] data = new Object[]{format,medicine.getMedicineId()};
-        System.out.println(format);
         model.addRow(data);
+    }
+    void AddMedicineToCart(){
+        PatientDefaultPage.DeleteButtonRenderer deleteButtonRenderer = new PatientDefaultPage.DeleteButtonRenderer();
+        Object[] data = new Object[]{localMedicine.getMedicineName(),
+                localMedicine.getMedicineId(),
+                Long.parseLong(UnitNumberInput.getText()),
+                deleteButtonRenderer
+        };
+        cartModel.addRow(data);
     }
     private void hideColumn(JTable table, int columnIndex){
         table.getColumnModel().getColumn(columnIndex).setMaxWidth(0);
         table.getColumnModel().getColumn(columnIndex).setMinWidth(0);
         table.getColumnModel().getColumn(columnIndex).setPreferredWidth(0);
         table.getColumnModel().getColumn(columnIndex).setResizable(false);
+    }
+    private void resetForm(){
+        localMedicine = null;
+        MedicineNameInput.setText("");
+        MedicineIDInput.setText("");
+        MedicineExpiryDateInput.setText("");
+        UnitNumberInput.setText("");
+        stock = 0;
+        StockLabel.setText(STR."Stock: \{stock}");
+    }
+    private void refreshSearch(){
+        SearchInput.setText("");
+        model.clearData();
+        List<Medicine> medicines = MedicineDAO.getAllMedicine();
+        for(Medicine medicine : medicines){
+            AddMedicineToTable(medicine);
+        }
+        model.fireTableDataChanged();
+        System.out.println("Refresh Search");
+    }
+    private void resetExport(){
+        resetForm();
+        cartModel.clearData();
+    }
+    private void exportBill(){
+        String path= STR."C://bill//Bill_\{generateBillID()}.pdf";
+        Document doc = new Document(PageSize.HALFLETTER);
+        try {
+            PdfWriter.getInstance(doc, new FileOutputStream(path));
+            doc.open();
+
+            // Add title to the document
+            com.itextpdf.text.Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 15);
+            Paragraph title = new Paragraph("ABC HOSPITAL", titleFont);
+            title.setAlignment(Paragraph.ALIGN_CENTER);
+            doc.add(title);
+
+            // Add a horizontal line
+            // Add dashed line
+            // Add dashes as separator
+            com.itextpdf.text.Font font = FontFactory.getFont(FontFactory.HELVETICA, 7);
+            String dashes = " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n";
+            Paragraph lineSeparator = new Paragraph(dashes,font);
+            lineSeparator.setAlignment(Element.ALIGN_CENTER);
+            doc.add(lineSeparator);
+
+            // Add Bill ID and date
+            String billID = generateBillID();
+            String currentDate = getCurrentDate();
+            Paragraph billInfo = new Paragraph("Bill ID: " + billID + "\nDate: " + currentDate,font);
+            billInfo.setAlignment(Paragraph.ALIGN_CENTER);
+            doc.add(billInfo);
+            doc.add(lineSeparator);
+
+            // Add table
+            PdfPTable tb1 = new PdfPTable(2);
+            tb1.setWidthPercentage(45);
+            tb1.getDefaultCell().setBackgroundColor(null);
+            tb1.getDefaultCell().setPadding(5);
+            tb1.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+            tb1.getDefaultCell().setVerticalAlignment(PdfPCell.ALIGN_MIDDLE);
+
+            // Add cells to table
+            PdfPCell cell1 = new PdfPCell(new Phrase("Medicine", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 7)));
+            PdfPCell cell2 = new PdfPCell(new Phrase("No of Units", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 7)));
+
+            // Set alignment for cells
+            cell1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+            tb1.addCell(cell1);
+            tb1.addCell(cell2);
+            int row = cartModel.getRowCount();
+            for(int i = 0; i < row; i++){
+                PdfPCell cell3 = new PdfPCell(new Phrase(cartModel.getValueAt(i,0).toString(), font));
+                PdfPCell cell4 = new PdfPCell(new Phrase(cartModel.getValueAt(i,2).toString(), font));
+                cell3.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell4.setHorizontalAlignment(Element.ALIGN_CENTER);
+                tb1.addCell(cell3);
+                tb1.addCell(cell4);
+            }
+            doc.add(new Paragraph("\n"));
+            doc.add(tb1);
+            doc.add(new Paragraph("\n"));
+            doc.add(new Paragraph(""));
+
+            // Add content to the document
+            doc.add(lineSeparator);
+
+            // Close the document
+            doc.close();
+            System.out.println(STR."PDF created successfully at: \{path}");
+        }
+        catch (Exception e){
+
+        }
+    }
+    static public String generateBillID(){
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSSSSS");
+        return formatter.format(zonedDateTime);
+    }
+    private static String getCurrentDate() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        // Format the current date and time
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return currentDateTime.format(formatter);
     }
 }
 class MedicineSearchTableModel extends AbstractTableModel {
@@ -386,7 +596,6 @@ class MedicineSearchTableModel extends AbstractTableModel {
     public void addRow(Object[] rowData) {
         Object[][] newData = new Object[data.length + 1][getColumnCount()];
         System.arraycopy(data, 0, newData, 0, data.length);
-        System.out.println(Arrays.toString(rowData));
         newData[data.length] = rowData;
         data = newData;
         fireTableRowsInserted(data.length - 1, data.length - 1); // Notify the table that rows have been inserted
@@ -405,7 +614,7 @@ class MedicineCartTableModel extends AbstractTableModel {
     private final String[] columnNames = {"Medicine Name","Medicine ID","No of Units",""};
     // Data types for each column
     @SuppressWarnings("rawtypes")
-    private final Class[] columnTypes = {String.class,String.class,int.class,JButton.class};
+    private final Class[] columnTypes = {String.class,String.class,long.class,JButton.class};
     @Override
     public int getRowCount() {
         return data.length;
@@ -440,7 +649,6 @@ class MedicineCartTableModel extends AbstractTableModel {
     public void addRow(Object[] rowData) {
         Object[][] newData = new Object[data.length + 1][getColumnCount()];
         System.arraycopy(data, 0, newData, 0, data.length);
-        System.out.println(Arrays.toString(rowData));
         newData[data.length] = rowData;
         data = newData;
         fireTableRowsInserted(data.length - 1, data.length - 1); // Notify the table that rows have been inserted
@@ -451,4 +659,18 @@ class MedicineCartTableModel extends AbstractTableModel {
         data = new Object[0][0];
         if (rowCount > 0) fireTableRowsDeleted(0, rowCount - 1); // Notify the table that rows have been deleted
     }
+    public void deleteRow(int rowIndex) {
+        if (rowIndex >= 0 && rowIndex < data.length) {
+            Object[][] newData = new Object[data.length - 1][getColumnCount()];
+            int dstIndex = 0;
+            for (int srcIndex = 0; srcIndex < data.length; srcIndex++) {
+                if (srcIndex != rowIndex) {
+                    newData[dstIndex++] = data[srcIndex];
+                }
+            }
+            data = newData;
+            fireTableRowsDeleted(rowIndex, rowIndex); // Notify the table that rows have been deleted
+        }
+    }
 }
+
