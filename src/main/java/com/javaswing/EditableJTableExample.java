@@ -1,3 +1,5 @@
+package com.javaswing;
+
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
