@@ -22,7 +22,7 @@ public class FileManager {
     private static Storage storage;
     private static Bucket defaultBucket;
 
-    private static String localDataPath = "./LocalData/";
+    private static String localDataPath = "./HMSAppLocalData/";
     //HARD-CODED PATH
     private static String storageDataPath = "MedicalRecords/";
 
@@ -74,6 +74,23 @@ public class FileManager {
         return newBlob.getBlobId().getName();
     }
 
+    public static String uploadFile(String localFilePath, String medRecId) {
+        getInstance();
+        String[] paths = separateFolderPathAndFileName(localFilePath);
+        medRecId += '/';
+
+        BlobInfo blobInfo = Blob.newBuilder(defaultBucket, storageDataPath + medRecId + paths[1])
+                .build();
+        Blob newBlob = null;
+        try {
+            newBlob = storage.create(blobInfo, Files.readAllBytes(Path.of(localFilePath)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return newBlob.getBlobId().getName();
+    }
+
     // Downloads a file from Firebase Storage
     public static String downloadFile(String storagePath){
         getInstance();
@@ -83,7 +100,7 @@ public class FileManager {
         //Validate and create local save path
         String[] paths = separateFolderPathAndFileName(storagePath);
         File savePath = new File(localDataPath + paths[0]);
-        if (!savePath.exists()) savePath.mkdir();
+        if (!savePath.exists()) savePath.mkdirs();
 
         newBlob.downloadTo(Path.of(localDataPath + storagePath));
         System.out.println("File downloaded to LocalData.");
@@ -137,8 +154,9 @@ public class FileManager {
         }
         return directoryToBeDeleted.delete();
     }
-    public static void cleanUp(){
-        deleteDirectory(new File(localDataPath));
+    public static void cleanUp() {
+        boolean result = deleteDirectory(new File(localDataPath));
+        System.out.println("Locally downloaded file cleanup result: " + result);
     }
 
     public static String[] separateFolderPathAndFileName(String storagePath) {
