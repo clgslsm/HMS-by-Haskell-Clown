@@ -696,7 +696,6 @@ class ViewPatientInfoPage extends JPanel {
         this.add(new Box.Filler(new Dimension(100,15), new Dimension(100,15), new Dimension(100,15)));
         this.add(form); // Registration form
     }
-
     static class ViewMode extends JPanel {
         JTextField name;
         JTextField phone;

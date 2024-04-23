@@ -13,7 +13,6 @@ import static com.javafirebasetest.dao.UserDAO.getUserByUsername;
 import static com.javafirebasetest.dao.UserDAO.getUserByUsernamePassword;
 
 public class LoginPage implements ActionListener {
-
     JFrame frame = new JFrame();
     JButton loginButton = new RoundedButton("Login");
     JButton resetButton = new RoundedButton("Reset");

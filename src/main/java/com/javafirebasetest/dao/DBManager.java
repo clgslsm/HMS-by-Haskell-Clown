@@ -38,7 +38,7 @@ public class DBManager {
     private DBManager() {
         FileInputStream serviceAccount;
         try {
-            serviceAccount = new FileInputStream("./serviceAccountKeyNew.json");
+            serviceAccount = new FileInputStream("./serviceAccountKey.json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
