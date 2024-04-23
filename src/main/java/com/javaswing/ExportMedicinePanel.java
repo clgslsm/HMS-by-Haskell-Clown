@@ -1,7 +1,6 @@
 package com.javaswing;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -33,22 +32,19 @@ import java.util.List;
 import static com.javaswing.MedicineDefaultPage.refreshMedicineTable;
 
 class ExportMedicinePanel extends JPanel {
-    private User user;
+    private final User user;
     private JTextField MedicineNameInput;
     private JTextField MedicineIDInput;
     private JTextField MedicineExpiryDateInput;
     private JTextField UnitNumberInput;
     private JLabel StockLabel;
     private long stock = 0;
-    private JButton AddToCartButton;
-    private JButton PurchaseButton;
     private JTextField SearchInput;
     private JTable MedicineSearchTable;
     private JTable MedicineCartTable;
     private MedicineSearchTableModel model;
     private MedicineCartTableModel cartModel;
     private Medicine localMedicine;
-    private List<Medicine> cart;
     ExportMedicinePanel(User user) {
         this.user = user;
         this.setMaximumSize(new Dimension(1000, 700));
@@ -118,7 +114,7 @@ class ExportMedicinePanel extends JPanel {
         MedicineSearchTable.setOpaque(false);
         MedicineSearchTable.setSelectionBackground(new Color(0xF1F8FF));
         MedicineSearchTable.setMaximumSize(new Dimension(200,600));
-        hideColumn(MedicineSearchTable,1);
+        hideColumn(MedicineSearchTable);
         MedicineSearchTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -327,9 +323,9 @@ class ExportMedicinePanel extends JPanel {
         JPanel AddToCartBox = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         AddToCartBox.setMaximumSize(new Dimension(600,50));
         AddToCartBox.setOpaque(false);
-        AddToCartButton = new RoundedButton(" Add To Cart ");
-        AddToCartButton.setMaximumSize(new Dimension(125,50));
-        AddToCartButton.addActionListener(_->{
+        JButton addToCartButton = new RoundedButton(" Add To Cart ");
+        addToCartButton.setMaximumSize(new Dimension(125,50));
+        addToCartButton.addActionListener(_->{
             long noUnit = (UnitNumberInput.getText().isEmpty()) ? 0 : Long.parseLong(UnitNumberInput.getText());
             if (noUnit > 0){
                 AddMedicineToCart();
@@ -339,7 +335,7 @@ class ExportMedicinePanel extends JPanel {
             else
                 JOptionPane.showOptionDialog(this,"No of Units must be greater than 0",null,JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE,null,null,null);
         });
-        AddToCartBox.add(AddToCartButton);
+        AddToCartBox.add(addToCartButton);
 
         JPanel StockBox = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         StockBox.setMaximumSize(new Dimension(600,50));
@@ -405,8 +401,8 @@ class ExportMedicinePanel extends JPanel {
 
         JPanel purchaseButtonBox = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         purchaseButtonBox.setOpaque(false);
-        PurchaseButton = new RoundedButton(" Purchase & Print ");
-        PurchaseButton.addActionListener(_->{
+        JButton purchaseButton = new RoundedButton(" Purchase & Print ");
+        purchaseButton.addActionListener(_->{
             int rowCount = MedicineCartTable.getRowCount();
             exportBill();
             for (int row = 0; row < rowCount; row++) {
@@ -419,7 +415,7 @@ class ExportMedicinePanel extends JPanel {
             refreshSearch();
             refreshMedicineTable();
         });
-        purchaseButtonBox.add(PurchaseButton);
+        purchaseButtonBox.add(purchaseButton);
 
         panel.add(scrollPane);
         panel.add(Box.createVerticalStrut(30));
@@ -441,11 +437,11 @@ class ExportMedicinePanel extends JPanel {
         };
         cartModel.addRow(data);
     }
-    private void hideColumn(JTable table, int columnIndex){
-        table.getColumnModel().getColumn(columnIndex).setMaxWidth(0);
-        table.getColumnModel().getColumn(columnIndex).setMinWidth(0);
-        table.getColumnModel().getColumn(columnIndex).setPreferredWidth(0);
-        table.getColumnModel().getColumn(columnIndex).setResizable(false);
+    private void hideColumn(JTable table){
+        table.getColumnModel().getColumn(1).setMaxWidth(0);
+        table.getColumnModel().getColumn(1).setMinWidth(0);
+        table.getColumnModel().getColumn(1).setPreferredWidth(0);
+        table.getColumnModel().getColumn(1).setResizable(false);
     }
     private void resetForm(){
         localMedicine = null;
@@ -493,7 +489,7 @@ class ExportMedicinePanel extends JPanel {
         }
 
         String path= STR."C://bill//Bill_\{generateBillID()}.pdf";
-        Rectangle one = new Rectangle(180,600);
+        Rectangle one = new Rectangle(180,400);
         Document doc = new Document(one);
         doc.setMargins(10, 10, 30, 30);
         try {
@@ -525,7 +521,7 @@ class ExportMedicinePanel extends JPanel {
 
             // Add table
             PdfPTable tb1 = new PdfPTable(2);
-            tb1.setWidthPercentage(95);
+            tb1.setWidthPercentage(80);
             tb1.getDefaultCell().setBackgroundColor(null);
             tb1.getDefaultCell().setPadding(5);
             tb1.getDefaultCell().setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
@@ -562,9 +558,7 @@ class ExportMedicinePanel extends JPanel {
             doc.close();
             System.out.println(STR."PDF created successfully at: \{path}");
         }
-        catch (Exception e){
-
-        }
+        catch (Exception _){}
     }
     static public String generateBillID(){
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
