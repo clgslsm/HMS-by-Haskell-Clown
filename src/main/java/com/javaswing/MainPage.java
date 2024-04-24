@@ -6,9 +6,11 @@ import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.geom.RoundRectangle2D;
 
 public class MainPage extends JFrame {
@@ -18,7 +20,7 @@ public class MainPage extends JFrame {
         this.getContentPane().setBackground(new Color(0xF1F8FF));
         this.setLayout(new BorderLayout());
         this.setVisible(true);
-        this.add(new MainPageUIContainer(user));
+        this.add(new MainPageUIContainer(user,this));
         this.pack();
     }
 }
@@ -28,18 +30,18 @@ class MainPageUIContainer extends JPanel {
     CardLayout containerLayout = new CardLayout();
     JPanel navContainer;
     JPanel mainPageContainer;
-    MainPageUIContainer(User u){
+    MainPageUIContainer(User u, MainPage mainPage){
         user = u;
 
         this.setLayout(new BorderLayout());
         this.setSize(new Dimension(screenSize.width, screenSize.height));
 
-        navContainer = NavigationContainer();
+        navContainer = NavigationContainer(mainPage);
         mainPageContainer  = MainPageContainer();
         this.add(navContainer, BorderLayout.WEST);
         this.add(mainPageContainer);
     }
-    private JPanel NavigationContainer() {
+    private JPanel NavigationContainer(MainPage mainPage) {
         JPanel navigationContainer = new JPanel();
         navigationContainer.setPreferredSize(new Dimension(screenSize.width * 4261 / 27320, screenSize.height));
         navigationContainer.setLayout(new BoxLayout(navigationContainer, BoxLayout.Y_AXIS));
@@ -163,7 +165,30 @@ class MainPageUIContainer extends JPanel {
             cPanel.add(Box.createVerticalStrut(10));
         }
 
+        JPanel logoutBox = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        logoutBox.setMaximumSize(new Dimension(200,50));
+        logoutBox.setBorder(new EmptyBorder(0,20,0,20));
+        logoutBox.setOpaque(false);
+        JButton logoutBtn = new RoundedButton(" Logout ");
+        logoutBtn.setOpaque(false);
+        logoutBtn.setForeground(Color.red);
+        logoutBtn.setBackground(Color.WHITE);
+        logoutBtn.setMinimumSize(new Dimension(125,50));
+        logoutBtn.setBorder(new CompoundBorder(
+                BorderFactory.createLineBorder(Color.red),
+                new EmptyBorder(10,10,10,10)
+        ));
+        logoutBtn.addActionListener(_->{
+            mainPage.setVisible(false);
+            LoginPage login = new LoginPage();
+        });
+        logoutBox.add(logoutBtn);
+
+
         navigationContainer.add(cPanel);
+        navigationContainer.add(Box.createVerticalStrut(200));
+        navigationContainer.add(logoutBtn);
+
         return navigationContainer;
     }
     private JPanel MainPageContainer() {
