@@ -1,26 +1,18 @@
 package com.javaswing;
-import com.javafirebasetest.dao.DoctorDAO;
 import com.javafirebasetest.dao.MachineDAO;
-import com.javafirebasetest.dao.StaffDAO;
 import com.javafirebasetest.entity.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 class MachinePanel extends JPanel {
-    ArrayList<Machine> data = new ArrayList<>();
     MachineDefaultPage defaultPage;
     MachinePanel() {
         CardLayout currentPage = new CardLayout();
@@ -46,25 +38,12 @@ class MachinePanel extends JPanel {
                 if (name.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "The input box cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Name: " + name, "Information", JOptionPane.INFORMATION_MESSAGE);
-                    //Machine newMachine = new Machine();
-                    //Doctor newDoctor = new Doctor("12", name, );
-////                data.add(newDoctor);
-////                try {
-////                    DoctorDAO.addDoctor(newDoctor);
-////                } catch (ExecutionException | InterruptedException ex) {
-////                    throw new RuntimeException(ex);
-////                }
-////                defaultPage.addDoctorToTable(newDoctor);
-////                System.out.println(data);
+                    JOptionPane.showMessageDialog(null, STR."Name: \{name}", "Information", JOptionPane.INFORMATION_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Cancel", "Notification", JOptionPane.INFORMATION_MESSAGE);
             }
         });
-
-        // See full information and medical records of a specific patient
-        MachinePanel machinePanel = this;
 
         // Always show default page
         this.add(defaultPage, "default-page");
@@ -80,28 +59,6 @@ class MachineDefaultPage extends JLabel {
         this.setMaximumSize(new Dimension(1300,600));
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-        // Header container
-        JPanel header = new JPanel();
-        JLabel title = new JLabel("Machine Information");
-        title.setFont(title.getFont().deriveFont(25F));
-        title.setForeground(new Color(0x3497F9));
-        header.setBackground(new Color(0xF1F8FF));
-        header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
-
-        header.add(title);
-        header.add(Box.createHorizontalGlue());
-        header.add(searchEngine);
-        header.add(Box.createHorizontalGlue());
-        header.add(addMachineBtn);
-
-        searchEngine.searchButton.addActionListener(_-> {
-            try {
-                showSearchResult(searchEngine.searchInput.getText());
-            } catch (ExecutionException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        });
 
         //Table
         JPanel body = new JPanel();
@@ -149,12 +106,36 @@ class MachineDefaultPage extends JLabel {
         scrollPane.setViewportView(machineList);
         body.add(scrollPane);
 
-        this.add(header);
+        this.add(headerContainer());
         JPanel space = new JPanel();
         space.setBackground(new Color(0xF1F8FF));
         space.setSize(new Dimension(100, 100));
         this.add(space);
         this.add(body);
+    }
+    JPanel headerContainer(){
+        // Header container
+        JPanel header = new JPanel();
+        JLabel title = new JLabel("Machine Information");
+        title.setFont(title.getFont().deriveFont(25F));
+        title.setForeground(new Color(0x3497F9));
+        header.setBackground(new Color(0xF1F8FF));
+        header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
+
+        header.add(title);
+        header.add(Box.createHorizontalGlue());
+        header.add(searchEngine);
+        header.add(Box.createHorizontalGlue());
+        header.add(addMachineBtn);
+
+        searchEngine.searchButton.addActionListener(_-> {
+            try {
+                showSearchResult(searchEngine.searchInput.getText());
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return header;
     }
     static class SearchEngine extends JPanel {
         JTextField searchInput = SearchBox();
@@ -213,7 +194,7 @@ class MachineDefaultPage extends JLabel {
     }
     void addMachineToTable (Machine machine){
         ButtonRenderer buttonRenderer = new ButtonRenderer();
-        Object[] rowData = new Object[]{machine.getMachineId(), machine.getMachineName(), buttonRenderer};
+        Object[] rowData = new Object[]{machine.getMachineId(), machine.getMachineName(), machine.getUseCount().toString(), buttonRenderer};
         model.addRow(rowData);
     }
     public void showSearchResult(String name) throws ExecutionException, InterruptedException {
@@ -247,11 +228,11 @@ class MachineDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name","Purchase Date","Status","Usage History", "Action"};
+        private final String[] columnNames = {"Machine ID","Machine Name","Remain Use", "Action"};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
-        private final Class[] columnTypes = {String.class,String.class,String.class,String.class,String.class,JButton.class};
+        private final Class[] columnTypes = {String.class,String.class,String.class,JButton.class};
 
         @Override
         public int getRowCount() {
@@ -310,7 +291,6 @@ class MachineDefaultPage extends JLabel {
 
         return addMachineButton;
     }
-
     static class ButtonRenderer extends DefaultTableCellRenderer {
         private JPanel panel;
         private RoundedButton viewButton;
@@ -352,7 +332,6 @@ class MachineDefaultPage extends JLabel {
         }
 
     }
-
     static class ButtonEditor extends DefaultCellEditor {
         private JPanel panel;
         private RoundedButton viewButton;

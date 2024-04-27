@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutionException;
 
 import static com.javafirebasetest.dao.UserDAO.getUserByUsername;
 import static com.javafirebasetest.dao.UserDAO.getUserByUsernamePassword;
@@ -16,8 +17,8 @@ public class LoginPage implements ActionListener {
     JFrame frame = new JFrame();
     JButton loginButton = new RoundedButton("Login");
     JButton resetButton = new RoundedButton("Reset");
-    JTextField userNameField = new JTextField();
-    JPasswordField userPasswordField = new JPasswordField();
+    JTextField userNameField = new JTextField("Technician16");
+    JPasswordField userPasswordField = new JPasswordField("Technician16");
     JLabel userNameLabel = new JLabel("User name:");
     JLabel userPasswordLabel = new JLabel("Password:");
     JLabel messageLabel = new JLabel();
@@ -101,7 +102,11 @@ public class LoginPage implements ActionListener {
                 User user = getUserByUsernamePassword(userName, password);
                 if (user != null) {
                     messageLabel.setText("OK");
-                    MainPage newMainPage = new MainPage(user);
+                    try {
+                        MainPage newMainPage = new MainPage(user);
+                    } catch (ExecutionException | InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
                     frame.setVisible(false);
                 } else {
                     messageLabel.setText("Username or password incorrect.");
