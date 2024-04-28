@@ -87,7 +87,6 @@ class MedicalRecordDefaultPage extends JPanel {
         medicalRecordList.getTableHeader().setReorderingAllowed(false);
         medicalRecordList.setFont(new Font("Courier",Font.PLAIN,13));
         medicalRecordList.getColumn("").setCellRenderer(new ViewButtonRenderer());
-        medicalRecordList.getColumn("").setCellEditor(new ViewButtonEditor(new JCheckBox()));
 
         // Create a custom cell renderer
         TableCellRenderer renderer = new DefaultTableCellRenderer() {

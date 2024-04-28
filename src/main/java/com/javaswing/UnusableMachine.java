@@ -1,6 +1,7 @@
 package com.javaswing;
+
 import com.javafirebasetest.dao.MachineDAO;
-import com.javafirebasetest.entity.*;
+import com.javafirebasetest.entity.Machine;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,50 +13,27 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-class MachinePanel extends JPanel {
-    MachineDefaultPage defaultPage;
-    MachinePanel() {
+
+class UnusableMachinePanel extends JPanel {
+    UnusableMachineDefaultPage defaultPage;
+    UnusableMachinePanel(){
         CardLayout currentPage = new CardLayout();
         this.setLayout(currentPage);
         this.setBackground(Color.white);
 
-        defaultPage = new MachineDefaultPage();
-
-        // When we click "Add Doctor" => change to Doctor Registration Page
-        defaultPage.addMachineBtn.addActionListener(_ -> {
-            JTextField nameField = new JTextField(30);
-
-            Object[] message = {
-                    "Name of machine:", nameField,
-            };
-
-            int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.OK_CANCEL_OPTION);
-
-            if (option == JOptionPane.OK_OPTION) {
-                String name = nameField.getText();
-
-                // Kiểm tra xem có ô nào bị bỏ trống không
-                if (name.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "The input box cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(null, STR."Name: \{name}", "Information", JOptionPane.INFORMATION_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "Cancel", "Notification", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
+        defaultPage = new UnusableMachineDefaultPage();
 
         // Always show default page
         this.add(defaultPage, "default-page");
         currentPage.show(this, "default-page");
     }
 }
-class MachineDefaultPage extends JLabel {
-    MachineDefaultPage.SearchEngine searchEngine = new MachineDefaultPage.SearchEngine();
-    JButton addMachineBtn = AddMachineButton();
+
+class UnusableMachineDefaultPage extends JLabel {
+    SearchEngine searchEngine = new SearchEngine();
     private static CustomTableModel model;
     private JTable machineList;
-    MachineDefaultPage() {
+    UnusableMachineDefaultPage() {
         this.setMaximumSize(new Dimension(1300,600));
         this.setBackground(Color.WHITE);
         this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
@@ -81,7 +59,6 @@ class MachineDefaultPage extends JLabel {
         header.add(Box.createHorizontalGlue());
         header.add(searchEngine);
         header.add(Box.createHorizontalGlue());
-        header.add(addMachineBtn);
 
         searchEngine.searchButton.addActionListener(_-> {
             try {
@@ -144,14 +121,15 @@ class MachineDefaultPage extends JLabel {
                 Object value = machineList.getValueAt(row,column);
                 if (column == 4 && value instanceof JButton){
                     System.out.println(STR."Button clicked for row: \{row}");
-                    MachineDAO.useMachine(machineList.getValueAt(row,0).toString());
+                    MachineDAO.maintainMachine(machineList.getValueAt(row,0).toString());
                     refreshMachineTable();
+                    MachineDefaultPage.refreshMachineTable();
                     Object[] message = {
                             STR."<html><b style='color:#3497F9; font-size:15px;'>\{machineList.getValueAt(row,1)}<b><html>",
                             STR."<html><b style='font-size:8px;'>ID: \{machineList.getValueAt(row,0)}<b><html>",
-                            STR."<html><br><br><p>Machine is being used</p><html>"
+                            "<html><br><br><p>Machine is under maintenance</p><html>"
                     };
-                    int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.DEFAULT_OPTION);
+                    JOptionPane.showConfirmDialog(null, message, "", JOptionPane.DEFAULT_OPTION);
                 }
                 if (column == 5 && value instanceof JButton){
                     System.out.println(STR."Button clicked for row: \{row}");
@@ -229,7 +207,7 @@ class MachineDefaultPage extends JLabel {
     }
     static void refreshMachineTable(){
         model.clearData();
-        List<Machine> availableMachines = MachineDAO.getUsableMachine();
+        java.util.List<Machine> availableMachines = MachineDAO.getUnusableMachine();
         for (Machine p : availableMachines) {
             addMachineToTable(p);
         }
@@ -311,17 +289,6 @@ class MachineDefaultPage extends JLabel {
             if (rowCount > 0) fireTableRowsDeleted(0, rowCount - 1);
         }
     }
-    public JButton AddMachineButton(){
-        JButton addMachineButton = new RoundedButton("  + Add Machine  ");
-        addMachineButton.setFont(new Font("Courier",Font.PLAIN,13));
-        addMachineButton.setFocusable(false);
-        addMachineButton.setForeground(Color.WHITE);
-        addMachineButton.setBackground(new Color(0x3497F9));
-        addMachineButton.setBounds(100, 100, 125, 60);
-        addMachineButton.setBorder(new EmptyBorder(10,10,10,10));
-
-        return addMachineButton;
-    }
     static class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -332,8 +299,8 @@ class MachineDefaultPage extends JLabel {
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             setBackground(Color.WHITE);
             setFont(new Font("Courier",Font.BOLD,16));
-            setText("Request Use");
-            setForeground(Color.BLUE);
+            setText("Request Maintenance");
+            setForeground(new Color(0xfe8702));
             setMaximumSize(new Dimension(70,18));
             setBorder(BorderFactory.createEmptyBorder());
             setOpaque(false);
@@ -356,9 +323,9 @@ class MachineDefaultPage extends JLabel {
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
             button.setBackground(Color.WHITE);
-            button.setText("Request Use");
+            button.setText("Request Maintenance");
             button.setFont(new Font("Courier",Font.BOLD,16));
-            button.setForeground(Color.BLUE);
+            button.setForeground(new Color(0xfe8702));
             button.setMaximumSize(new Dimension(70,18));
             button.setBorder(BorderFactory.createEmptyBorder());
             button.setOpaque(false);
