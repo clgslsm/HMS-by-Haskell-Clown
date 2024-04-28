@@ -235,22 +235,34 @@ class MainPageUIContainer extends JPanel {
         container.setPreferredSize(new Dimension(screenSize.width * 23059 / 27320, screenSize.height));
 
         JPanel defaultPanel = new DefaultPanel(user);
-        JPanel patientPanel = new PatientPanel(user.getStaffId());
-        JPanel staffPanel = new StaffPanel();
-        JPanel medicinePanel = new MedicinePanel();
-        JPanel exportMedicinePanel = new ExportMedicinePanel(user);
-        JPanel machinePanel = new MachinePanel();
-        JPanel unusableMachinePanel = new UnusableMachinePanel();
-        JPanel medrecPanel = new MedicalRecordPanel(user);
-
         container.add(defaultPanel, "staff-default-panel");
-        container.add(patientPanel, "patient-panel");
-        container.add(staffPanel, "staff-panel");
-        container.add(medicinePanel, "medicine-panel");
-        container.add(exportMedicinePanel,"export-medicine-panel");
-        container.add(machinePanel, "machine-panel");
-        container.add(unusableMachinePanel,"unusable-machine-panel");
-        container.add(medrecPanel, "medrec-panel");
+
+        if (user != null && user.getUserMode().getValue().equals("Doctor")) {
+            JPanel patientPanel = new PatientPanel(user.getStaffId());
+            container.add(patientPanel, "patient-panel");
+        }
+        else if (user != null && user.getUserMode().getValue().equals("Admin")) {
+            JPanel staffPanel = new StaffPanel();
+            container.add(staffPanel, "staff-panel");
+        }
+        else if (user != null && user.getUserMode().getValue().equals("Receptionist")) {
+            JPanel patientPanel = new PatientPanel(user.getStaffId());
+            container.add(patientPanel, "patient-panel");
+        }
+        else if (user != null && user.getUserMode().getValue().equals("Technician")) {
+            JPanel medrecPanel = new MedicalRecordPanel(user);
+            JPanel machinePanel = new MachinePanel();
+            JPanel unusableMachinePanel = new UnusableMachinePanel();
+            container.add(machinePanel, "machine-panel");
+            container.add(unusableMachinePanel,"unusable-machine-panel");
+            container.add(medrecPanel, "medrec-panel");
+        }
+        else if (user != null && user.getUserMode().getValue().equals("Pharmacist")) {
+            JPanel medicinePanel = new MedicinePanel();
+            JPanel exportMedicinePanel = new ExportMedicinePanel(user);
+            container.add(medicinePanel, "medicine-panel");
+            container.add(exportMedicinePanel,"export-medicine-panel");
+        }
 
         containerLayout.show(container, "staff-default-panel");
 
