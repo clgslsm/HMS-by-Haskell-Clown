@@ -87,6 +87,7 @@ class MedicalRecordDefaultPage extends JPanel {
         medicalRecordList.getTableHeader().setReorderingAllowed(false);
         medicalRecordList.setFont(new Font("Courier",Font.PLAIN,13));
         medicalRecordList.getColumn("").setCellRenderer(new ViewButtonRenderer());
+        medicalRecordList.getColumn("").setCellEditor(new ViewButtonEditor(new JCheckBox()));
 
         // Create a custom cell renderer
         TableCellRenderer renderer = new DefaultTableCellRenderer() {
@@ -112,6 +113,7 @@ class MedicalRecordDefaultPage extends JPanel {
             }
         };
         medicalRecordList.getColumnModel().getColumn(4).setCellRenderer(renderer);
+
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         for (int i = 0; i < 4; i++) {
@@ -131,10 +133,21 @@ class MedicalRecordDefaultPage extends JPanel {
                     Object value = medicalRecordList.getValueAt(row, column);
                     if (value instanceof JButton) {
                         // Instead of simulating button click, print to terminal
-                        ViewMedicalRecordPage viewMedicalRecordPage;
+                        ViewMedicalRecordPanel viewMedicalRecordPage;
                         System.out.println(STR."Button clicked for row: \{row}");
                         try {
                             viewMedicalRecordPage = viewPage(row);
+                            viewMedicalRecordPage.backButton.addActionListener(_->{
+                                parentPanel.currentPage.show(parentPanel, "view-page");
+                                parentPanel.currentPage.removeLayoutComponent(viewMedicalRecordPage);
+                                try {
+                                    refreshMedicalRecordTable();
+                                } catch (ExecutionException e) {
+                                    throw new RuntimeException(e);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            });
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -183,12 +196,11 @@ class MedicalRecordDefaultPage extends JPanel {
         table.getColumnModel().getColumn(0).setPreferredWidth(0);
         table.getColumnModel().getColumn(0).setResizable(false);
     }
-    private ViewMedicalRecordPage viewPage(int row) throws Exception {
+    private ViewMedicalRecordPanel viewPage(int row) throws Exception {
         System.out.println(medicalRecordList.getModel().getValueAt(row,0).toString());
         System.out.println(parentPanel.user.getStaffId());
         // call medicine ID
-        return new ViewMedicalRecordPage(
-                parentPanel,
+        return new ViewMedicalRecordPanel(
                 medicalRecordList.getModel().getValueAt(row,0).toString(),
                 parentPanel.user.getStaffId()
                 );

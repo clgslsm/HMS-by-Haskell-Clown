@@ -23,7 +23,7 @@ class LoginPage extends JFrame {
 
         // Create a custom JPanel with the background image
         home = new Home(new ImageIcon("src/main/java/com/javaswing/img/home.jpg").getImage());
-        form = new LoginForm();
+        form = new LoginForm(this);
 
         JPanel container1 = new JPanel();
         container1.setLayout(null);
@@ -68,7 +68,9 @@ class LoginForm extends JPanel implements ActionListener {
     JLabel userNameLabel = new JLabel("User name:");
     JLabel userPasswordLabel = new JLabel("Password:");
     JLabel messageLabel = new JLabel();
-    LoginForm(){
+    LoginPage frame;
+    LoginForm(LoginPage frame){
+        this.frame = frame;
         setMaximumSize(new Dimension(400,500));
         setMinimumSize(new Dimension(400,500));
         setLayout(null);
@@ -145,7 +147,7 @@ class LoginForm extends JPanel implements ActionListener {
                     } catch (ExecutionException | InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
-                    this.setVisible(false);
+                    frame.setVisible(false);
                 } else {
                     messageLabel.setText("Username or password incorrect!");
                 }

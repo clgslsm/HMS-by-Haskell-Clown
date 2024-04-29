@@ -334,7 +334,6 @@ public class ViewMedicalRecordPanel extends JPanel {
                     testDecription.setEnabled(false);
                     testResult.setEnabled(false);
                     addMedicineToPrecription.setEnabled(true);
-                    testDecription.setBackground(Color.gray);
                 }
             }
         });
@@ -371,7 +370,6 @@ public class ViewMedicalRecordPanel extends JPanel {
         testDecription.setEnabled(false);
         testResult.setEnabled(false);
         addMedicineToPrecription.setEnabled(false);
-        testDecription.setBackground(Color.gray);
 
         saveButton.setEnabled(false);
         
