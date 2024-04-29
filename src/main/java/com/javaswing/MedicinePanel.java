@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 class MedicinePanel extends JPanel {
-    ArrayList<Medicine> data = new ArrayList<>();
     MedicineDefaultPage defaultPage;
-    ViewMedicineInfoPage viewMedicineInfoPage;
     CardLayout currentPage = new CardLayout();
     MedicinePanel() {
         this.setLayout(currentPage);
@@ -108,7 +106,7 @@ class MedicineDefaultPage extends JLabel {
         // Center-align the content in each column
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        for (int i = 0; i < medicineList.getColumnCount() - 1; i++) {
+        for (int i = 0; i < medicineList.getColumnCount()-1; i++) {
             medicineList.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 

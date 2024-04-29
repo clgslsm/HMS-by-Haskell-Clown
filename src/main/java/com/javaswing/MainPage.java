@@ -1,24 +1,24 @@
 package com.javaswing;
 
-import com.javafirebasetest.dao.UserDAO;
-import com.javafirebasetest.entity.Staff;
 import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
+import java.util.concurrent.ExecutionException;
 
 public class MainPage extends JFrame {
-    MainPage(User user){
+    MainPage(User user) throws ExecutionException, InterruptedException {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle("ABC Hospital @%s".formatted(user.getUsername()));
         this.getContentPane().setBackground(new Color(0xF1F8FF));
         this.setLayout(new BorderLayout());
         this.setVisible(true);
-        this.add(new MainPageUIContainer(user));
+        this.add(new MainPageUIContainer(user,this));
         this.pack();
     }
 }
@@ -28,18 +28,18 @@ class MainPageUIContainer extends JPanel {
     CardLayout containerLayout = new CardLayout();
     JPanel navContainer;
     JPanel mainPageContainer;
-    MainPageUIContainer(User u){
+    MainPageUIContainer(User u, MainPage mainPage) throws ExecutionException, InterruptedException {
         user = u;
 
         this.setLayout(new BorderLayout());
         this.setSize(new Dimension(screenSize.width, screenSize.height));
 
-        navContainer = NavigationContainer();
+        navContainer = NavigationContainer(mainPage);
         mainPageContainer  = MainPageContainer();
         this.add(navContainer, BorderLayout.WEST);
         this.add(mainPageContainer);
     }
-    private JPanel NavigationContainer() {
+    private JPanel NavigationContainer(MainPage mainPage) {
         JPanel navigationContainer = new JPanel();
         navigationContainer.setPreferredSize(new Dimension(screenSize.width * 4261 / 27320, screenSize.height));
         navigationContainer.setLayout(new BoxLayout(navigationContainer, BoxLayout.Y_AXIS));
@@ -58,8 +58,10 @@ class MainPageUIContainer extends JPanel {
         NavButton patientSection = new NavButton("Patients");
         NavButton staffSection = new NavButton("Staffs");
         NavButton medicineSection = new NavButton("Medicine");
-        NavButton machineSection = new NavButton("Machine");
+        NavButton machineSection = new NavButton("Available Machine");
+        NavButton unusableMachineSection = new NavButton("Unusable Machine");
         NavButton exportMedicineSection = new NavButton("Export Medicine");
+        NavButton medrecSection = new NavButton("Medical Records");
 
         defaultSection.setSelected(true);
         patientSection.setSelected(false);
@@ -75,6 +77,8 @@ class MainPageUIContainer extends JPanel {
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
             exportMedicineSection.setSelected(false);
+            medrecSection.setSelected(false);
+            unusableMachineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"staff-default-panel");
         });
 
@@ -85,6 +89,8 @@ class MainPageUIContainer extends JPanel {
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
             exportMedicineSection.setSelected(false);
+            medrecSection.setSelected(false);
+            unusableMachineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"patient-panel");
         });
 
@@ -95,6 +101,8 @@ class MainPageUIContainer extends JPanel {
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
             exportMedicineSection.setSelected(false);
+            medrecSection.setSelected(false);
+            unusableMachineSection.setSelected(false);
             containerLayout.show(mainPageContainer, "staff-panel");
         });
 
@@ -105,6 +113,8 @@ class MainPageUIContainer extends JPanel {
             medicineSection.setSelected(true);
             machineSection.setSelected(false);
             exportMedicineSection.setSelected(false);
+            medrecSection.setSelected(false);
+            unusableMachineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"medicine-panel");
         });
 
@@ -115,6 +125,8 @@ class MainPageUIContainer extends JPanel {
             medicineSection.setSelected(false);
             machineSection.setSelected(true);
             exportMedicineSection.setSelected(false);
+            medrecSection.setSelected(false);
+            unusableMachineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"machine-panel");
         });
 
@@ -125,7 +137,33 @@ class MainPageUIContainer extends JPanel {
             medicineSection.setSelected(false);
             machineSection.setSelected(false);
             exportMedicineSection.setSelected(true);
+            medrecSection.setSelected(false);
+            unusableMachineSection.setSelected(false);
             containerLayout.show(mainPageContainer,"export-medicine-panel");
+        });
+
+        medrecSection.addActionListener(_->{
+            defaultSection.setSelected(false);
+            patientSection.setSelected(false);
+            staffSection.setSelected(false);
+            medicineSection.setSelected(false);
+            machineSection.setSelected(false);
+            exportMedicineSection.setSelected(false);
+            medrecSection.setSelected(true);
+            unusableMachineSection.setSelected(false);
+            containerLayout.show(mainPageContainer,"medrec-panel");
+        });
+
+        unusableMachineSection.addActionListener(_->{
+            defaultSection.setSelected(false);
+            patientSection.setSelected(false);
+            staffSection.setSelected(false);
+            medicineSection.setSelected(false);
+            machineSection.setSelected(false);
+            exportMedicineSection.setSelected(false);
+            medrecSection.setSelected(false);
+            unusableMachineSection.setSelected(true);
+            containerLayout.show(mainPageContainer,"unusable-machine-panel");
         });
 
         navigationContainer.add(label);
@@ -151,9 +189,11 @@ class MainPageUIContainer extends JPanel {
             cPanel.add(Box.createVerticalStrut(10));
         }
         else if (user != null && user.getUserMode().getValue().equals("Technician")) {
-            cPanel.add(patientSection);
+            cPanel.add(medrecSection);
             cPanel.add(Box.createVerticalStrut(10));
             cPanel.add(machineSection);
+            cPanel.add(Box.createVerticalStrut(10));
+            cPanel.add(unusableMachineSection);
             cPanel.add(Box.createVerticalStrut(10));
         }
         else if (user != null && user.getUserMode().getValue().equals("Pharmacist")) {
@@ -163,27 +203,66 @@ class MainPageUIContainer extends JPanel {
             cPanel.add(Box.createVerticalStrut(10));
         }
 
+        JPanel logoutBox = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        logoutBox.setMaximumSize(new Dimension(200,50));
+        logoutBox.setBorder(new EmptyBorder(0,20,0,20));
+        logoutBox.setOpaque(false);
+        JButton logoutBtn = new RoundedButton(" Logout ");
+        logoutBtn.setOpaque(false);
+        logoutBtn.setForeground(Color.red);
+        logoutBtn.setBackground(Color.WHITE);
+        logoutBtn.setMinimumSize(new Dimension(125,50));
+        logoutBtn.setBorder(new CompoundBorder(
+                BorderFactory.createLineBorder(Color.red),
+                new EmptyBorder(10,10,10,10)
+        ));
+        logoutBtn.addActionListener(_->{
+            mainPage.setVisible(false);
+            LoginPage login = new LoginPage();
+        });
+        logoutBox.add(logoutBtn);
+
+
         navigationContainer.add(cPanel);
+        navigationContainer.add(Box.createVerticalStrut(200));
+        navigationContainer.add(logoutBtn);
+
         return navigationContainer;
     }
-    private JPanel MainPageContainer() {
+    private JPanel MainPageContainer() throws ExecutionException, InterruptedException {
         JPanel container = new JPanel();
         container.setLayout(containerLayout);
         container.setPreferredSize(new Dimension(screenSize.width * 23059 / 27320, screenSize.height));
 
         JPanel defaultPanel = new DefaultPanel(user);
-        JPanel patientPanel = new PatientPanel(user.getStaffId());
-        JPanel staffPanel = new StaffPanel();
-        JPanel medicinePanel = new MedicinePanel();
-        JPanel exportMedicinePanel = new ExportMedicinePanel(user);
-        JPanel machinePanel = new MachinePanel();
-
         container.add(defaultPanel, "staff-default-panel");
-        container.add(patientPanel, "patient-panel");
-        container.add(staffPanel, "staff-panel");
-        container.add(medicinePanel, "medicine-panel");
-        container.add(exportMedicinePanel,"export-medicine-panel");
-        container.add(machinePanel, "machine-panel");
+
+        if (user != null && user.getUserMode().getValue().equals("Doctor")) {
+            JPanel patientPanel = new PatientPanel(user.getStaffId());
+            container.add(patientPanel, "patient-panel");
+        }
+        else if (user != null && user.getUserMode().getValue().equals("Admin")) {
+            JPanel staffPanel = new StaffPanel();
+            container.add(staffPanel, "staff-panel");
+        }
+        else if (user != null && user.getUserMode().getValue().equals("Receptionist")) {
+            JPanel patientPanel = new PatientPanel(user.getStaffId());
+            container.add(patientPanel, "patient-panel");
+        }
+        else if (user != null && user.getUserMode().getValue().equals("Technician")) {
+            JPanel medrecPanel = new MedicalRecordPanel(user);
+            JPanel machinePanel = new MachinePanel();
+            JPanel unusableMachinePanel = new UnusableMachinePanel();
+            container.add(machinePanel, "machine-panel");
+            container.add(unusableMachinePanel,"unusable-machine-panel");
+            container.add(medrecPanel, "medrec-panel");
+        }
+        else if (user != null && user.getUserMode().getValue().equals("Pharmacist")) {
+            JPanel medicinePanel = new MedicinePanel();
+            JPanel exportMedicinePanel = new ExportMedicinePanel(user);
+            container.add(medicinePanel, "medicine-panel");
+            container.add(exportMedicinePanel,"export-medicine-panel");
+        }
 
         containerLayout.show(container, "staff-default-panel");
 
