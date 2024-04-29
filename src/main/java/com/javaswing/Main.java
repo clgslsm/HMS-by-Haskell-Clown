@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
         //SwingUtilities.invokeLater((Runnable) new MainPage("Doctor"));
-        SwingUtilities.invokeLater((Runnable) new LoginPage());
+        SwingUtilities.invokeLater(LoginPage::new);
 //        System.out.println(DoctorDAO.getAllDoctorID());
 //          Doctor doctor = DoctorDAO.getDoctorWithMinPatientCountByDepartment(DeptType.PLASTIC_SURGERY);
 //          Patient patient = PatientDAO.getPatientById("A216");
