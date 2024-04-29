@@ -60,7 +60,7 @@ public class Main {
 
 //        _BackendTest.MedicineExportTest();
 //        _DBPopulator.populate(true);
-        _BackendTest.MedrecTest("C:\\Users\\ACER\\Desktop\\smileyFace.png");
+//        _BackendTest.MedrecTest("C:\\Users\\ACER\\Desktop\\smileyFace.png");
     }
 }
 
