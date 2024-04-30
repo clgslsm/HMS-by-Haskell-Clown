@@ -188,13 +188,9 @@ class PatientPanel extends JPanel {
 
                         viewPatientInfoPage.form.saveButton.addActionListener(_ -> {
                             Patient patient = null;
-                            try {
-                                patient = PatientDAO.getPatientById(defaultPage.patientList.getValueAt(row,0).toString());
-                            } catch (ExecutionException e) {
-                                throw new RuntimeException(e);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
+
+                            patient = PatientDAO.getPatientById(defaultPage.patientList.getValueAt(row,0).toString());
+
                             System.out.println(viewPatientInfoPage.form.name.getText());
                             System.out.println(viewPatientInfoPage.form.address.getText());
                             System.out.println(viewPatientInfoPage.form.phone.getText());

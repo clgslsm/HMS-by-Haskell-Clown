@@ -30,16 +30,17 @@ public class StaffDAO {
     //CREATE METHODS
     public static String addStaff(Staff staff) {
         String hexId = null;
-        String newId = null;
+        String newId = staff.getStaffId();
 
+        if (getStaffById(newId) == null){
+            try {
+                hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+            } catch (NoSuchAlgorithmException e) {
+                System.out.println(e);
+            }
 
-        try {
-            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println(e);
+            newId = idPrefixMap.get(staff.getUserMode()) + hexId.substring(hexId.length() - (DBManager.idHashLength));
         }
-
-        newId = idPrefixMap.get(staff.getUserMode()) + hexId.substring(hexId.length() - (DBManager.idHashLength));
         dbManager.updateDocument(DBManager.CollectionPath.STAFF, newId, staff.toMap());
 
         return newId;
@@ -55,9 +56,16 @@ public class StaffDAO {
     //READ METHODS
     public static Staff getStaffById(String staffId) {
 
-        Map<String, Object> staffData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, staffId).getData();
+        Map<String, Object> staffData;
 
-        assert staffData != null;
+        try {
+            staffData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, staffId).getData();
+        }
+        catch (Exception err){
+            return null;
+        }
+
+        if (staffData == null) return null;
         return new Staff(staffId, staffData);
     }
     public static List<Staff> getStaffByName(String name) {
