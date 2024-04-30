@@ -18,7 +18,7 @@ import static com.javafirebasetest.entity.HashPassword.toHexString;
 public class UserDAO {
     private static final DBManager dbManager = DBManager.getInstance();
 
-    static String idPrefix = "US_";
+    static String idPrefix = "US";
     //CRUD
 
     //CREATE METHODS

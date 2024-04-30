@@ -18,7 +18,7 @@ import static com.javafirebasetest.entity.HashPassword.toHexString;
 
 public class MedicineDAO {
     private static final DBManager dbManager = DBManager.getInstance();
-    static String idPrefix = "ME_";
+    static String idPrefix = "ME";
 
     public static Medicine getMedicineById(String medicineId) {
         Map<String, Object> medicineData = dbManager.getDocumentById(DBManager.CollectionPath.MEDICINE, medicineId).getData();

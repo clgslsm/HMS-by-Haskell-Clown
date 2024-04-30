@@ -23,7 +23,7 @@ import static com.javafirebasetest.entity.HashPassword.toHexString;
 
 public class MedRecDAO {
     private static final DBManager dbManager = DBManager.getInstance();
-    static String idPrefix = "MR_";
+    static String idPrefix = "MR";
 
     //CRUD
 

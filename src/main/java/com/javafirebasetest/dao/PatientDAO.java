@@ -17,7 +17,7 @@ import static com.javafirebasetest.entity.HashPassword.toHexString;
 
 public class PatientDAO {
     private static final DBManager dbManager = DBManager.getInstance();
-    static String idPrefix = "PA_";
+    static String idPrefix = "PA";
     //CRUD
 
     //CREATE METHODS

@@ -16,7 +16,7 @@ import static com.javafirebasetest.entity.HashPassword.toHexString;
 
 public class MachineDAO {
     private static final DBManager dbManager = DBManager.getInstance();
-    static String idPrefix = "MA_";
+    static String idPrefix = "MA";
 
     public static Machine getMachineByID(String machineId) {
         Map<String, Object> machineData = dbManager.getDocumentById(DBManager.CollectionPath.MACHINE, machineId).getData();

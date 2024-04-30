@@ -19,11 +19,11 @@ public class StaffDAO {
     private static final DBManager dbManager = DBManager.getInstance();
 
     static Map<User.Mode, String> idPrefixMap = new HashMap<User.Mode, String>(){{
-        put(User.Mode.DOCTOR, "DO_");
-        put(User.Mode.RECEPTIONIST, "RC_");
-        put(User.Mode.PHARMACIST, "PH_");
-        put(User.Mode.TECHNICIAN, "TE_");
-        put(User.Mode.ADMIN, "AD_");
+        put(User.Mode.DOCTOR, "DO");
+        put(User.Mode.RECEPTIONIST, "RC");
+        put(User.Mode.PHARMACIST, "PH");
+        put(User.Mode.TECHNICIAN, "TE");
+        put(User.Mode.ADMIN, "AD");
     }};
     //CRUD
 
