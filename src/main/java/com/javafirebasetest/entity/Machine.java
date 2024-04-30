@@ -24,6 +24,11 @@ public class Machine {
     }
 
     public String getMachineId() {return machineId;}
+
+    public void setMachineId(String machineId) {
+        this.machineId = machineId;
+    }
+
     public String getMachineName() {return machineName;}
     public Long getAvaiUse() {return avaiUse;}
     public Long getUseCount() {return useCount;}

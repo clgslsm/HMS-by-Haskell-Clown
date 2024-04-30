@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 public class DBManager {
     private static DBManager instance;
     final public Firestore db;
+    public static int idHashLength = 10;
     public enum CollectionPath {
         PATIENT("Patients"), STAFF("Staffs"), MEDICAL_RECORD("MedicalRecords"), MACHINE("Machines"), MEDICINE("Medicines"), USER("Users");
         private final String value;
