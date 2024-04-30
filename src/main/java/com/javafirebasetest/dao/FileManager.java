@@ -26,7 +26,7 @@ public class FileManager {
     //HARD-CODED PATH
     private static String storageDataPath = "MedicalRecords/";
 
-    public FileManager() {
+    private FileManager() {
         //Make dir if it doesnt exist, try to delete after the program terminates
         File localPath = new File(localDataPath);
         if (!localPath.exists()) localPath.mkdir();
@@ -52,7 +52,6 @@ public class FileManager {
 
     public static FileManager getInstance() {
         if (instance == null) {
-            DBManager.getInstance();
             instance = new FileManager();
         }
         return instance;
