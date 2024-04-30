@@ -6,19 +6,39 @@ import com.javafirebasetest.entity.DeptType;
 import com.javafirebasetest.entity.Doctor;
 import com.javafirebasetest.entity.MedicalRecord;
 
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.*;
+
+import static com.javafirebasetest.entity.HashPassword.getSHA;
+import static com.javafirebasetest.entity.HashPassword.toHexString;
 
 public class DoctorDAO {
     private static final DBManager dbManager = DBManager.getInstance();
+    static String idPrefix = "DO_";
     //CRUD
 
     public static String addDoctor(Doctor doctor) {
-        if (doctor.getStaffId() == null) {
-            return dbManager.addDocument(DBManager.CollectionPath.STAFF, doctor.toMap());
-        } else {
-            dbManager.updateDocument(DBManager.CollectionPath.STAFF, doctor.getStaffId(), doctor.toMap());
-            return doctor.getStaffId();
+        String hexId = null;
+        String newId = null;
+
+        try {
+            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println(e);
         }
+
+        newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
+
+        dbManager.updateDocument(DBManager.CollectionPath.STAFF, newId, doctor.toMap());
+
+        return newId;
+//        if (doctor.getStaffId() == null) {
+//            return dbManager.addDocument(DBManager.CollectionPath.STAFF, doctor.toMap());
+//        } else {
+//            dbManager.updateDocument(DBManager.CollectionPath.STAFF, doctor.getStaffId(), doctor.toMap());
+//            return doctor.getStaffId();
+//        }
     }
 
     //READ METHODS

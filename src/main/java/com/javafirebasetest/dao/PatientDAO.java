@@ -5,6 +5,7 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.entity.Patient;
 
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,17 +17,31 @@ import static com.javafirebasetest.entity.HashPassword.toHexString;
 
 public class PatientDAO {
     private static final DBManager dbManager = DBManager.getInstance();
-
+    static String idPrefix = "PA_";
     //CRUD
 
     //CREATE METHODS
     public static String addPatient(Patient patient) {
-        if (patient.getPatientId() == null) {
-            return dbManager.addDocument(DBManager.CollectionPath.PATIENT, patient.toMap());
-        } else {
-            dbManager.updateDocument(DBManager.CollectionPath.PATIENT, patient.getPatientId(), patient.toMap());
-            return patient.getPatientId();
+        String hexId = null;
+        String newId = null;
+
+        try {
+            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println(e);
         }
+
+        newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
+
+        dbManager.updateDocument(DBManager.CollectionPath.PATIENT, newId, patient.toMap());
+
+        return newId;
+//        if (patient.getPatientId() == null) {
+//            return dbManager.addDocument(DBManager.CollectionPath.PATIENT, patient.toMap());
+//        } else {
+//            dbManager.updateDocument(DBManager.CollectionPath.PATIENT, patient.getPatientId(), patient.toMap());
+//            return patient.getPatientId();
+//        }
     }
 
     public String getHashPassword(String password) throws NoSuchAlgorithmException {

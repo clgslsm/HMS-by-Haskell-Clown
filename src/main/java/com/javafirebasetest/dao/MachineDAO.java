@@ -4,13 +4,19 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.entity.Machine;
 
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.javafirebasetest.entity.HashPassword.getSHA;
+import static com.javafirebasetest.entity.HashPassword.toHexString;
+
 public class MachineDAO {
     private static final DBManager dbManager = DBManager.getInstance();
+    static String idPrefix = "MA_";
 
     public static Machine getMachineByID(String machineId) {
         Map<String, Object> machineData = dbManager.getDocumentById(DBManager.CollectionPath.MACHINE, machineId).getData();
@@ -74,12 +80,26 @@ public class MachineDAO {
     }
 
     public static String addMachine(Machine machine) {
-        if (machine.getMachineId() == null) {
-            return dbManager.addDocument(DBManager.CollectionPath.MACHINE, machine.toMap());
-        } else {
-            dbManager.updateDocument(DBManager.CollectionPath.MACHINE, machine.getMachineId(), machine.toMap());
-            return machine.getMachineId();
+        String hexId = null;
+        String newId = null;
+
+        try {
+            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println(e);
         }
+
+        newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
+
+        dbManager.updateDocument(DBManager.CollectionPath.MACHINE, newId, machine.toMap());
+
+        return newId;
+//        if (machine.getMachineId() == null) {
+//            return dbManager.addDocument(DBManager.CollectionPath.MACHINE, machine.toMap());
+//        } else {
+//            dbManager.updateDocument(DBManager.CollectionPath.MACHINE, machine.getMachineId(), machine.toMap());
+//            return machine.getMachineId();
+//        }
     }
 
     public static void updateMachine(String machineId, Object... fieldsAndValues) {
