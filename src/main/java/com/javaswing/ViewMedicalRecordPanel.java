@@ -304,7 +304,7 @@ public class ViewMedicalRecordPanel extends JPanel {
         resLabel.setFont(new Font("Courier",Font.PLAIN,16));
         resLabel.setBounds(100,520,100,20);
         testResult = new RoundedButton("Choose result file");
-        testResult.setBounds(200, 520, 200, 100);
+        testResult.setBounds(200, 520, 150, 80);
         if (mr.getStatus().getValue().equals("Tested")) {
             testResult.setText("View the result");
         }
@@ -422,20 +422,27 @@ public class ViewMedicalRecordPanel extends JPanel {
             Object[][] ob = parseStringToObjectArray(mr.getTestResult().getPrescription());
             for (Object[] objects : ob) {
                 model.addRow(objects);
-                System.out.println(objects[0]);
+                System.out.println(objects[1]);
             }
+        }
+        if (mr.getServiceRating() != null) {
+            rating.setText(mr.getServiceRating().toString());
         }
 
         saveButton.addActionListener(_->{
+            saveButton.setEnabled(false);
             saveData(table);
             TestResult t = null;
             if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Doctor") && Prescriptions.isSelected()) {
                 t = new TestResult(null, null, diagnosis.getText(), pre);
                 assert t != null;
                 MedRecDAO.updateTestResult(mr.getMedRecId(), t);
+               if (mr.getStatus().equals("Pending")) {
+                   MedRecDAO.send(mr.getMedRecId(), true);
+               }
             }
             else if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Doctor")&& Test.isSelected()) {
-                t  = new TestResult(testDecription.getText(), null,null, null);
+                t  = new TestResult(testDecription.getText(), null, diagnosis.getText(), null);
                 assert t != null;
                 MedRecDAO.updateTestResult(mr.getMedRecId(), t);
             }
@@ -485,17 +492,19 @@ public class ViewMedicalRecordPanel extends JPanel {
         Object[][] result = new Object[rows.length][2]; // Mảng kết quả với 2 cột
 
         for (int i = 0; i < rows.length; i++) {
-            String[] columns = rows[i].trim().split("\\s+"); // Tách các cột trong từng hàng dựa trên khoảng trắng
-            if (columns.length >= 2) {
-                result[i][0] = columns[0]; // Cột đầu tiên
-                result[i][1] = columns[1]; // Cột thứ hai
+            String row = rows[i].trim();
+            int firstSpaceIndex = row.indexOf(" ");
+            if (firstSpaceIndex != -1) { // Check if a space is found in the row
+                result[i][0] = row.substring(0, firstSpaceIndex - 1); // First column
+                result[i][1] = row.substring(firstSpaceIndex - 1); // Second column
             } else {
-                // Nếu số lượng cột ít hơn 2, bạn có thể thực hiện xử lý phù hợp ở đây
-                // Ví dụ: bỏ qua hoặc xử lý lỗi
-                System.err.println("Invalid input format at row " + (i + 1));
+                // If no space is found, handle the situation as needed
+                System.err.println("No space found in input at row " + (i + 1));
+                // You might want to set the second column to null or an empty string
+                result[i][0] = row; // Set the entire row as the first column
+                result[i][1] = ""; // Set the second column as an empty string
             }
         }
-
         return result;
     }
 }

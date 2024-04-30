@@ -93,10 +93,10 @@ class PatientPanel extends JPanel {
                                     parentPanel.add(viewMedicalRecordPanel, "view-mr-page");
                                     currentPage.show(parentPanel, "view-mr-page");
 
-                                    addPatientPage.backButton.addActionListener(_->{
-                                        currentPage.removeLayoutComponent(viewMedicalRecordPanel);
-                                        currentPage.show(parentPanel,"view-page");
-                                        parentPanel.defaultPage.updateTableUI(userId);
+                                    viewMedicalRecordPanel.backButton.addActionListener(_->{
+                                        currentPage.removeLayoutComponent(addPatientPage);
+                                        defaultPage.updateTableUI(userId);
+                                        currentPage.show(parentPanel,"default-page");
                                     });
                                 }
                             }
@@ -108,8 +108,8 @@ class PatientPanel extends JPanel {
             // Get back to default page
             addPatientPage.backButton.addActionListener(_ ->{
                 currentPage.removeLayoutComponent(addPatientPage);
-                currentPage.show(this,"default-page");
                 defaultPage.updateTableUI(userId);
+                currentPage.show(this,"default-page");
             });
             currentPage.show(this, "add-patient-page");
         });
@@ -155,10 +155,9 @@ class PatientPanel extends JPanel {
                                                 currentPage.show(parentPanel, "view-mr-page");
 
                                                 viewMedicalRecordPanel.backButton.addActionListener(_->{
-                                                    currentPage.removeLayoutComponent(viewMedicalRecordPanel);
-                                                    currentPage.show(parentPanel,"view-page");
-
-                                                    viewPatientInfoPage.form.updateTableUI(viewPatientInfoPage.form.table.getValueAt(row,0).toString(), userId);
+                                                    currentPage.removeLayoutComponent(viewPatientInfoPage);
+                                                    defaultPage.updateTableUI(userId);
+                                                    currentPage.show(parentPanel,"default-page");
                                                 });
                                             }
                                         }
@@ -215,8 +214,8 @@ class PatientPanel extends JPanel {
 
                         viewPatientInfoPage.backButton.addActionListener(_ ->{
                             currentPage.removeLayoutComponent(viewPatientInfoPage);
-                            currentPage.show(parentPanel,"default-page");
                             defaultPage.updateTableUI(userId);
+                            currentPage.show(parentPanel,"default-page");
                         });
                     }
 
@@ -378,7 +377,7 @@ class PatientDefaultPage extends JLabel {
             else if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")) {
                 List<MedicalRecord> medrec = MedRecDAO.getMedRecByPatientId(p.getPatientId());
                 for (MedicalRecord m : medrec) {
-                    if (m.getStatus().getValue().equals("Pending") || m.getStatus().getValue().equals("Diagnosed")) {
+                    if (m.getStatus().getValue().equals("Pending") || m.getStatus().getValue().equals("Diagnosed") || m.getStatus().getValue().equals("Checked_out")) {
                         addPatientToTable(p);
                         break;
                     }
@@ -1086,7 +1085,7 @@ class ViewPatientInfoPage extends JPanel {
                 }
                 else if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")){
                     for (MedicalRecord medRecord : medicalRecordList){
-                        if (medRecord.getStatus().getValue().equals("Pending") || medRecord.getStatus().getValue().equals("Diagnosed")) {
+                        if (medRecord.getStatus().getValue().equals("Pending") || medRecord.getStatus().getValue().equals("Diagnosed") || medRecord.getStatus().getValue().equals("Checked_out")) {
                             ViewButtonRenderer buttonRenderer = new ViewButtonRenderer();
                             Object[] rowData = new Object[]{medRecord.getMedRecId(), DoctorDAO.getDoctorById(medRecord.getDoctorId()).getDepartment(), DoctorDAO.getDoctorById(medRecord.getDoctorId()).getName(), medRecord.getCheckIn(), medRecord.getStatus(), buttonRenderer};
                             model.addRow(rowData);
