@@ -94,6 +94,7 @@ public class FileManager {
     // Downloads a file from Firebase Storage
     public static String downloadFile(String storagePath){
         getInstance();
+        System.out.println(storagePath);
         BlobId blobId = BlobId.of(defaultBucket.getName(), storagePath);
         Blob newBlob = storage.get(blobId);
 

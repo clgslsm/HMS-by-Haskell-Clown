@@ -5,6 +5,7 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.entity.Doctor;
 import com.javafirebasetest.entity.MedicalRecord;
+import com.javafirebasetest.entity.Patient;
 
 import com.javafirebasetest.entity.TestResult;
 

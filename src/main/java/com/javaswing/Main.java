@@ -9,13 +9,10 @@ import java.util.concurrent.ExecutionException;
 
 public class Main {
     public static void main(String[] args) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
-//        MainPage mainPage = new MainPage("Doctor");
-//        Thread thread = new Thread(String.valueOf(mainPage));
-//        thread.start();
+        //SwingUtilities.invokeLater((Runnable) new MainPage("Doctor"));
+        SwingUtilities.invokeLater(LoginPage::new);
+//        _DBPopulator.populate(true);
 
-//        _BackendTest.MedicineExportTest();
-        _DBPopulator.populate(true);
-//        _BackendTest.MedrecTest("C:\\Users\\ACER\\Desktop\\smileyFace.png");
     }
 }
 
