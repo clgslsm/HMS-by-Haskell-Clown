@@ -23,24 +23,23 @@ import static com.javafirebasetest.entity.HashPassword.toHexString;
 
 public class MedRecDAO {
     private static final DBManager dbManager = DBManager.getInstance();
-    static String idPrefix = "MR_";
+    static String idPrefix = "MR";
 
     //CRUD
 
     //CREATE METHODS
     public static String addMedRec(MedicalRecord medRec) {
         String hexId = null;
-        String newId = null;
-
-        try {
-            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println(e);
-        }
-
-        newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
+        String newId = medRec.getMedRecId();
 
         if (MedRecDAO.getMedRecById(newId) == null){
+            try {
+                hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+            } catch (NoSuchAlgorithmException e) {
+                System.out.println(e);
+            }
+
+            newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
             DoctorDAO.updatePatientCount(medRec.getDoctorId(), 1);
         }
 
@@ -163,6 +162,10 @@ public class MedRecDAO {
     //FRONTEND HELPER FUNCTIONS
     public static void send(String medRecId){
         MedicalRecord medrec = getMedRecById(medRecId);
+
+        if (medrec.getStatus() == MedicalRecord.Status.TESTED){
+            DoctorDAO.updatePatientCount(medrec.getDoctorId(), -1);
+        }
 
         if (medrec.getStatus() == MedicalRecord.Status.DIAGNOSED){
             medrec.setCheckOut(Timestamp.now());
