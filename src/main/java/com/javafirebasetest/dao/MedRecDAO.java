@@ -147,6 +147,25 @@ public class MedRecDAO {
         addMedRec(medrec);
     }
 
+    private static void send(String medRecId, int count){
+        MedicalRecord medrec = getMedRecById(medRecId);
+
+        if (medrec.getStatus() == MedicalRecord.Status.DIAGNOSED){
+            medrec.setCheckOut(Timestamp.now());
+        }
+
+        for (int i = 0; i < count; ++i){
+            medrec.advanceStatus();
+        }
+
+        addMedRec(medrec);
+    }
+
+    public static void send(String medRecId, boolean noTest){
+        if (noTest) send(medRecId, 2);
+        else send(medRecId);
+    }
+
     private static void updateTestResult_AnalysisFilePath(String medRecId, String analysisFilePath) {
         MedicalRecord medrec = getMedRecById(medRecId);
 
