@@ -1,4 +1,7 @@
 package com.javaswing;
+import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.javafirebasetest.entity.User;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -61,12 +64,12 @@ class Home extends JPanel {
 }
 
 class LoginForm extends JPanel implements ActionListener {
-    JButton loginButton = new RoundedButton("Login");
-    JButton resetButton = new RoundedButton("Reset");
-    JTextField userNameField = new JTextField("Technician16");
-    JPasswordField userPasswordField = new JPasswordField("Technician16");
-    JLabel userNameLabel = new JLabel("User name:");
-    JLabel userPasswordLabel = new JLabel("Password:");
+    JButton loginButton = new JButton("Login");
+    JButton resetButton = new JButton("Reset");
+    JTextField userNameField = new JTextField("");
+    JPasswordField userPasswordField = new JPasswordField("");
+    JLabel userNameLabel = new JLabel("Username");
+    JLabel userPasswordLabel = new JLabel("Password");
     JLabel messageLabel = new JLabel();
     LoginPage frame;
     LoginForm(LoginPage frame){
@@ -77,17 +80,22 @@ class LoginForm extends JPanel implements ActionListener {
         setBounds(0, 0, 400, 400);
 
         JLabel hospitalName = new JLabel("ABC HOSPITAL");
+        hospitalName.setIcon(new FlatSVGIcon("logo.svg",50,50));
+        hospitalName.setHorizontalTextPosition(SwingConstants.CENTER);
+        hospitalName.setVerticalTextPosition(SwingConstants.BOTTOM);
         hospitalName.setFont(new Font("Tahoma",Font.BOLD,30));
         hospitalName.setForeground(new Color(0x3497F9));
-        hospitalName.setBounds(100,25,400,80);
+        hospitalName.setBounds(100,25,400,100);
 
-        userNameLabel.setBounds(100, 120, 100, 40);
-        userNameLabel.setFont(new Font("Ubuntu", Font.BOLD, 15));
-        userPasswordLabel.setBounds(100, 200, 100, 40);
-        userPasswordLabel.setFont(new Font("Ubuntu", Font.BOLD, 15));
+        userNameLabel.setBounds(110, 150, 100, 40);
+        userNameLabel.setForeground(Color.gray);
+        userNameLabel.setFont(new Font(FlatRobotoFont.FAMILY, Font.BOLD, 15));
+        userPasswordLabel.setBounds(110, 230, 100, 40);
+        userPasswordLabel.setForeground(Color.gray);
+        userPasswordLabel.setFont(new Font(FlatRobotoFont.FAMILY, Font.BOLD, 15));
 
-        messageLabel.setBounds(100, 380, 250, 50);
-        messageLabel.setFont(new Font("Poppins", Font.PLAIN, 15));
+        messageLabel.setBounds(100, 410, 250, 50);
+        messageLabel.setFont(new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 15));
         messageLabel.setForeground(Color.RED);
 
         int topPadding = 5;
@@ -95,24 +103,34 @@ class LoginForm extends JPanel implements ActionListener {
         int bottomPadding = 5;
         int rightPadding = 10;
 
-        userNameField.setBounds(100, 155, 225, 40);
+        userNameField.setBounds(100, 185, 225, 40);
+        userNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,"Username");
+        userNameField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON,new FlatSVGIcon("user.svg"));
+        userNameField.setFont(new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 15));
         userNameField.setBorder(BorderFactory.createCompoundBorder(
                 userNameField.getBorder(),
                 BorderFactory.createEmptyBorder(topPadding, leftPadding, bottomPadding, rightPadding)
         ));
-        userPasswordField.setBounds(100, 235, 225, 40);
+        userPasswordField.setBounds(100, 265, 225, 40);
+        userPasswordField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,"Password");
+        userPasswordField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON,new FlatSVGIcon("pass.svg"));
+        userPasswordField.setFont(new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 15));
         userPasswordField.setBorder(BorderFactory.createCompoundBorder(
                 userPasswordField.getBorder(),
                 BorderFactory.createEmptyBorder(topPadding, leftPadding, bottomPadding, rightPadding)
         ));
 
-        loginButton.setBounds(100, 350, 100, 40);
-        loginButton.setFont(new Font("Ubuntu", Font.PLAIN, 15));
+        loginButton.setBounds(100, 380, 138, 40);
+        loginButton.setBackground(new Color(0x3497F9));
+        loginButton.setForeground(Color.white);
+        loginButton.setFont(new Font(FlatRobotoFont.FAMILY, Font.BOLD, 15));
         loginButton.setFocusable(false);
+        loginButton.setIcon(new FlatSVGIcon("login.svg"));
         loginButton.addActionListener(this);
 
-        resetButton.setBounds(225, 350, 100, 40);
-        resetButton.setFont(new Font("Ubuntu", Font.PLAIN, 15));
+        resetButton.setBounds(250, 380, 75, 40);
+        resetButton.setForeground(Color.gray);
+        resetButton.setFont(new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 15));
         resetButton.setFocusable(false);
         resetButton.addActionListener(this);
 

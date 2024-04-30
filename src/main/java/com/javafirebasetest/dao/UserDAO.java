@@ -4,28 +4,51 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.entity.User;
 
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.javafirebasetest.entity.HashPassword.getSHA;
+import static com.javafirebasetest.entity.HashPassword.toHexString;
+
 public class UserDAO {
     private static final DBManager dbManager = DBManager.getInstance();
 
+    static String idPrefix = "US";
     //CRUD
 
     //CREATE METHODS
 
     //USER SPECIAL ADD
     public static String addUser(User user) {
-        if (user.getUserId() == null) {
-            if (getUserByUsername(user.getUsername()) != null)
-                throw new RuntimeException("Username already exist");
-            return dbManager.addDocument(DBManager.CollectionPath.USER, user.toMap());
-        } else {
-            dbManager.updateDocument(DBManager.CollectionPath.USER, user.getUserId(), user.toMap());
-            return user.getUserId();
+        String hexId = null;
+        String newUserId = null;
+
+        if (getUserByUsername(user.getUsername()) != null)
+            throw new RuntimeException("Username already exist");
+        try {
+            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println(e);
         }
+
+        newUserId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
+
+        dbManager.updateDocument(DBManager.CollectionPath.USER, newUserId, user.toMap());
+
+        return newUserId;
+//        if (user.getUserId() == null) {
+//            if (getUserByUsername(user.getUsername()) != null)
+//                throw new RuntimeException("Username already exist");
+//            return dbManager.addDocument(DBManager.CollectionPath.USER, user.toMap());
+//        } else {
+//            dbManager.updateDocument(DBManager.CollectionPath.USER, user.getUserId(), user.toMap());
+//            return user.getUserId();
+//        }
     }
 
     //READ METHODS

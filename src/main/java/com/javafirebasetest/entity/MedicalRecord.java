@@ -87,6 +87,10 @@ public class MedicalRecord {
         return medRecId;
     }
 
+    public void setMedRecId(String medRecId) {
+        this.medRecId = medRecId;
+    }
+
     public String getPatientId() {
         return patientId;
     }

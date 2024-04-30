@@ -10,31 +10,57 @@ import com.javafirebasetest.entity.Patient;
 import com.javafirebasetest.entity.TestResult;
 
 
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.javafirebasetest.entity.HashPassword.getSHA;
+import static com.javafirebasetest.entity.HashPassword.toHexString;
+
 
 public class MedRecDAO {
     private static final DBManager dbManager = DBManager.getInstance();
+    static String idPrefix = "MR";
 
     //CRUD
 
     //CREATE METHODS
     public static String addMedRec(MedicalRecord medRec) {
-        String output = medRec.getMedRecId();
+        String hexId = null;
+        String newId = null;
 
-        if (MedRecDAO.getMedRecById(output) == null){
+        try {
+            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println(e);
+        }
+
+        newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
+
+        if (MedRecDAO.getMedRecById(newId) == null){
             DoctorDAO.updatePatientCount(medRec.getDoctorId(), 1);
         }
 
-        if (medRec.getMedRecId() == null) {
-            output = dbManager.addDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRec.toMap());
-        } else {
-            dbManager.updateDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRec.getMedRecId(), medRec.toMap());
-        }
-        return output;
+        dbManager.updateDocument(DBManager.CollectionPath.MEDICAL_RECORD, newId, medRec.toMap());
+
+        return newId;
+
+
+//        String output = medRec.getMedRecId();
+//
+//        if (MedRecDAO.getMedRecById(output) == null){
+//            DoctorDAO.updatePatientCount(medRec.getDoctorId(), 1);
+//        }
+//
+//        if (medRec.getMedRecId() == null) {
+//            output = dbManager.addDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRec.toMap());
+//        } else {
+//            dbManager.updateDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRec.getMedRecId(), medRec.toMap());
+//        }
+//        return output;
     }
 
     //READ METHODS
