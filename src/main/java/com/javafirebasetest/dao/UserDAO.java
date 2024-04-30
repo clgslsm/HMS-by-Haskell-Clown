@@ -26,17 +26,19 @@ public class UserDAO {
     //USER SPECIAL ADD
     public static String addUser(User user) {
         String hexId = null;
-        String newUserId = null;
+        String newUserId = user.getUserId();
 
-        if (getUserByUsername(user.getUsername()) != null)
-            throw new RuntimeException("Username already exist");
-        try {
-            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println(e);
+        if (UserDAO.getUserById(newUserId) == null){
+            if (getUserByUsername(user.getUsername()) != null)
+                throw new RuntimeException("Username already exist");
+            try {
+                hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+            } catch (NoSuchAlgorithmException e) {
+                System.out.println(e);
+            }
+
+            newUserId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
         }
-
-        newUserId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
 
         dbManager.updateDocument(DBManager.CollectionPath.USER, newUserId, user.toMap());
 
@@ -54,7 +56,7 @@ public class UserDAO {
     //READ METHODS
     public static User getUserById(String userId) {
         Map<String, Object> userData = dbManager.getDocumentById(DBManager.CollectionPath.USER, userId).getData();
-        assert userData != null;
+        if (userData == null) return null;
         return new User(userId, userData);
     }
 

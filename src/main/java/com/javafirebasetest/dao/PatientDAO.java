@@ -23,15 +23,17 @@ public class PatientDAO {
     //CREATE METHODS
     public static String addPatient(Patient patient) {
         String hexId = null;
-        String newId = null;
+        String newId = patient.getPatientId();
 
-        try {
-            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println(e);
+        if (getPatientById(newId) == null){
+            try {
+                hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+            } catch (NoSuchAlgorithmException e) {
+                System.out.println(e);
+            }
+
+            newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
         }
-
-        newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
 
         dbManager.updateDocument(DBManager.CollectionPath.PATIENT, newId, patient.toMap());
 
@@ -49,10 +51,10 @@ public class PatientDAO {
     }
 
     //READ METHODS
-    public static Patient getPatientById(String patientID) throws ExecutionException, InterruptedException {
+    public static Patient getPatientById(String patientID){
         Map<String, Object> patientData = dbManager.getDocumentById(DBManager.CollectionPath.PATIENT, patientID).getData();
 
-        assert patientData != null;
+        if (patientData == null) return null;
         return new Patient(patientID, patientData);
     }
 

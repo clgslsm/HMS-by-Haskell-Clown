@@ -5,6 +5,7 @@ import com.google.cloud.firestore.Filter;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.javafirebasetest.entity.Medicine;
 
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,7 +23,7 @@ public class MedicineDAO {
 
     public static Medicine getMedicineById(String medicineId) {
         Map<String, Object> medicineData = dbManager.getDocumentById(DBManager.CollectionPath.MEDICINE, medicineId).getData();
-        assert medicineData != null;
+        if (medicineData == null) return null;
         return new Medicine(medicineId, medicineData);
     }
 
@@ -68,15 +69,17 @@ public class MedicineDAO {
 
     public static String addMedicine(Medicine medicine) {
         String hexId = null;
-        String newId = null;
+        String newId = medicine.getMedicineId();
 
-        try {
-            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println(e);
+        if (getMedicineById(newId) == null){
+            try {
+                hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+            } catch (NoSuchAlgorithmException e) {
+                System.out.println(e);
+            }
+
+            newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
         }
-
-        newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
 
         dbManager.updateDocument(DBManager.CollectionPath.MEDICINE, newId, medicine.toMap());
 

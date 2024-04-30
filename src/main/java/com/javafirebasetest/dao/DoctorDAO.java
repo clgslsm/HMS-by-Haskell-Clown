@@ -20,15 +20,17 @@ public class DoctorDAO {
 
     public static String addDoctor(Doctor doctor) {
         String hexId = null;
-        String newId = null;
+        String newId = doctor.getStaffId();
 
-        try {
-            hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println(e);
+        if (getDoctorById(newId) == null){
+            try {
+                hexId = toHexString(getSHA(LocalDateTime.now().toLocalTime().toString()));
+            } catch (NoSuchAlgorithmException e) {
+                System.out.println(e);
+            }
+
+            newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
         }
-
-        newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
 
         dbManager.updateDocument(DBManager.CollectionPath.STAFF, newId, doctor.toMap());
 
@@ -44,7 +46,7 @@ public class DoctorDAO {
     //READ METHODS
     public static Doctor getDoctorById(String doctorId) {
         Map<String, Object> doctorData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, doctorId).getData();
-        assert doctorData != null;
+        if (doctorData == null) return null;
         return new Doctor(doctorId, doctorData);
     }
     public static List<Doctor> getDoctorByName(String doctorName) {
