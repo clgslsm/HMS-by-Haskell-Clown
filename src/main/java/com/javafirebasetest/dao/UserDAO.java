@@ -55,7 +55,13 @@ public class UserDAO {
 
     //READ METHODS
     public static User getUserById(String userId) {
-        Map<String, Object> userData = dbManager.getDocumentById(DBManager.CollectionPath.USER, userId).getData();
+        Map<String, Object> userData;
+        try {
+            userData = dbManager.getDocumentById(DBManager.CollectionPath.USER, userId).getData();
+        }
+        catch (Exception err){
+            return null;
+        }
         if (userData == null) return null;
         return new User(userId, userData);
     }

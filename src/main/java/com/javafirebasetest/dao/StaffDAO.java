@@ -57,7 +57,14 @@ public class StaffDAO {
     //READ METHODS
     public static Staff getStaffById(String staffId) {
 
-        Map<String, Object> staffData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, staffId).getData();
+        Map<String, Object> staffData;
+
+        try {
+            staffData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, staffId).getData();
+        }
+        catch (Exception err){
+            return null;
+        }
 
         if (staffData == null) return null;
         return new Staff(staffId, staffData);

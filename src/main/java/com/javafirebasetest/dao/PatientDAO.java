@@ -52,7 +52,14 @@ public class PatientDAO {
 
     //READ METHODS
     public static Patient getPatientById(String patientID){
-        Map<String, Object> patientData = dbManager.getDocumentById(DBManager.CollectionPath.PATIENT, patientID).getData();
+        Map<String, Object> patientData;
+
+        try {
+            patientData = dbManager.getDocumentById(DBManager.CollectionPath.PATIENT, patientID).getData();
+        }
+        catch (Exception err){
+            return null;
+        }
 
         if (patientData == null) return null;
         return new Patient(patientID, patientData);

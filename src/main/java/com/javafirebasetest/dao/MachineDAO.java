@@ -44,9 +44,14 @@ public class MachineDAO {
     }
 
     public static Machine getMachineByID(String machineId) {
-        Map<String, Object> machineData = dbManager.getDocumentById(DBManager.CollectionPath.MACHINE, machineId).getData();
-        if (machineData == null )return  null;
-        return new Machine(machineId, machineData);
+        try {
+            Map<String, Object> machineData = dbManager.getDocumentById(DBManager.CollectionPath.MACHINE, machineId).getData();
+            if (machineData == null) return null;
+            return new Machine(machineId, machineData);
+        }
+        catch (Exception err){
+            return null;
+        }
     }
 
     public static List<Machine> getMachineByName(String machineName) {

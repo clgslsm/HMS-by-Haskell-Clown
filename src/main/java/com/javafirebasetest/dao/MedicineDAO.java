@@ -22,9 +22,14 @@ public class MedicineDAO {
     static String idPrefix = "ME";
 
     public static Medicine getMedicineById(String medicineId) {
-        Map<String, Object> medicineData = dbManager.getDocumentById(DBManager.CollectionPath.MEDICINE, medicineId).getData();
-        if (medicineData == null) return null;
-        return new Medicine(medicineId, medicineData);
+        try {
+            Map<String, Object> medicineData = dbManager.getDocumentById(DBManager.CollectionPath.MEDICINE, medicineId).getData();
+            if (medicineData == null) return null;
+            return new Medicine(medicineId, medicineData);
+        }
+        catch (Exception err){
+            return null;
+        }
     }
 
     public static List<Medicine> getMedicineByName(String medicineName) {

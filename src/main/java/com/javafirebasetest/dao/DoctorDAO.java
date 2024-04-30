@@ -45,7 +45,13 @@ public class DoctorDAO {
 
     //READ METHODS
     public static Doctor getDoctorById(String doctorId) {
-        Map<String, Object> doctorData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, doctorId).getData();
+        Map<String, Object> doctorData;
+        try {
+            doctorData = dbManager.getDocumentById(DBManager.CollectionPath.STAFF, doctorId).getData();
+        }
+        catch (Exception err){
+            return null;
+        }
         if (doctorData == null) return null;
         return new Doctor(doctorId, doctorData);
     }
