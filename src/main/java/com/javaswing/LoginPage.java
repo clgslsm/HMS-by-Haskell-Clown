@@ -18,12 +18,10 @@ class LoginPage extends JFrame {
 
     public LoginPage() {
         setTitle("ABC HOSPITAL _ LOGIN");
+        setIconImage(new FlatSVGIcon("logo.svg").getImage());
         setSize(screenSize.width,screenSize.height);
-        setDefaultLookAndFeelDecorated(true);
-//        this.getRootPane().putClientProperty("FlatLaf.fullWindowContent","true");
-        getRootPane().putClientProperty("Window.style","small");
-//        getRootPane().putClientProperty("TitlePane.background","#1E1E1E");
-//        getRootPane().putClientProperty("JRootPane.titleBarForeground","white");
+        getRootPane().putClientProperty("JRootPane.titleBarBackground",new Color(0x1E1E1E));
+        getRootPane().putClientProperty("JRootPane.titleBarForeground",Color.white);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // Center the frame on the screen
@@ -158,6 +156,8 @@ class LoginForm extends JPanel implements ActionListener {
         }
 
         if (e.getSource() == loginButton) {
+            messageLabel.setText("");
+            loginButton.setEnabled(false);
             String userName = userNameField.getText().trim();
             String password = String.valueOf(userPasswordField.getPassword()).trim();
 
@@ -173,11 +173,14 @@ class LoginForm extends JPanel implements ActionListener {
                     frame.setVisible(false);
                 } else {
                     messageLabel.setText("Username or password incorrect!");
+                    loginButton.setEnabled(true);
                 }
             } else {
                 // Handle case when fields are empty
                 messageLabel.setText("Please fill in all fields.");
+                loginButton.setEnabled(true);
             }
+
         }
     }
 }

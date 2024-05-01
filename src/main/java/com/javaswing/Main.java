@@ -6,6 +6,7 @@ import com.javafirebasetest.dao._DBPopulator;
 
 
 import javax.swing.*;
+import java.awt.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 
@@ -15,6 +16,7 @@ public class Main {
         FlatLightLaf.setup();
         UIManager.put("TextComponent.arc",999);
         UIManager.put("Button.arc",999);
+        System.setProperty("flatlaf.useWindowDecorations","true");
         SwingUtilities.invokeLater(LoginPage::new);
 //        _DBPopulator.populate(true);
 

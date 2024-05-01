@@ -1,6 +1,7 @@
 package com.javaswing;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
@@ -14,11 +15,10 @@ import java.util.concurrent.ExecutionException;
 
 public class MainPage extends JFrame {
     MainPage(User user) throws ExecutionException, InterruptedException {
-//        getRootPane().putClientProperty("Window.style","small");
-//        getRootPane().putClientProperty("JRootPane.titleBarBackground","#1E1E1E");
-//        getRootPane().putClientProperty("JRootPane.titleBarForeground","white");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setIconImage(new FlatSVGIcon("logo.svg").getImage());
+        getRootPane().putClientProperty("JRootPane.titleBarBackground",new Color(0x1E1E1E));
+        getRootPane().putClientProperty("JRootPane.titleBarForeground",Color.white);
         this.setExtendedState(MAXIMIZED_BOTH);
         this.setTitle("ABC Hospital @%s".formatted(user.getUsername()));
         this.getContentPane().setBackground(new Color(0xF1F8FF));
