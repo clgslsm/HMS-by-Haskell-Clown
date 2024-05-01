@@ -1,4 +1,5 @@
 package com.javaswing;
+import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.javafirebasetest.dao.*;
@@ -745,16 +746,16 @@ class ViewPatientInfoPage extends JPanel {
             JLabel nameLabel = new JLabel("Name");
             nameLabel.setFont(new Font("Courier",Font.PLAIN,16));
             nameLabel.setBounds(100,60,100,20);
-            name = new RoundedTextField(1, 20);
-            name.setBounds(200,60,200,20);
+            name = new JTextField();
+            name.setBounds(200,60,200,30);
             name.setText(patient.getName());
 
             //  Patient's phone number
             JLabel phoneLabel = new JLabel("Phone");
             phoneLabel.setFont(new Font("Courier",Font.PLAIN,16));
             phoneLabel.setBounds(100,100,100,20);
-            phone = new RoundedTextField(1, 20);
-            phone.setBounds(200,100,200,20);
+            phone = new JTextField();
+            phone.setBounds(200,100,200,30);
             phone.setText(patient.getPhoneNumber());
 
             // Patient's gender
@@ -765,8 +766,7 @@ class ViewPatientInfoPage extends JPanel {
             gender = new JComboBox<>(sex);
             gender.setFont(new Font("Courier",Font.PLAIN,16));
             gender.setBackground(Color.white);
-            gender.setBorder(BorderFactory.createEmptyBorder());
-            gender.setBounds(200,140,100,20);
+            gender.setBounds(200,140,100,30);
             gender.setSelectedItem(patient.getGender());
 
             // Date of birth (DOB)
@@ -781,7 +781,8 @@ class ViewPatientInfoPage extends JPanel {
             JLabel addressLabel = new JLabel("Address");
             addressLabel.setFont(new Font("Courier",Font.PLAIN,16));
             addressLabel.setBounds(100,220,100,20);
-            address = new RoundedTextArea(1, 1,20, Color.gray);
+            address = new JTextArea();
+            address.putClientProperty(FlatClientProperties.OUTLINE,"gray");
             address.setBounds(200, 220, 200, 100);
             address.setLineWrap(true);
             address.setText(patient.getAddress());
@@ -797,7 +798,6 @@ class ViewPatientInfoPage extends JPanel {
             bloodGroup = new JComboBox<>(bloodType);
             bloodGroup.setFont(new Font("Courier",Font.PLAIN,16));
             bloodGroup.setBackground(Color.WHITE);
-            bloodGroup.setBorder(BorderFactory.createEmptyBorder());
             bloodGroup.setBounds(200,340,100,20);
             bloodGroup.setSelectedItem(patient.getBloodGroup());
 
@@ -806,11 +806,11 @@ class ViewPatientInfoPage extends JPanel {
             message.setBounds(200, 380, 300, 25);
 
             // Cancel Button
-            cancelButton = new RoundedButton(" Cancel");
+            cancelButton = new JButton(" Cancel");
             cancelButton.setBounds(250, 420, 80, 25);
 
             // Save Button
-            saveButton = new RoundedButton(" Save");
+            saveButton = new JButton(" Save");
             saveButton.setBounds(150, 420, 80, 25);
 
             JPanel form = new JPanel();
@@ -844,15 +844,15 @@ class ViewPatientInfoPage extends JPanel {
             JLabel nameLabel = new JLabel("Name");
             nameLabel.setFont(new Font("Courier",Font.PLAIN,16));
             nameLabel.setBounds(100,60,100,20);
-            name = new RoundedTextField(1, 20);
-            name.setBounds(200,60,200,20);
+            name = new JTextField();
+            name.setBounds(200,60,200,30);
 
             //  Patient's phone number
             JLabel phoneLabel = new JLabel("Phone");
             phoneLabel.setFont(new Font("Courier",Font.PLAIN,16));
             phoneLabel.setBounds(100,100,100,20);
-            phone = new RoundedTextField(1, 20);
-            phone.setBounds(200,100,200,20);
+            phone = new JTextField();
+            phone.setBounds(200,100,200,30);
 
             // Patient's gender
             JLabel genderLabel = new JLabel("Gender");
@@ -863,20 +863,20 @@ class ViewPatientInfoPage extends JPanel {
             gender.setFont(new Font("Courier",Font.PLAIN,16));
             gender.setBackground(Color.white);
             gender.setBorder(BorderFactory.createEmptyBorder());
-            gender.setBounds(200,140,100,20);
+            gender.setBounds(200,140,100,30);
 
             // Date of birth (DOB)
             JLabel DOBLabel = new JLabel("Date of birth");
             DOBLabel.setFont(new Font("Courier",Font.PLAIN,16));
             DOBLabel.setBounds(100,180,100,20);
             DOB = new CustomDatePicker(new String[]{"1", "July", "1990"});
-            DOB.setBounds(200, 180, 300, 25);
+            DOB.setBounds(200, 180, 300, 30);
 
             // Address
             JLabel addressLabel = new JLabel("Address");
             addressLabel.setFont(new Font("Courier",Font.PLAIN,16));
             addressLabel.setBounds(100,220,100,20);
-            address = new RoundedTextArea(1, 1,20, Color.gray);
+            address = new JTextArea();
             address.setBounds(200, 220, 200, 100);
             address.setLineWrap(true);
 
@@ -891,7 +891,6 @@ class ViewPatientInfoPage extends JPanel {
             bloodGroup = new JComboBox<>(bloodType);
             bloodGroup.setFont(new Font("Courier",Font.PLAIN,16));
             bloodGroup.setBackground(Color.WHITE);
-            bloodGroup.setBorder(BorderFactory.createEmptyBorder());
             bloodGroup.setBounds(200,340,100,20);
 
             message.setFont(new Font("Courier",Font.PLAIN,16));
@@ -899,11 +898,11 @@ class ViewPatientInfoPage extends JPanel {
             message.setBounds(200, 380, 300, 25);
 
             // Cancel Button
-            cancelButton = new RoundedButton(" Cancel");
+            cancelButton = new JButton(" Cancel");
             cancelButton.setBounds(250, 420, 80, 25);
 
             // Save Button
-            saveButton = new RoundedButton(" Save");
+            saveButton = new JButton(" Save");
             saveButton.setBounds(150, 420, 80, 25);
 
             JPanel form = new JPanel();
@@ -1068,7 +1067,7 @@ class ViewPatientInfoPage extends JPanel {
             }
         }
         public JButton AddAppointmentButton(){
-            JButton addAppointmentButton = new RoundedButton("  + Add appointment  ");
+            JButton addAppointmentButton = new JButton("  + Add appointment  ");
             addAppointmentButton.setForeground(Color.white);
             addAppointmentButton.setBackground(Constants.BLUE);
             addAppointmentButton.setMaximumSize(new Dimension(125,30));

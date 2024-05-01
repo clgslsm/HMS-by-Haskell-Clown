@@ -19,6 +19,11 @@ class LoginPage extends JFrame {
     public LoginPage() {
         setTitle("ABC HOSPITAL _ LOGIN");
         setSize(screenSize.width,screenSize.height);
+        setDefaultLookAndFeelDecorated(true);
+//        this.getRootPane().putClientProperty("FlatLaf.fullWindowContent","true");
+        getRootPane().putClientProperty("Window.style","small");
+//        getRootPane().putClientProperty("TitlePane.background","#1E1E1E");
+//        getRootPane().putClientProperty("JRootPane.titleBarForeground","white");
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // Center the frame on the screen

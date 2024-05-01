@@ -1,5 +1,6 @@
 package com.javaswing;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
@@ -13,6 +14,9 @@ import java.util.concurrent.ExecutionException;
 
 public class MainPage extends JFrame {
     MainPage(User user) throws ExecutionException, InterruptedException {
+//        getRootPane().putClientProperty("Window.style","small");
+//        getRootPane().putClientProperty("JRootPane.titleBarBackground","#1E1E1E");
+//        getRootPane().putClientProperty("JRootPane.titleBarForeground","white");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(MAXIMIZED_BOTH);
         this.setResizable(false);
