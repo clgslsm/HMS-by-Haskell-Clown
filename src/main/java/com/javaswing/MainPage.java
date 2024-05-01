@@ -14,6 +14,8 @@ import java.util.concurrent.ExecutionException;
 public class MainPage extends JFrame {
     MainPage(User user) throws ExecutionException, InterruptedException {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setExtendedState(MAXIMIZED_BOTH);
+        this.setResizable(false);
         this.setTitle("ABC Hospital @%s".formatted(user.getUsername()));
         this.getContentPane().setBackground(new Color(0xF1F8FF));
         this.setLayout(new BorderLayout());
@@ -24,15 +26,23 @@ public class MainPage extends JFrame {
 }
 class MainPageUIContainer extends JPanel {
     User user;
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    Toolkit toolkit = Toolkit.getDefaultToolkit();
+    // Get the screen size
+    Dimension screenSize = toolkit.getScreenSize();
+    // Get the screen insets (including taskbar and other system decorations)
+    Insets screenInsets = toolkit.getScreenInsets(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration());
+
+    // Calculate the usable screen bounds (excluding taskbar)
+    int usableScreenWidth = screenSize.width - screenInsets.left - screenInsets.right;
+    int usableScreenHeight = screenSize.height - screenInsets.top - screenInsets.bottom;
     CardLayout containerLayout = new CardLayout();
     JPanel navContainer;
     JPanel mainPageContainer;
     MainPageUIContainer(User u, MainPage mainPage) throws ExecutionException, InterruptedException {
-        user = u;
-
+        this.user=u;
         this.setLayout(new BorderLayout());
-        this.setSize(new Dimension(screenSize.width, screenSize.height));
+        this.setSize(new Dimension(usableScreenWidth, usableScreenHeight));
+
 
         navContainer = NavigationContainer(mainPage);
         mainPageContainer  = MainPageContainer();
@@ -41,7 +51,7 @@ class MainPageUIContainer extends JPanel {
     }
     private JPanel NavigationContainer(MainPage mainPage) {
         JPanel navigationContainer = new JPanel();
-        navigationContainer.setPreferredSize(new Dimension(screenSize.width * 4261 / 27320, screenSize.height));
+        navigationContainer.setPreferredSize(new Dimension(usableScreenWidth * 4261 / 27320, usableScreenHeight));
         navigationContainer.setLayout(new BoxLayout(navigationContainer, BoxLayout.Y_AXIS));
         navigationContainer.setBackground(Color.WHITE);
         // Thêm nội dung vào control panel
@@ -232,7 +242,7 @@ class MainPageUIContainer extends JPanel {
     private JPanel MainPageContainer() throws ExecutionException, InterruptedException {
         JPanel container = new JPanel();
         container.setLayout(containerLayout);
-        container.setPreferredSize(new Dimension(screenSize.width * 23059 / 27320, screenSize.height));
+        container.setPreferredSize(new Dimension(usableScreenWidth * 23059 / 27320, usableScreenHeight));
 
         JPanel defaultPanel = new DefaultPanel(user);
         container.add(defaultPanel, "staff-default-panel");
