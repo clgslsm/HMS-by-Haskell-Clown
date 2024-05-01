@@ -172,11 +172,15 @@ class LoginForm extends JPanel implements ActionListener {
                     }
                     frame.setVisible(false);
                 } else {
+                    userNameField.putClientProperty(FlatClientProperties.OUTLINE,"error");
+                    userPasswordField.putClientProperty(FlatClientProperties.OUTLINE,"error");
                     messageLabel.setText("Username or password incorrect!");
                     loginButton.setEnabled(true);
                 }
             } else {
                 // Handle case when fields are empty
+                userNameField.putClientProperty(FlatClientProperties.OUTLINE,"warning");
+                userPasswordField.putClientProperty(FlatClientProperties.OUTLINE,"warning");
                 messageLabel.setText("Please fill in all fields.");
                 loginButton.setEnabled(true);
             }
