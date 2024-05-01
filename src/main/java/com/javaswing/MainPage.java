@@ -18,8 +18,8 @@ public class MainPage extends JFrame {
 //        getRootPane().putClientProperty("JRootPane.titleBarBackground","#1E1E1E");
 //        getRootPane().putClientProperty("JRootPane.titleBarForeground","white");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setExtendedState(MAXIMIZED_BOTH);
-        this.setResizable(false);
         this.setTitle("ABC Hospital @%s".formatted(user.getUsername()));
         this.getContentPane().setBackground(new Color(0xF1F8FF));
         this.setLayout(new BorderLayout());
