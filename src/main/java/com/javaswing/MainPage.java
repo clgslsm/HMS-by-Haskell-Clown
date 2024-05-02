@@ -98,7 +98,7 @@ class MainPageUIContainer extends JPanel {
         label.setBorder(new EmptyBorder(40, 20, 40, 20));
 
         // Thêm các điều hướng
-        NavButton defaultSection = new NavButton("Staff information");
+//        NavButton defaultSection = new NavButton("Staff information");
         NavButton patientSection = new NavButton("Patients");
         NavButton staffSection = new NavButton("Staffs");
         NavButton medicineSection = new NavButton("Medicine");
@@ -107,27 +107,27 @@ class MainPageUIContainer extends JPanel {
         NavButton exportMedicineSection = new NavButton("Export Medicine");
         NavButton medrecSection = new NavButton("Medical Records");
 
-        defaultSection.setSelected(true);
+//        defaultSection.setSelected(true);
         patientSection.setSelected(false);
         staffSection.setSelected(false);
         medicineSection.setSelected(false);
         machineSection.setSelected(false);
         exportMedicineSection.setSelected(false);
 
-        defaultSection.addActionListener(_->{
-            defaultSection.setSelected(true);
-            patientSection.setSelected(false);
-            staffSection.setSelected(false);
-            medicineSection.setSelected(false);
-            machineSection.setSelected(false);
-            exportMedicineSection.setSelected(false);
-            medrecSection.setSelected(false);
-            unusableMachineSection.setSelected(false);
-            containerLayout.show(mainPageContainer,"staff-default-panel");
-        });
+//        defaultSection.addActionListener(_->{
+//            defaultSection.setSelected(true);
+//            patientSection.setSelected(false);
+//            staffSection.setSelected(false);
+//            medicineSection.setSelected(false);
+//            machineSection.setSelected(false);
+//            exportMedicineSection.setSelected(false);
+//            medrecSection.setSelected(false);
+//            unusableMachineSection.setSelected(false);
+//            containerLayout.show(mainPageContainer,"staff-default-panel");
+//        });
 
         patientSection.addActionListener(e -> {
-            defaultSection.setSelected(false);
+//            defaultSection.setSelected(false);
             patientSection.setSelected(true);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -139,7 +139,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         staffSection.addActionListener(e -> {
-            defaultSection.setSelected(false);
+//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(true);
             medicineSection.setSelected(false);
@@ -151,7 +151,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         medicineSection.addActionListener(e -> {
-            defaultSection.setSelected(false);
+//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(true);
@@ -163,7 +163,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         machineSection.addActionListener(e -> {
-            defaultSection.setSelected(false);
+//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -175,7 +175,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         exportMedicineSection.addActionListener(_->{
-            defaultSection.setSelected(false);
+//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -187,7 +187,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         medrecSection.addActionListener(_->{
-            defaultSection.setSelected(false);
+//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -199,7 +199,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         unusableMachineSection.addActionListener(_->{
-            defaultSection.setSelected(false);
+//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -217,22 +217,26 @@ class MainPageUIContainer extends JPanel {
         cPanel.setBackground(Constants.DARK_MODE_1);
         cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 
-        cPanel.add(defaultSection);
+//        cPanel.add(defaultSection);
         cPanel.add(Box.createVerticalStrut(10));
 
         if (user != null && user.getUserMode().getValue().equals("Doctor")) {
+            patientSection.setSelected(true);
             cPanel.add(patientSection);
             cPanel.add(Box.createVerticalStrut(10));
         }
         else if (user != null && user.getUserMode().getValue().equals("Admin")) {
+            staffSection.setSelected(true);
             cPanel.add(staffSection);
             cPanel.add(Box.createVerticalStrut(10));
         }
         else if (user != null && user.getUserMode().getValue().equals("Receptionist")) {
+            patientSection.setSelected(true);
             cPanel.add(patientSection);
             cPanel.add(Box.createVerticalStrut(10));
         }
         else if (user != null && user.getUserMode().getValue().equals("Technician")) {
+            medrecSection.setSelected(true);
             cPanel.add(medrecSection);
             cPanel.add(Box.createVerticalStrut(10));
             cPanel.add(machineSection);
@@ -241,6 +245,7 @@ class MainPageUIContainer extends JPanel {
             cPanel.add(Box.createVerticalStrut(10));
         }
         else if (user != null && user.getUserMode().getValue().equals("Pharmacist")) {
+            exportMedicineSection.setSelected(true);
             cPanel.add(medicineSection);
             cPanel.add(Box.createVerticalStrut(10));
             cPanel.add(exportMedicineSection);
@@ -287,19 +292,22 @@ class MainPageUIContainer extends JPanel {
         container.setPreferredSize(new Dimension(usableScreenWidth * 23059 / 27320, usableScreenHeight));
 
         JPanel defaultPanel = new DefaultPanel(user);
-        container.add(defaultPanel, "staff-default-panel");
+//        container.add(defaultPanel, "staff-default-panel");
 
         if (user != null && user.getUserMode().getValue().equals("Doctor")) {
             JPanel patientPanel = new PatientPanel(user.getStaffId());
             container.add(patientPanel, "patient-panel");
+            containerLayout.show(container, "patient-panel");
         }
         else if (user != null && user.getUserMode().getValue().equals("Admin")) {
             JPanel staffPanel = new StaffPanel();
             container.add(staffPanel, "staff-panel");
+            containerLayout.show(container, "staff-panel");
         }
         else if (user != null && user.getUserMode().getValue().equals("Receptionist")) {
             JPanel patientPanel = new PatientPanel(user.getStaffId());
             container.add(patientPanel, "patient-panel");
+            containerLayout.show(container, "patient-panel");
         }
         else if (user != null && user.getUserMode().getValue().equals("Technician")) {
             JPanel medrecPanel = new MedicalRecordPanel(user);
@@ -308,15 +316,15 @@ class MainPageUIContainer extends JPanel {
             container.add(machinePanel, "machine-panel");
             container.add(unusableMachinePanel,"unusable-machine-panel");
             container.add(medrecPanel, "medrec-panel");
+            containerLayout.show(container, "medrec-panel");
         }
         else if (user != null && user.getUserMode().getValue().equals("Pharmacist")) {
             JPanel medicinePanel = new MedicinePanel();
             JPanel exportMedicinePanel = new ExportMedicinePanel(user);
             container.add(medicinePanel, "medicine-panel");
             container.add(exportMedicinePanel,"export-medicine-panel");
+            containerLayout.show(container, "export-medicine-panel");
         }
-
-        containerLayout.show(container, "staff-default-panel");
 
         return container;
     }
