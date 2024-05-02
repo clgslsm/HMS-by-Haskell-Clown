@@ -1,5 +1,7 @@
 package com.javaswing;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.javafirebasetest.dao.MedRecDAO;
 import com.javafirebasetest.dao.MedicineDAO;
 import com.javafirebasetest.dao.PatientDAO;
@@ -24,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ViewMedicalRecordPanel extends JPanel {
     JLabel message = new JLabel("");
-    JButton backButton = new RoundedButton(" Return ");
+    JButton backButton = new RoundedButton("Return");
     JTextArea diagnosis;
     JTextField rating;
     JRadioButton Prescriptions = new JRadioButton("Prescriptions");
@@ -33,20 +35,26 @@ public class ViewMedicalRecordPanel extends JPanel {
     JTextField quantity;
     JTextArea testDecription;
     RoundedButton testResult;
-    RoundedButton saveButton;
+    JButton saveButton;
     String pre = "";
     String filePath = "";
     MedicalRecord mr;
     ViewMedicalRecordPanel(String id, String userId) throws ExecutionException, InterruptedException {
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 40));
+        this.setBackground(Color.WHITE);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         mr = MedRecDAO.getMedRecById(id);
 
-        JLabel title = new JLabel("Medical record form");
-        title.setFont(new Font("Courier",Font.BOLD,30));
+        JLabel title = new JLabel("Medical Record Form");
+        title.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,30));
         title.setForeground(Color.gray);
         title.setBounds(50, 0, 400, 50);
+
+//        backButton.setBackground(Constants.BLUE);
+//        backButton.setForeground(Color.white);
+//        backButton.setFont(Constants.commonUsed);
+//        backButton.setMinimumSize(new Dimension(100,40));
 
         JPanel pageHeader = new JPanel();
         pageHeader.setBackground(Color.white);
@@ -76,57 +84,58 @@ public class ViewMedicalRecordPanel extends JPanel {
     JPanel Inform(MedicalRecord mr, String userId) throws ExecutionException, InterruptedException {
         // Patient's name
         JLabel nameLabel = new JLabel("Name");
-        nameLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        nameLabel.setFont(Constants.commonUsed);
         nameLabel.setBounds(100,30,100,20);
         JLabel name = new JLabel(PatientDAO.getPatientById(mr.getPatientId()).getName());
-        name.setFont(new Font("Courier",Font.PLAIN,16));
+        name.setFont(Constants.commonUsed);
         name.setBounds(200,30,200,20);
 
         //  Patient's phone number
         JLabel phoneLabel = new JLabel("Phone");
-        phoneLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        phoneLabel.setFont(Constants.commonUsed);
         phoneLabel.setBounds(100,70,100,20);
         JLabel phone = new JLabel(PatientDAO.getPatientById(mr.getPatientId()).getPhoneNumber());
-        phone.setFont(new Font("Courier",Font.PLAIN,16));
+        phone.setFont(Constants.commonUsed);
         phone.setBounds(200,70,200,20);
 
         // Patient's gender
         JLabel genderLabel = new JLabel("Gender");
-        genderLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        genderLabel.setFont(Constants.commonUsed);
         genderLabel.setBounds(100,110,100,20);
         JLabel gender = new JLabel(PatientDAO.getPatientById(mr.getPatientId()).getGender().getValue());
-        gender.setFont(new Font("Courier",Font.PLAIN,16));
+        gender.setFont(Constants.commonUsed);
         gender.setBounds(200,110,100,20);
 
         // Date of birth (DOB)
         JLabel DOBLabel = new JLabel("Date of birth");
-        DOBLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        DOBLabel.setFont(Constants.commonUsed);
         DOBLabel.setBounds(100,150,100,20);
         JLabel DOB = new JLabel(PatientDAO.getPatientById(mr.getPatientId()).getBirthDate().toString());
-        DOB.setFont(new Font("Courier",Font.PLAIN,16));
+        DOB.setFont(Constants.commonUsed);
         DOB.setBounds(200, 150, 300, 25);
 
         // Patient's blood group
         JLabel bloodGroupLabel = new JLabel("Blood type");
-        bloodGroupLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        bloodGroupLabel.setFont(Constants.commonUsed);
         bloodGroupLabel.setBounds(100,190,100,20);
         JLabel bloodGroup = new JLabel(PatientDAO.getPatientById(mr.getPatientId()).getBloodGroup().getValue());
-        bloodGroup.setFont(new Font("Courier",Font.PLAIN,16));
+        bloodGroup.setFont(Constants.commonUsed);
         bloodGroup.setBounds(200,190,100,20);
 
         JLabel ratingLabel = new JLabel("Service rating");
-        ratingLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        ratingLabel.setFont(Constants.commonUsed);
         ratingLabel.setBounds(100,230,100,20);
-        rating = new RoundedTextField(1, 20);
-        rating.setBounds(200, 230, 230, 20);
+        rating = new JTextField();
+        rating.setFont(Constants.commonUsed);
+        rating.setBounds(200, 230, 230, 30);
 
         JLabel diagnosisLabel = new JLabel("Diagnosis");
-        diagnosisLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        diagnosisLabel.setFont(Constants.commonUsed);
         diagnosisLabel.setBounds(100,270,100,20);
-        diagnosis = new RoundedTextArea(1, 1,20, Color.gray);
+        diagnosis = new RoundedTextArea(1, 1,5, Color.lightGray);
         diagnosis.setBounds(200, 270, 300, 200);
         diagnosis.setLineWrap(true);
-
+        diagnosis.setWrapStyleWord(true);
         diagnosis.setEditable(false);
         Prescriptions.setEnabled(false);
         Test.setEnabled(false);
@@ -150,20 +159,23 @@ public class ViewMedicalRecordPanel extends JPanel {
         Prescriptions.setBackground(Color.white);
         Prescriptions.setFocusable(false);
         Prescriptions.setFocusPainted(false);
-        Prescriptions.setFont(new Font("Courier",Font.PLAIN,16));
+        Prescriptions.setFont(Constants.commonUsed);
         Test.setBounds(350, 480, 150, 25);
         Test.setBackground(Color.white);
         Test.setFocusable(true);
         Test.setFocusPainted(false);
-        Test.setFont(new Font("Courier",Font.PLAIN,16));
+        Test.setFont(Constants.commonUsed);
 
-        message.setFont(new Font("Courier",Font.PLAIN,16));
-        message.setForeground(Color.red);
+        message.setFont(Constants.commonUsed);
+        message.setForeground(Constants.RED);
         message.setBounds(200, 520, 300, 25);
 
         // Save Button
-        saveButton = new RoundedButton(" Save ");
-        saveButton.setBounds(200, 550, 80, 25);
+        saveButton = new JButton("Save");
+        saveButton.setBackground(Constants.BLUE);
+        saveButton.setForeground(Color.white);
+        saveButton.setFont(Constants.commonUsed);
+        saveButton.setBounds(200, 550, 100, 40);
 
         JPanel form = new JPanel();
         form.setBackground(Color.white);
@@ -196,12 +208,12 @@ public class ViewMedicalRecordPanel extends JPanel {
         exam.setBackground(Color.white);
 
         JLabel title1 = new JLabel("Prescriptions");
-        title1.setFont(new Font("Courier",Font.BOLD,20));
+        title1.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,20));
         title1.setForeground(Color.gray);
         title1.setBounds(100, 30, 400, 25);
 
         JLabel medicineLabel = new JLabel("Medicine");
-        medicineLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        medicineLabel.setFont(Constants.commonUsed);
         medicineLabel.setBounds(100,70,100,20);
 
         int i = 0;
@@ -213,23 +225,22 @@ public class ViewMedicalRecordPanel extends JPanel {
         }
         medicineButton = new JComboBox<>(m);
         medicineButton.setBackground(Color.white);
-        medicineButton.setBorder(BorderFactory.createEmptyBorder());
-        medicineButton.setBounds(200, 70, 200, 20);
+        medicineButton.setBounds(200, 70, 200, 25);
 
         JLabel quantityLabel = new JLabel("Quantity");
-        quantityLabel.setFont(new Font("Courier",Font.PLAIN,14));
+        quantityLabel.setFont(Constants.commonUsed);
         quantityLabel.setBounds(100,110,100,20);
-        quantity = new RoundedTextField(1, 20);
-        quantity.setBounds(200, 110, 200, 20);
+        quantity = new JTextField();
+        quantity.setBounds(200, 110, 200, 30);
 
         DefaultTableModel model = new DefaultTableModel(new Object[][]{}, new Object[]{"Name", "Quantity"});
 
         // Tạo JTable với DefaultTableModel
         JTable table = new JTable(model);
-        table.getTableHeader().setFont(new Font("Courier", Font.BOLD, 12));
+        table.getTableHeader().setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,15));
         table.getTableHeader().setOpaque(false);
         table.getTableHeader().setBackground(new Color(32, 136, 203));
-        table.getTableHeader().setForeground(new Color(255,255,255));
+        table.getTableHeader().setForeground(Color.white);
 
         table.setFocusable(false);
         table.setIntercellSpacing(new Dimension(0, 0));
@@ -237,7 +248,7 @@ public class ViewMedicalRecordPanel extends JPanel {
         table.setSelectionForeground(Color.white);
         table.setShowVerticalLines(false);
         table.getTableHeader().setReorderingAllowed(false);
-        table.setFont(new Font("Courier",Font.PLAIN,13));
+        table.setFont(Constants.commonUsed);
         table.setBackground(Color.white);
         table.setRowHeight(30);
 
@@ -248,14 +259,18 @@ public class ViewMedicalRecordPanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBounds(100, 150, 400, 200);
 
-        JButton addMedicineToPrecription = new RoundedButton(" Add ");
+        JButton addMedicineToPrecription = new JButton("Add");
+        addMedicineToPrecription.setIcon(new FlatSVGIcon("add.svg"));
+        addMedicineToPrecription.setBackground(Constants.BLUE);
+        addMedicineToPrecription.setForeground(Color.white);
+        addMedicineToPrecription.setFont(Constants.commonUsed);
         addMedicineToPrecription.addActionListener(_->{
             if (medicineButton.getSelectedItem() != null && !quantity.getText().isEmpty()) {
                 Object[] newOb = {medicineButton.getSelectedItem(), quantity.getText()};
                 model.addRow(newOb);
             }
         });
-        addMedicineToPrecription.setBounds(450, 100, 80, 25);
+        addMedicineToPrecription.setBounds(450, 110, 100, 30);
 
         //EDIT
         table.setEditingColumn(1);
@@ -289,19 +304,20 @@ public class ViewMedicalRecordPanel extends JPanel {
         });
 
         JLabel title2 = new JLabel("Test");
-        title2.setFont(new Font("Courier",Font.BOLD,20));
+        title2.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,20));
         title2.setForeground(Color.gray);
         title2.setBounds(100, 370, 400, 25);
 
         JLabel desLabel = new JLabel("Decription");
-        desLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        desLabel.setFont(Constants.commonUsed);
         desLabel.setBounds(100,410,100,20);
-        testDecription = new RoundedTextArea(1, 1,20, Color.gray);
+        testDecription = new RoundedTextArea(1, 1,5, Color.lightGray);
         testDecription.setBounds(200, 410, 300, 100);
         testDecription.setLineWrap(true);
+        testDecription.setWrapStyleWord(true);
 
         JLabel resLabel = new JLabel("Result");
-        resLabel.setFont(new Font("Courier",Font.PLAIN,16));
+        resLabel.setFont(Constants.commonUsed);
         resLabel.setBounds(100,520,100,20);
         testResult = new RoundedButton("Choose result file");
         testResult.setBounds(200, 520, 150, 80);

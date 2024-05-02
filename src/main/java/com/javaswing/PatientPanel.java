@@ -9,6 +9,7 @@ import com.javafirebasetest.entity.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
@@ -241,12 +242,13 @@ class PatientDefaultPage extends JLabel {
     CustomTableModel model;
     JTable patientList;
     PatientDefaultPage(String userId) {
+
         this.setMaximumSize(new Dimension(1300,600));
         this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 40));
         this.setBackground(Constants.LIGHT_BLUE);
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.add(headerPanel());
+        this.add(headerPanel(userId));
         this.add(SearchFilterContainer(userId));
         JPanel space = new JPanel();
         space.setBackground(Constants.LIGHT_BLUE);
@@ -254,7 +256,7 @@ class PatientDefaultPage extends JLabel {
         this.add(space);
         this.add(bodyContainer(userId));
     }
-    private JPanel headerPanel(){
+    private JPanel headerPanel(String staffID){
         // Header container
         JPanel header = new JPanel();
         JPanel titleContainer = new JPanel();
@@ -271,7 +273,8 @@ class PatientDefaultPage extends JLabel {
 
         header.add(titleContainer);
         header.add(Box.createHorizontalGlue());
-        header.add(addPatientBtn);
+        if (StaffDAO.getStaffById(staffID).getUserMode().getValue().equals("Receptionist"))
+            header.add(addPatientBtn);
         return header;
     }
     private JPanel SearchFilterContainer(String userId){
@@ -403,6 +406,7 @@ class PatientDefaultPage extends JLabel {
         String userMode = StaffDAO.getStaffById(userId).getUserMode().getValue();
         if (userMode.equals("Receptionist")){
             for (Patient p : allPatients) {
+                count++;
                 addPatientToTable(p);
             }
         }
@@ -769,7 +773,7 @@ class ViewPatientInfoPage extends JPanel {
             gender = new JComboBox<>(sex);
             gender.setFont(Constants.commonUsed);
             gender.setBackground(Color.white);
-            gender.setBounds(200,140,100,30);
+            gender.setBounds(200,140,100,25);
             gender.setSelectedItem(patient.getGender());
 
             // Date of birth (DOB)
@@ -802,7 +806,7 @@ class ViewPatientInfoPage extends JPanel {
             bloodGroup = new JComboBox<>(bloodType);
             bloodGroup.setFont(Constants.commonUsed);
             bloodGroup.setBackground(Color.WHITE);
-            bloodGroup.setBounds(200,340,100,20);
+            bloodGroup.setBounds(200,340,100,25);
             bloodGroup.setSelectedItem(patient.getBloodGroup());
 
             message.setFont(Constants.commonUsed);
@@ -814,9 +818,18 @@ class ViewPatientInfoPage extends JPanel {
             cancelButton.setFont(Constants.commonUsed);
             cancelButton.setForeground(Constants.BLUE);
             cancelButton.setBounds(250, 420, 80, 40);
+            cancelButton.addActionListener(_->{
+                name.setText(patient.getName());
+                phone.setText(patient.getPhoneNumber());
+                gender.setSelectedItem(patient.getGender());
+                DOB = new CustomDatePicker(d);
+                address.setText(patient.getAddress());
+                bloodGroup.setSelectedItem(patient.getBloodGroup());
+                message.setText("");
+            });
 
             // Save Button
-            saveButton = new JButton(" Save");
+            saveButton = new JButton("Save");
             saveButton.setFont(Constants.commonUsed);
             saveButton.setForeground(Color.white);
             saveButton.setBackground(Constants.BLUE);
@@ -873,14 +886,14 @@ class ViewPatientInfoPage extends JPanel {
             gender = new JComboBox<>(sex);
             gender.setFont(Constants.commonUsed);
             gender.setBackground(Color.white);
-            gender.setBounds(200,140,100,30);
+            gender.setBounds(200,140,100,25);
 
             // Date of birth (DOB)
             JLabel DOBLabel = new JLabel("Date of birth");
             DOBLabel.setFont(Constants.commonUsed);
             DOBLabel.setBounds(100,180,100,20);
             DOB = new CustomDatePicker(new String[]{"1", "July", "1990"});
-            DOB.setBounds(200, 180, 300, 30);
+            DOB.setBounds(200, 180, 300, 25);
 
             // Address
             JLabel addressLabel = new JLabel("Address");
@@ -902,7 +915,7 @@ class ViewPatientInfoPage extends JPanel {
             bloodGroup = new JComboBox<>(bloodType);
             bloodGroup.setFont(Constants.commonUsed);
             bloodGroup.setBackground(Color.WHITE);
-            bloodGroup.setBounds(200,340,100,20);
+            bloodGroup.setBounds(200,340,100,25);
 
             message.setFont(Constants.commonUsed);
             message.setForeground(Constants.RED);
@@ -1019,7 +1032,36 @@ class ViewPatientInfoPage extends JPanel {
             table.getTableHeader().setReorderingAllowed(false);
             table.setFont(new Font("Courier",Font.PLAIN,12));
             table.setBackground(Color.white);
+            TableCellRenderer renderer = new DefaultTableCellRenderer() {
+                @Override
+                public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                    JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
+                    // Set the font color for the specific cell
+                    if (column == 4) {
+                        String cellText = value.toString();
+                        label.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,14));
+                        if (cellText.equals("TESTING")) {
+                            label.setForeground(Constants.BLUE);
+                        } else if (cellText.equals("TESTED")) {
+                            label.setForeground(new Color(0x87A922));
+                        }
+                        else if (cellText.equals("CHECKED_OUT"))
+                            label.setForeground(Color.gray);
+                        else if (cellText.equals("PENDING")) {
+                            label.setForeground(Color.ORANGE);
+                        } else if (cellText.equals("DIAGNOSED")) {
+                            label.setForeground(new Color(0x4B0082));
+                        }
+                    } else {
+                        // Reset the font color for other columns
+                        label.setForeground(table.getForeground());
+                    }
+                    label.setHorizontalAlignment(JLabel.CENTER);
+                    return label;
+                }
+            };
+            table.getColumn("Status").setCellRenderer(renderer);
             table.getColumn("View").setCellRenderer(new ViewButtonRenderer());
             table.getColumn("View").setCellEditor(new ViewButtonEditor(new JCheckBox()));
             table.getColumn("View").setMaxWidth(50);
