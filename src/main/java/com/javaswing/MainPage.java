@@ -2,6 +2,10 @@ package com.javaswing;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.inter.FlatInterFont;
+import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+import com.javafirebasetest.dao.StaffDAO;
+import com.javafirebasetest.entity.Staff;
 import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
@@ -17,11 +21,11 @@ public class MainPage extends JFrame {
     MainPage(User user) throws ExecutionException, InterruptedException {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setIconImage(new FlatSVGIcon("logo.svg").getImage());
-        getRootPane().putClientProperty("JRootPane.titleBarBackground",new Color(0x1E1E1E));
+        getRootPane().putClientProperty("JRootPane.titleBarBackground",Constants.DARK_MODE_2);
         getRootPane().putClientProperty("JRootPane.titleBarForeground",Color.white);
         this.setExtendedState(MAXIMIZED_BOTH);
         this.setTitle("ABC Hospital @%s".formatted(user.getUsername()));
-        this.getContentPane().setBackground(new Color(0xF1F8FF));
+        this.getContentPane().setBackground(Constants.LIGHT_BLUE);
         this.setLayout(new BorderLayout());
         this.setVisible(true);
         this.add(new MainPageUIContainer(user,this));
@@ -53,19 +57,45 @@ class MainPageUIContainer extends JPanel {
         this.add(navContainer, BorderLayout.WEST);
         this.add(mainPageContainer);
     }
+    private JPanel StaffAccountContainer(){
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
+        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+
+        Staff st = StaffDAO.getStaffById(user.getStaffId());
+
+        JLabel userLabel = new JLabel(st.getName());
+        userLabel.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,20));
+        userLabel.setForeground(Color.WHITE);
+        userLabel.setIcon(new FlatSVGIcon("user.svg",25,25));
+
+        JLabel staffIdLabel = new JLabel(STR."Staff ID: \{st.getStaffId()}");
+        staffIdLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,13));
+        staffIdLabel.setForeground(Color.WHITE);
+
+        JLabel userModeLabel = new JLabel(STR."\{user.getUserMode()}");
+        userModeLabel.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,13));
+        userModeLabel.setForeground(Color.yellow);
+
+        panel.add(userLabel);
+        panel.add(userModeLabel);
+        panel.add(staffIdLabel);
+        return panel;
+    }
     private JPanel NavigationContainer(MainPage mainPage) {
         JPanel navigationContainer = new JPanel();
-        navigationContainer.setPreferredSize(new Dimension(usableScreenWidth * 4261 / 27320, usableScreenHeight));
+        navigationContainer.setPreferredSize(new Dimension(usableScreenWidth * 4275 / 27320, usableScreenHeight));
         navigationContainer.setLayout(new BoxLayout(navigationContainer, BoxLayout.Y_AXIS));
-        navigationContainer.setBackground(Color.WHITE);
+        navigationContainer.setBackground(Constants.DARK_MODE_1);
         // Thêm nội dung vào control panel
         JLabel label = new JLabel("ABC HOSPITAL");
-        label.setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/logo.jpg").getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
-        label.setFont(new Font("Ubuntu", Font.BOLD, 25));
-        label.setVerticalTextPosition(JLabel.CENTER);
-        label.setForeground(new Color(0x3497F9));
+        label.setIcon(new FlatSVGIcon("logo.svg",50,50));
+        label.setFont(new Font(FlatRobotoFont.FAMILY, Font.BOLD, 25));
+        label.setHorizontalTextPosition(JLabel.CENTER);
+        label.setVerticalTextPosition(JLabel.BOTTOM);
+        label.setForeground(Constants.BLUE);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        label.setBorder(new EmptyBorder(40, 0, 40, 0));
+        label.setBorder(new EmptyBorder(40, 20, 40, 20));
 
         // Thêm các điều hướng
         NavButton defaultSection = new NavButton("Staff information");
@@ -184,7 +214,7 @@ class MainPageUIContainer extends JPanel {
 
         JPanel cPanel = new JPanel();
         cPanel.setSize(new Dimension(this.getWidth(), this.getHeight() * 257/384));
-        cPanel.setBackground(Color.WHITE);
+        cPanel.setBackground(Constants.DARK_MODE_1);
         cPanel.setLayout(new BoxLayout(cPanel, BoxLayout.Y_AXIS));
 
         cPanel.add(defaultSection);
@@ -217,30 +247,38 @@ class MainPageUIContainer extends JPanel {
             cPanel.add(Box.createVerticalStrut(10));
         }
 
-        JPanel logoutBox = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        logoutBox.setMaximumSize(new Dimension(200,50));
-        logoutBox.setBorder(new EmptyBorder(0,20,0,20));
+        JPanel logoutBox = new JPanel();
         logoutBox.setOpaque(false);
-        JButton logoutBtn = new RoundedButton(" Logout ");
+        logoutBox.setLayout(new BoxLayout(logoutBox,BoxLayout.X_AXIS));
+        logoutBox.setSize(200,70);
+        JButton logoutBtn = new JButton("Log Out");
+        logoutBtn.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,15));
         logoutBtn.setOpaque(false);
-        logoutBtn.setForeground(Color.red);
-        logoutBtn.setBackground(Color.WHITE);
+        logoutBtn.setBackground(Constants.DARK_MODE_1);
+        logoutBtn.setAlignmentX(LEFT_ALIGNMENT);
+        logoutBtn.setForeground(Color.white);
+        logoutBtn.setBackground(Constants.RED);
         logoutBtn.setMinimumSize(new Dimension(125,50));
-        logoutBtn.setBorder(new CompoundBorder(
-                BorderFactory.createLineBorder(Color.red),
-                new EmptyBorder(10,10,10,10)
-        ));
         logoutBtn.addActionListener(_->{
             mainPage.setVisible(false);
+            mainPage.dispose();
             LoginPage login = new LoginPage();
         });
         logoutBox.add(logoutBtn);
 
 
-        navigationContainer.add(cPanel);
-        navigationContainer.add(Box.createVerticalStrut(200));
-        navigationContainer.add(logoutBtn);
+        JPanel StaffBox = new JPanel();
+        StaffBox.setMaximumSize(new Dimension(this.getWidth(), this.getHeight() * 45/384));
+        StaffBox.setOpaque(false);
+        JPanel staff = StaffAccountContainer();
+        staff.setAlignmentX(LEFT_ALIGNMENT);
+        StaffBox.add(staff);
 
+        navigationContainer.add(StaffBox);
+        navigationContainer.add(logoutBox);
+        navigationContainer.add(Box.createVerticalStrut(20));
+        navigationContainer.add(cPanel);
+        navigationContainer.add(Box.createVerticalStrut(150));
         return navigationContainer;
     }
     private JPanel MainPageContainer() throws ExecutionException, InterruptedException {
@@ -288,13 +326,13 @@ class NavButton extends JButton {
         super(text);
         setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         setAlignmentX(Component.CENTER_ALIGNMENT);
-        setForeground(new Color(0x7F8F98));
-        setBackground(Color.WHITE);
+        setForeground(Color.WHITE);
+        setBackground(Constants.DARK_MODE_2);
         setFocusPainted(false);
-        setContentAreaFilled(false);
+        setContentAreaFilled(true);
         setOpaque(true);
         setFocusable(false);
-        setFont(new Font("Verdana", Font.PLAIN, 16));
+        setFont(new Font(FlatInterFont.FAMILY, Font.PLAIN, 17));
         Border border = BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 5, 0, 0, Color.white), // Tạo viền màu xanh chỉ ở phía trái
                 BorderFactory.createEmptyBorder(0, 5, 0, 0) // Tạo khoảng cách trống phía bên trái viền
@@ -307,17 +345,17 @@ class NavButton extends JButton {
     public void setSelected(boolean selected) {
         super.setSelected(selected);
         if (selected) {
-            setBackground(new Color(0xE7F3FE));
-            setForeground(new Color(0x3497F9));
+            setBackground(Color.BLACK);
+            setForeground(Constants.BLUE);
             setBorderPainted(true);
             Border border = BorderFactory.createCompoundBorder(
-                    BorderFactory.createMatteBorder(0, 5, 0, 0, new Color(0x3497F9)), // Tạo viền màu xanh chỉ ở phía trái
+                    BorderFactory.createMatteBorder(0, 5, 0, 0, Constants.BLUE), // Tạo viền màu xanh chỉ ở phía trái
                     BorderFactory.createEmptyBorder(0, 5, 0, 0) // Tạo khoảng cách trống phía bên trái viền
             );
             setBorder(border);
         } else {
-            setBackground(Color.WHITE); // Đổi màu nền về trắng khi không được chọn
-            setForeground(new Color(0x7F8F98));
+            setBackground(Constants.DARK_MODE_1);
+            setForeground(Color.white);
             setBorderPainted(false);
         }
     }
@@ -329,7 +367,7 @@ class RoundedButton extends JButton {
         setFocusable(false);
         setFont(new Font("Courier",Font.PLAIN,16));
         setForeground(Color.WHITE);
-        setBackground(new Color(0x3497F9));
+        setBackground(Constants.BLUE);
         setBounds(100, 100, 125, 60);
         setBorder(new EmptyBorder(10,10,10,10));
     }
