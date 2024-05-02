@@ -98,7 +98,6 @@ class MainPageUIContainer extends JPanel {
         label.setBorder(new EmptyBorder(40, 20, 40, 20));
 
         // Thêm các điều hướng
-//        NavButton defaultSection = new NavButton("Staff information");
         NavButton patientSection = new NavButton("Patients");
         NavButton staffSection = new NavButton("Staffs");
         NavButton medicineSection = new NavButton("Medicine");
@@ -107,27 +106,14 @@ class MainPageUIContainer extends JPanel {
         NavButton exportMedicineSection = new NavButton("Export Medicine");
         NavButton medrecSection = new NavButton("Medical Records");
 
-//        defaultSection.setSelected(true);
         patientSection.setSelected(false);
+        patientSection.setIcon(new FlatSVGIcon("person-group.svg"));
         staffSection.setSelected(false);
         medicineSection.setSelected(false);
         machineSection.setSelected(false);
         exportMedicineSection.setSelected(false);
 
-//        defaultSection.addActionListener(_->{
-//            defaultSection.setSelected(true);
-//            patientSection.setSelected(false);
-//            staffSection.setSelected(false);
-//            medicineSection.setSelected(false);
-//            machineSection.setSelected(false);
-//            exportMedicineSection.setSelected(false);
-//            medrecSection.setSelected(false);
-//            unusableMachineSection.setSelected(false);
-//            containerLayout.show(mainPageContainer,"staff-default-panel");
-//        });
-
         patientSection.addActionListener(e -> {
-//            defaultSection.setSelected(false);
             patientSection.setSelected(true);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -139,7 +125,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         staffSection.addActionListener(e -> {
-//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(true);
             medicineSection.setSelected(false);
@@ -151,7 +136,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         medicineSection.addActionListener(e -> {
-//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(true);
@@ -163,7 +147,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         machineSection.addActionListener(e -> {
-//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -175,7 +158,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         exportMedicineSection.addActionListener(_->{
-//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -187,7 +169,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         medrecSection.addActionListener(_->{
-//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -199,7 +180,6 @@ class MainPageUIContainer extends JPanel {
         });
 
         unusableMachineSection.addActionListener(_->{
-//            defaultSection.setSelected(false);
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -290,9 +270,6 @@ class MainPageUIContainer extends JPanel {
         JPanel container = new JPanel();
         container.setLayout(containerLayout);
         container.setPreferredSize(new Dimension(usableScreenWidth * 23059 / 27320, usableScreenHeight));
-
-        JPanel defaultPanel = new DefaultPanel(user);
-//        container.add(defaultPanel, "staff-default-panel");
 
         if (user != null && user.getUserMode().getValue().equals("Doctor")) {
             JPanel patientPanel = new PatientPanel(user.getStaffId());
