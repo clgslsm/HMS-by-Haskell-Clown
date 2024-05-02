@@ -4,6 +4,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+import com.javafirebasetest.dao.FileManager;
 import com.javafirebasetest.dao.StaffDAO;
 import com.javafirebasetest.entity.Staff;
 import com.javafirebasetest.entity.User;
@@ -247,6 +248,7 @@ class MainPageUIContainer extends JPanel {
         logoutBtn.addActionListener(_->{
             mainPage.setVisible(false);
             mainPage.dispose();
+            FileManager.cleanUp();
             LoginPage login = new LoginPage();
         });
         logoutBox.add(logoutBtn);
