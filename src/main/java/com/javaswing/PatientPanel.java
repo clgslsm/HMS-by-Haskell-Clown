@@ -8,6 +8,7 @@ import com.javafirebasetest.entity.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.*;
@@ -1013,6 +1014,42 @@ class ViewPatientInfoPage extends JPanel {
 
             table.setRowHeight(60);
 
+            table.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (SwingUtilities.isRightMouseButton(e)) { // Only proceed for right mouse button clicks
+                        int row = table.rowAtPoint(e.getPoint());
+                        if (row >= 0 && row < table.getRowCount()) {
+                            Object mr_id = table.getValueAt(row,0);
+                            if (mr_id != null) {
+                                MedicalRecord mr = MedRecDAO.getMedRecById(mr_id.toString());
+                                if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist") && mr.getStatus().getValue().equals("Pending")) {
+                                    int response = JOptionPane.showConfirmDialog(null, "Do you want to delete this medical record?",
+                                            "Confirm", JOptionPane.YES_NO_OPTION);
+                                    if (response == JOptionPane.YES_OPTION) {
+                                        // Delete the row
+                                        MedRecDAO.deleteMedRec(mr_id.toString());
+                                        ((MedicalRecordTableModel) table.getModel()).removeRow(row);
+                                    }
+                                }
+                                else {
+                                    Object[] message = {
+                                            STR."<html><br><br><p>You can not delete this medical record.</p><html>"
+                                    };
+                                    int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.DEFAULT_OPTION);
+                                }
+                            }
+                            else {
+                                Object[] message = {
+                                        STR."<html><br><br><p>This appointment is not ready, please come again later.</p><html>"
+                                };
+                                int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.DEFAULT_OPTION);
+                            }
+                        }
+                    }
+                }
+            });
+
             //assert table != null;
             JScrollPane scrollPane = new JScrollPane();
             scrollPane.setViewportView(table);
@@ -1077,6 +1114,20 @@ class ViewPatientInfoPage extends JPanel {
                 int rowCount = getRowCount();
                 data = new Object[0][0];
                 if (rowCount > 0) fireTableRowsDeleted(0, rowCount - 1); // Notify the table that rows have been deleted
+            }
+
+            public void removeRow(int rowIndex) {
+                if (rowIndex >= 0 && rowIndex < data.length) {
+                    Object[][] newData = new Object[data.length - 1][getColumnCount()];
+                    int newIndex = 0;
+                    for (int i = 0; i < data.length; i++) {
+                        if (i != rowIndex) {
+                            newData[newIndex++] = data[i];
+                        }
+                    }
+                    data = newData;
+                    fireTableRowsDeleted(rowIndex, rowIndex); // Notify the table that rows have been deleted
+                }
             }
         }
         public JButton AddAppointmentButton(){
