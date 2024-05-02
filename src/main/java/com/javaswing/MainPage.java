@@ -441,7 +441,7 @@ class RoundedTextArea extends JTextArea {
 
     public RoundedTextArea(int rows, int columns, int radius, Color borderColor) {
         super(rows, columns);
-        this.setFont(new Font("Courier",Font.PLAIN,16));
+        this.setFont(Constants.commonUsed);
         this.radius = radius;
         this.borderColor = borderColor;
         setOpaque(false); // Để hiển thị hình dạng bo góc

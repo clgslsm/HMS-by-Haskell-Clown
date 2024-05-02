@@ -1,6 +1,7 @@
 package com.javaswing;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.javafirebasetest.dao.*;
 import com.javafirebasetest.entity.*;
@@ -264,12 +265,12 @@ class PatientDefaultPage extends JLabel {
         titleContainer.setLayout(new GridLayout(2,1));
         titleContainer.setOpaque(false);
         title.setFont(new Font(FlatRobotoFont.FAMILY,Font.BOLD,28));
-        title.setForeground(new Color(0x3497F9));
+        title.setForeground(Constants.BLUE);
         JLabel subTitle = new JLabel("<html>Show patients whose appointment's status is " +
                 "<b style='color:orange;'>PENDING<b/>, " +
                 "<b style='color:#4B0082'>DIAGNOSED<b/>, " +
                 "<b style='color:gray'>CHECKED_OUT<b/><html/>");
-        subTitle.setFont(new Font(FlatRobotoFont.FAMILY,Font.PLAIN,15));
+        subTitle.setFont(Constants.commonUsed);
         titleContainer.add(title);
         titleContainer.add(subTitle);
         header.setOpaque(false);
@@ -322,7 +323,7 @@ class PatientDefaultPage extends JLabel {
         patientList.setSelectionForeground(Color.white);
         patientList.setShowVerticalLines(false);
         patientList.getTableHeader().setReorderingAllowed(false);
-        patientList.setFont(new Font(FlatRobotoFont.FAMILY,Font.PLAIN,15));
+        patientList.setFont(Constants.commonUsed);
 
         patientList.getColumn(" ").setCellRenderer(new ButtonRenderer());
         patientList.getColumn(" ").setCellEditor(new ButtonEditor(new JCheckBox()));
@@ -352,7 +353,7 @@ class PatientDefaultPage extends JLabel {
         Patient patient = PatientDAO.getPatientById(patientList.getValueAt(row,0).toString());
         ViewPatientInfoPage viewPage = new ViewPatientInfoPage(patient.getPatientId(), userId);
         viewPage.title.setText(STR."Information of \{patient.getName()}");
-        viewPage.title.setFont(new Font("Courier", Font.BOLD,30));
+        viewPage.title.setFont(new Font(FlatInterFont.FAMILY, Font.BOLD,30));
         viewPage.title.setForeground(Color.gray);
         viewPage.form.message.setVisible(false);
 
@@ -362,7 +363,7 @@ class PatientDefaultPage extends JLabel {
         // call patient ID
         ViewPatientInfoPage viewPage = new ViewPatientInfoPage(userId);
         viewPage.title.setText(STR."Patient Registration Form");
-        viewPage.title.setFont(new Font("Courier",Font.BOLD,25));
+        viewPage.title.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,25));
         viewPage.title.setForeground(Color.gray);
         viewPage.form.message.setVisible(false);
 
@@ -613,7 +614,7 @@ class PatientDefaultPage extends JLabel {
             field.setForeground(Color.GRAY);
             field.setFocusable(false);
             field.revalidate();
-            field.setFont(new Font("Courier",Font.PLAIN,16));
+            field.setFont(Constants.commonUsed);
             field.setText("Search by patient name");
             field.addMouseListener(new CustomMouseListener() {
                 @Override
@@ -640,7 +641,7 @@ class PatientDefaultPage extends JLabel {
         }
         JButton SearchButton(){
             JButton button = new RoundedButton("Search");
-            button.setFont(new Font("Courier",Font.PLAIN,13));
+            button.setFont(Constants.commonUsed);
             button.setFocusable(false);
             button.setForeground(Color.WHITE);
             button.setBackground(Constants.BLUE);
@@ -651,7 +652,7 @@ class PatientDefaultPage extends JLabel {
     }
     public JButton AddPatientButton(){
         JButton addPatientButton = new RoundedButton("  + Add patient  ");
-        addPatientButton.setFont(new Font("Courier",Font.PLAIN,13));
+        addPatientButton.setFont(Constants.commonUsed);
         addPatientButton.setFocusable(false);
         addPatientButton.setForeground(Color.WHITE);
         addPatientButton.setBackground(Constants.BLUE);
@@ -738,40 +739,42 @@ class ViewPatientInfoPage extends JPanel {
         JPanel Form(String id) throws ExecutionException, InterruptedException {
             Patient patient = PatientDAO.getPatientById(id);
             JLabel title = new JLabel("Personal Information");
-            title.setFont(new Font("Courier",Font.BOLD,20));
+            title.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,20));
             title.setForeground(Color.gray);
             title.setBounds(50, 0, 400, 50);
 
             // Patient's name
             JLabel nameLabel = new JLabel("Name");
-            nameLabel.setFont(new Font("Courier",Font.PLAIN,16));
+            nameLabel.setFont(Constants.commonUsed);
             nameLabel.setBounds(100,60,100,20);
             name = new JTextField();
+            name.setFont(Constants.commonUsed);
             name.setBounds(200,60,200,30);
             name.setText(patient.getName());
 
             //  Patient's phone number
             JLabel phoneLabel = new JLabel("Phone");
-            phoneLabel.setFont(new Font("Courier",Font.PLAIN,16));
+            phoneLabel.setFont(Constants.commonUsed);
             phoneLabel.setBounds(100,100,100,20);
             phone = new JTextField();
+            phone.setFont(Constants.commonUsed);
             phone.setBounds(200,100,200,30);
             phone.setText(patient.getPhoneNumber());
 
             // Patient's gender
             JLabel genderLabel = new JLabel("Gender");
-            genderLabel.setFont(new Font("Courier",Font.PLAIN,16));
+            genderLabel.setFont(Constants.commonUsed);
             genderLabel.setBounds(100,140,100,20);
             String[] sex = {"Male", "Female", "Other"};
             gender = new JComboBox<>(sex);
-            gender.setFont(new Font("Courier",Font.PLAIN,16));
+            gender.setFont(Constants.commonUsed);
             gender.setBackground(Color.white);
             gender.setBounds(200,140,100,30);
             gender.setSelectedItem(patient.getGender());
 
             // Date of birth (DOB)
             JLabel DOBLabel = new JLabel("Date of birth");
-            DOBLabel.setFont(new Font("Courier",Font.PLAIN,16));
+            DOBLabel.setFont(Constants.commonUsed);
             DOBLabel.setBounds(100,180,100,20);
             String[] d = splitDate(patient.getBirthDate().toString());
             DOB = new CustomDatePicker(d);
@@ -779,39 +782,45 @@ class ViewPatientInfoPage extends JPanel {
 
             // Address
             JLabel addressLabel = new JLabel("Address");
-            addressLabel.setFont(new Font("Courier",Font.PLAIN,16));
+            addressLabel.setFont(Constants.commonUsed);
             addressLabel.setBounds(100,220,100,20);
-            address = new JTextArea();
-            address.putClientProperty(FlatClientProperties.OUTLINE,"gray");
+            address = new RoundedTextArea(100,5,5,Color.LIGHT_GRAY);
+            address.setFont(Constants.commonUsed);
+            address.putClientProperty("FlatClientProperties.OUTLINE",Color.gray);
             address.setBounds(200, 220, 200, 100);
             address.setLineWrap(true);
             address.setText(patient.getAddress());
 
             // Patient's blood group
             JLabel bloodGroupLabel = new JLabel("Blood type");
-            bloodGroupLabel.setFont(new Font("Courier",Font.PLAIN,16));
+            bloodGroupLabel.setFont(Constants.commonUsed);
             bloodGroupLabel.setBounds(100,340,100,20);
             String[] bloodType = {"A+", "A-",
                     "B+", "B-",
                     "AB+", "AB-",
                     "O+", "O-"};
             bloodGroup = new JComboBox<>(bloodType);
-            bloodGroup.setFont(new Font("Courier",Font.PLAIN,16));
+            bloodGroup.setFont(Constants.commonUsed);
             bloodGroup.setBackground(Color.WHITE);
             bloodGroup.setBounds(200,340,100,20);
             bloodGroup.setSelectedItem(patient.getBloodGroup());
 
-            message.setFont(new Font("Courier",Font.PLAIN,16));
-            message.setForeground(Color.red);
+            message.setFont(Constants.commonUsed);
+            message.setForeground(Constants.RED);
             message.setBounds(200, 380, 300, 25);
 
             // Cancel Button
-            cancelButton = new JButton(" Cancel");
-            cancelButton.setBounds(250, 420, 80, 25);
+            cancelButton = new JButton("Cancel");
+            cancelButton.setFont(Constants.commonUsed);
+            cancelButton.setForeground(Constants.BLUE);
+            cancelButton.setBounds(250, 420, 80, 40);
 
             // Save Button
             saveButton = new JButton(" Save");
-            saveButton.setBounds(150, 420, 80, 25);
+            saveButton.setFont(Constants.commonUsed);
+            saveButton.setForeground(Color.white);
+            saveButton.setBackground(Constants.BLUE);
+            saveButton.setBounds(150, 420, 80, 40);
 
             JPanel form = new JPanel();
             form.setBackground(Color.white);
@@ -937,7 +946,7 @@ class ViewPatientInfoPage extends JPanel {
             header.setBounds(25, 10, 475, 30);
 
             JLabel headerLabel = new JLabel("Medical Record");
-            headerLabel.setFont(new Font("Courier",Font.BOLD,20));
+            headerLabel.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,20));
             headerLabel.setForeground(Color.gray);
             headerLabel.setBounds(450, 0, 400, 50);
 
@@ -981,10 +990,10 @@ class ViewPatientInfoPage extends JPanel {
             table = new JTable(model);
 
             table.getTableHeader().setPreferredSize(new Dimension(table.getTableHeader().getWidth(), 40));
-            table.getTableHeader().setFont(new Font("Courier", Font.BOLD, 12));
+            table.getTableHeader().setFont(Constants.commonUsed);
             table.getTableHeader().setOpaque(false);
             table.getTableHeader().setBackground(new Color(32, 136, 203));
-            table.getTableHeader().setForeground(new Color(255,255,255));
+            table.getTableHeader().setForeground(Color.white);
 
             table.setFocusable(false);
             table.setIntercellSpacing(new java.awt.Dimension(0, 0));
@@ -997,8 +1006,9 @@ class ViewPatientInfoPage extends JPanel {
 
             table.getColumn("View").setCellRenderer(new ViewButtonRenderer());
             table.getColumn("View").setCellEditor(new ViewButtonEditor(new JCheckBox()));
+            table.getColumn("View").setMaxWidth(50);
 
-            table.setRowHeight(60);
+            table.setRowHeight(45);
 
             //assert table != null;
             JScrollPane scrollPane = new JScrollPane();
@@ -1118,11 +1128,9 @@ class ViewPatientInfoPage extends JPanel {
             public Component getTableCellRendererComponent(JTable table, Object value,
                                                            boolean isSelected, boolean hasFocus, int row, int column) {
                 setForeground(Constants.BLUE);
-                setFont(new Font("Courier",Font.BOLD,16));
+                setFont(Constants.commonUsed);
                 setBackground(Color.white);
-                setText("View");
-
-                setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
+                setIcon(new FlatSVGIcon("edit.svg"));
                 setSize(25,25);
                 return this;
             }
@@ -1142,10 +1150,10 @@ class ViewPatientInfoPage extends JPanel {
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value,
                                                          boolean isSelected, int row, int column) {
-                button.setBackground(new Color(0x126DA6));
+                button.setBackground(Constants.BLUE);
                 button.setForeground(Color.WHITE);
-                button.setText("View");
-                button.setFont(new Font("Courier",Font.PLAIN,16));
+                button.setIcon(new FlatSVGIcon("edit.svg"));
+                button.setFont(Constants.commonUsed);
                 button.setFocusable(false);
                 button.setSize(25,25);
                 isPushed = true;
