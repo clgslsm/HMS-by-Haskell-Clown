@@ -148,7 +148,16 @@ class PatientPanel extends JPanel {
                                                 System.out.println(STR."MR for row: \{row}");
 
                                                 try {
-                                                    viewMedicalRecordPanel = new ViewMedicalRecordPanel(viewPatientInfoPage.form.table.getValueAt(row,0).toString(), userId);
+                                                    Object me_id = viewPatientInfoPage.form.table.getValueAt(row,0);
+                                                    if (me_id != null) {
+                                                        viewMedicalRecordPanel = new ViewMedicalRecordPanel(me_id.toString(), userId);
+                                                    }
+                                                    else {
+                                                        Object[] message = {
+                                                                STR."<html><br><br><p>This appointment is not ready, please come again later.</p><html>"
+                                                        };
+                                                        int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.DEFAULT_OPTION);
+                                                    }
                                                 } catch (ExecutionException | InterruptedException e) {
                                                     throw new RuntimeException(e);
                                                 }
@@ -265,10 +274,7 @@ class PatientDefaultPage extends JLabel {
         titleContainer.setOpaque(false);
         title.setFont(new Font(FlatRobotoFont.FAMILY,Font.BOLD,28));
         title.setForeground(new Color(0x3497F9));
-        JLabel subTitle = new JLabel("<html>Show patients whose appointment's status is " +
-                "<b style='color:orange;'>PENDING<b/>, " +
-                "<b style='color:#4B0082'>DIAGNOSED<b/>, " +
-                "<b style='color:gray'>CHECKED_OUT<b/><html/>");
+        JLabel subTitle = new JLabel("<html>Show all patients whose has appointment. ");
         subTitle.setFont(new Font(FlatRobotoFont.FAMILY,Font.PLAIN,15));
         titleContainer.add(title);
         titleContainer.add(subTitle);
@@ -373,9 +379,26 @@ class PatientDefaultPage extends JLabel {
             try{
                 List<Patient> res = PatientDAO.getPatientsByName(name);
                 model.clearData();
-                for (Patient p : res) {
-                    addPatientToTable(p);
+                String userMode = StaffDAO.getStaffById(userId).getUserMode().getValue();
+                if (userMode.equals("Receptionist")){
+                    for (Patient p : res) {
+                        addPatientToTable(p);
+                    }
                 }
+                else if (userMode.equals("Doctor")){
+                    for (Patient p : res) {
+                        List<MedicalRecord> medrec = MedRecDAO.getMedRecByPatientId(p.getPatientId());
+                        for (MedicalRecord m : medrec) {
+                            if (m.getDoctorId().equals(userId)
+                                    && (m.getStatus().getValue().equals("Pending") || m.getStatus().getValue().equals("Tested"))) {
+                                addPatientToTable(p);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+
             }
             catch (Exception e) {
                 updateTableUI(userId);
@@ -392,17 +415,7 @@ class PatientDefaultPage extends JLabel {
         String userMode = StaffDAO.getStaffById(userId).getUserMode().getValue();
         if (userMode.equals("Receptionist")){
             for (Patient p : allPatients) {
-                List<MedicalRecord> medrec = MedRecDAO.getMedRecByPatientId(p.getPatientId());
-                for (MedicalRecord m : medrec) {
-                    String appointmentStatus = m.getStatus().getValue();
-                    if (appointmentStatus.equals("Pending")
-                            || appointmentStatus.equals("Diagnosed")
-                            || appointmentStatus.equals("Checked_out")){
-                        addPatientToTable(p);
-                        count++;
-                        break;
-                    }
-                }
+                addPatientToTable(p);
             }
         }
         else if (userMode.equals("Doctor")){
@@ -1100,11 +1113,22 @@ class ViewPatientInfoPage extends JPanel {
                 }
                 else if (StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")){
                     for (MedicalRecord medRecord : medicalRecordList){
-                        if (medRecord.getStatus().getValue().equals("Pending") || medRecord.getStatus().getValue().equals("Diagnosed") || medRecord.getStatus().getValue().equals("Checked_out")) {
+                        //if (medRecord.getStatus().getValue().equals("Pending") || medRecord.getStatus().getValue().equals("Diagnosed") || medRecord.getStatus().getValue().equals("Checked_out")) {
                             ViewButtonRenderer buttonRenderer = new ViewButtonRenderer();
-                            Object[] rowData = new Object[]{medRecord.getMedRecId(), DoctorDAO.getDoctorById(medRecord.getDoctorId()).getDepartment(), DoctorDAO.getDoctorById(medRecord.getDoctorId()).getName(), medRecord.getCheckIn(), medRecord.getStatus(), buttonRenderer};
+                            Doctor d = DoctorDAO.getDoctorById(medRecord.getDoctorId());
+                            String dep = "";
+                            String name = "";
+                            if (d == null) {
+                                dep = "N/A";
+                                name = "N/A";
+                            }
+                            else {
+                                dep = d.getDepartment().getValue();
+                                name = d.getName();
+                            }
+                            Object[] rowData = new Object[]{medRecord.getMedRecId(), dep, name, medRecord.getCheckIn(), medRecord.getStatus(), buttonRenderer};
                             model.addRow(rowData);
-                        }
+                        //}
                     }
                 }
             }

@@ -376,6 +376,15 @@ public class ViewMedicalRecordPanel extends JPanel {
         // Trạng thái chờ, receptionist được xem, không được chỉnh sửa và lưu
         //                 doctor được chỉnh sửa và lưu 
         if (mr.getStatus().getValue().equals("Pending") && StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")) {
+            // sửa lại xóa được
+        }
+        if (mr.getStatus().getValue().equals("Testing") && StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")) {
+            // chỉ xem
+        }
+        if (mr.getStatus().getValue().equals("Tested") && StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")) {
+            // chỉ xem
+        }
+        if (mr.getStatus().getValue().equals("Checked_out") && StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Receptionist")) {
             // chỉ xem
         }
         if (mr.getStatus().getValue().equals("Pending") && StaffDAO.getStaffById(userId).getUserMode().getValue().equals("Doctor")) {
