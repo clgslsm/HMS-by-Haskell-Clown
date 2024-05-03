@@ -114,6 +114,7 @@ class MedicalRecordDefaultPage extends JPanel {
         };
         medicalRecordList.getColumnModel().getColumn(4).setCellRenderer(renderer);
 
+
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         for (int i = 0; i < 4; i++) {
