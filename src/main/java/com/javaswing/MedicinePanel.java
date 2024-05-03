@@ -414,7 +414,7 @@ class AddNewMedicinePage extends JPanel {
     JButton backButton = new RoundedButton(" Return ");
     JTextField MedicineNameInput;
     JTextField MedicineIDInput;
-    JComboBox<String> MedicineUnitInput;
+    JTextField MedicineUnitInput;
     JTextField QuantityInput;
     JTextArea descriptionInput;
     JTextField MedicineImportInput;
@@ -426,8 +426,8 @@ class AddNewMedicinePage extends JPanel {
     JButton ResetButton = new RoundedButton(" Reset ");
     AddNewMedicinePage(MedicinePanel panel) {
         this.panel = panel;
-        this.setBackground(Color.WHITE);
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 25));
+        this.setOpaque(false);
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 25));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JPanel container = new JPanel();
@@ -470,11 +470,11 @@ class AddNewMedicinePage extends JPanel {
         titleJoined.setOpaque(false);
 
         JLabel title = new JLabel("List of Medicines > ");
-        title.setFont(title.getFont().deriveFont(28F));
-        title.setForeground(new Color(0x3497F9));
+        title.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,28));
+        title.setForeground(Constants.BLUE);
 
         JLabel titleMedicine = new JLabel(medicineTitle);
-        titleMedicine.setFont(title.getFont().deriveFont(28F));
+        titleMedicine.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,28));
         titleMedicine.setForeground(Color.BLACK);
 
         titleJoined.add(title);
@@ -483,7 +483,7 @@ class AddNewMedicinePage extends JPanel {
 
         JLabel subTitle = new JLabel("*All fields are mandatory, except mentioned as (option)");
         subTitle.setOpaque(false);
-        subTitle.setFont(new Font("Poppins",Font.PLAIN,15));
+        subTitle.setFont(Constants.commonUsed);
         subTitle.setAlignmentX(LEFT_ALIGNMENT);
 
         titleContainer.add(titleJoined);
@@ -494,7 +494,7 @@ class AddNewMedicinePage extends JPanel {
         backButtonContainer.setMaximumSize(new Dimension(1300,50));
         backButtonContainer.setOpaque(false);
         backButton.setMaximumSize(new Dimension(80,35));
-        backButton.setFont(new Font("Poppins",Font.PLAIN,15));
+        backButton.setFont(Constants.commonUsed);
         backButtonContainer.add(backButton);
 
         JPanel container01 = new JPanel();
@@ -503,7 +503,7 @@ class AddNewMedicinePage extends JPanel {
         container01.add(titleContainer);
 
         panel.add(backButtonContainer);
-        panel.add(Box.createVerticalStrut(10));
+        panel.add(Box.createVerticalStrut(5));
         panel.add(container01);
 
         return panel;
@@ -511,7 +511,7 @@ class AddNewMedicinePage extends JPanel {
     JPanel formContainer(){
         JPanel form = new JPanel();
         form.setOpaque(false);
-        form.setMaximumSize(new Dimension(600,400));
+        form.setMaximumSize(new Dimension(600,450));
         form.setLayout(new BoxLayout(form,BoxLayout.Y_AXIS));
 
         // Medicine Name
@@ -520,10 +520,10 @@ class AddNewMedicinePage extends JPanel {
         MedicineNameBox.setMaximumSize(new Dimension(600,100));
         MedicineNameBox.setLayout(new GridLayout(3,1,0,5));
         JLabel MedicineNameLabel = new JLabel("Medicine Name");
-        MedicineNameLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        MedicineNameInput = new RoundedTextField(40,20);
+        MedicineNameLabel.setFont(Constants.commonUsed);
+        MedicineNameInput = new JTextField();
         MedicineNameInput.setPreferredSize(new Dimension(300,50));
-        MedicineNameInput.setFont(new Font("Courier",Font.PLAIN,15));
+        MedicineNameInput.setFont(Constants.commonUsed);
         emptyName.setVisible(false);
         MedicineNameBox.add(MedicineNameLabel);
         MedicineNameBox.add(MedicineNameInput);
@@ -534,11 +534,11 @@ class AddNewMedicinePage extends JPanel {
         MedicineIDBox.setOpaque(false);
         MedicineIDBox.setLayout(new GridLayout(3,1,0,5));
         JLabel MedicineIDLabel = new JLabel("Medicine ID (optional)");
-        MedicineIDLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        MedicineIDInput = new RoundedTextField(40,20);
+        MedicineIDLabel.setFont(Constants.commonUsed);
+        MedicineIDInput = new JTextField();
         MedicineIDInput.setText("");
         MedicineIDInput.setPreferredSize(new Dimension(300,50));
-        MedicineIDInput.setFont(new Font("Courier",Font.PLAIN,15));
+        MedicineIDInput.setFont(Constants.commonUsed);
         MedicineIDBox.add(MedicineIDLabel);
         MedicineIDBox.add(MedicineIDInput);
 
@@ -555,12 +555,11 @@ class AddNewMedicinePage extends JPanel {
         MedicineUnitBox.setOpaque(false);
         MedicineUnitBox.setLayout(new GridLayout(3,1,0,5));
         JLabel MedicineUnitLabel = new JLabel("Unit");
-        MedicineUnitLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        MedicineUnitInput = new JComboBox<>();
-        MedicineUnitInput.setPreferredSize(new Dimension(300,40));
-        MedicineUnitInput.setFont(new Font("Courier",Font.PLAIN,15));
-        MedicineUnitInput.setBackground(Color.white);
-        MedicineUnitInput.setBorder(BorderFactory.createEmptyBorder());
+        MedicineUnitLabel.setFont(Constants.commonUsed);
+        MedicineUnitInput = new JTextField();
+        MedicineUnitInput.setText("Unit");
+        MedicineUnitInput.setPreferredSize(new Dimension(300,50));
+        MedicineUnitInput.setFont(Constants.commonUsed);
         MedicineUnitInput.setOpaque(false);
         MedicineUnitBox.add(MedicineUnitLabel);
         MedicineUnitBox.add(MedicineUnitInput);
@@ -590,10 +589,10 @@ class AddNewMedicinePage extends JPanel {
         QuantityBox.setLayout(new GridLayout(3,1,0,5));
         JLabel QuantityLabel = new JLabel("Quantity in Number");
         QuantityLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        QuantityInput = new RoundedTextField(40,20);
+        QuantityInput = new JTextField();
         QuantityInput.setDocument(doc);
         QuantityInput.setPreferredSize(new Dimension(100,50));
-        QuantityInput.setFont(new Font("Courier",Font.PLAIN,15));
+        QuantityInput.setFont(Constants.commonUsed);
         emptyQuantity.setVisible(false);
         QuantityBox.add(QuantityLabel);
         QuantityBox.add(QuantityInput);
@@ -612,10 +611,10 @@ class AddNewMedicinePage extends JPanel {
         MedicineImportBox.setOpaque(false);
         MedicineImportBox.setLayout(new GridLayout(3,1,0,5));
         JLabel MedicineImportLabel = new JLabel("Import Date");
-        MedicineImportLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        MedicineImportInput = new RoundedTextField(40,20);
+        MedicineImportLabel.setFont(Constants.commonUsed);
+        MedicineImportInput = new JTextField();
         MedicineImportInput.setPreferredSize(new Dimension(300,50));
-        MedicineImportInput.setFont(new Font("Courier",Font.PLAIN,15));
+        MedicineImportInput.setFont(Constants.commonUsed);
         MedicineImportInput.setEnabled(false);
         MedicineImportInput.setText(convertLocalDateToString(LocalDate.now()));
         MedicineImportBox.add(MedicineImportLabel);
@@ -626,11 +625,11 @@ class AddNewMedicinePage extends JPanel {
         MedicineExpiredDayBox.setOpaque(false);
         MedicineExpiredDayBox.setLayout(new GridLayout(3,1,0,5));
         JLabel MedicineExpiredDayLabel = new JLabel("Expiry Date");
-        MedicineExpiredDayLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        MedicineExpiredDayInput = new RoundedTextField(40,20);
+        MedicineExpiredDayLabel.setFont(Constants.commonUsed);
+        MedicineExpiredDayInput = new JTextField();
         MedicineExpiredDayInput.setToolTipText("Enter a date in the format DD-MM-YYYY");
         MedicineExpiredDayInput.setPreferredSize(new Dimension(300,50));
-        MedicineExpiredDayInput.setFont(new Font("Courier",Font.PLAIN,15));
+        MedicineExpiredDayInput.setFont(Constants.commonUsed);
         emptyExpiryDate.setVisible(false);
         MedicineExpiredDayBox.add(MedicineExpiredDayLabel);
         MedicineExpiredDayBox.add(MedicineExpiredDayInput);
@@ -653,12 +652,12 @@ class AddNewMedicinePage extends JPanel {
         DescriptionLabelBox.setOpaque(false);
         JLabel DescriptionLabel = new JLabel("Description (optional)");
         DescriptionLabelBox.add(DescriptionLabel);
-        DescriptionLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        descriptionInput = new RoundedTextArea(3,100,20,Color.BLACK);
+        DescriptionLabel.setFont(Constants.commonUsed);
+        descriptionInput = new RoundedTextArea(3,100,10,Color.LIGHT_GRAY);
         descriptionInput.setMinimumSize(new Dimension(700,80));
         descriptionInput.setLineWrap(true);
         descriptionInput.setWrapStyleWord(true);
-        descriptionInput.setFont(new Font("Courier",Font.PLAIN,15));
+        descriptionInput.setFont(Constants.commonUsed);
         DescriptionBox.add(DescriptionLabelBox);
         DescriptionBox.add(descriptionInput);
 
@@ -700,10 +699,10 @@ class AddNewMedicinePage extends JPanel {
         ResetButton.setMaximumSize(new Dimension(100,50));
         ResetButton.setBackground(Color.WHITE);
         ResetButton.setBorder(new CompoundBorder(
-                BorderFactory.createLineBorder(new Color(0x3497F9)),
+                BorderFactory.createLineBorder(Constants.BLUE),
                 new EmptyBorder(10,10,10,10)
         ));
-        ResetButton.setForeground(new Color(0x3497F9));
+        ResetButton.setForeground(Constants.BLUE);
         ResetButton.addActionListener(_->resetInfo());
 
         panel.add(ResetButton);
@@ -712,8 +711,7 @@ class AddNewMedicinePage extends JPanel {
     }
     void resetInfo(){
         MedicineNameInput.setText("");
-        if (MedicineUnitInput.getItemCount() > 0)
-            MedicineUnitInput.setSelectedIndex(0);
+        MedicineUnitInput.setText("Unit");
         QuantityInput.setText("");
         descriptionInput.setText("");
     }
@@ -867,10 +865,10 @@ class EditDetailMedicinePage extends AddNewMedicinePage {
         ResetButton.setMaximumSize(new Dimension(100,50));
         ResetButton.setBackground(Color.WHITE);
         ResetButton.setBorder(new CompoundBorder(
-                BorderFactory.createLineBorder(new Color(0x3497F9)),
+                BorderFactory.createLineBorder(Constants.BLUE),
                 new EmptyBorder(10,10,10,10)
         ));
-        ResetButton.setForeground(new Color(0x3497F9));
+        ResetButton.setForeground(Constants.BLUE);
         ResetButton.addActionListener(_->resetInfo());
 
         panel.add(ResetButton);
@@ -937,7 +935,7 @@ class ViewMedicineInfoPage extends JPanel {
 
         JLabel title = new JLabel("List of Medicines > ");
         title.setFont(title.getFont().deriveFont(28F));
-        title.setForeground(new Color(0x3497F9));
+        title.setForeground(Constants.BLUE);
 
         titleMedicine = new JLabel("");
         titleMedicine.setFont(title.getFont().deriveFont(28F));
@@ -949,7 +947,7 @@ class ViewMedicineInfoPage extends JPanel {
 
         JLabel subTitle = new JLabel("List of medicines available for sales");
         subTitle.setOpaque(false);
-        subTitle.setFont(new Font("Poppins",Font.PLAIN,15));
+        subTitle.setFont(Constants.commonUsed);
         subTitle.setAlignmentX(LEFT_ALIGNMENT);
 
         JPanel ExpireDateBox = new JPanel(new GridLayout(2,1));
@@ -958,12 +956,12 @@ class ViewMedicineInfoPage extends JPanel {
         ExpireDateBox.setBorder(BorderFactory.createLineBorder(Color.red));
         ExpireDateBox.setAlignmentX(LEFT_ALIGNMENT);
         JLabel ExpireDateLabel = new JLabel("Expiry date");
-        ExpireDateLabel.setFont(new Font("Courier",Font.PLAIN,13));
+        ExpireDateLabel.setFont(Constants.commonUsed);
         ExpireDateLabel.setForeground(Color.red);
         ExpireDateLabel.setAlignmentX(CENTER_ALIGNMENT);
         ExpDate = new JLabel("");
         ExpDate.setForeground(Color.red);
-        ExpDate.setFont(new Font("Courier",Font.PLAIN,13));
+        ExpDate.setFont(Constants.commonUsed);
         ExpDate.setAlignmentX(CENTER_ALIGNMENT);
         ExpireDateBox.add(ExpireDateLabel);
         ExpireDateBox.add(ExpDate);
@@ -980,7 +978,7 @@ class ViewMedicineInfoPage extends JPanel {
         backButtonContainer.setMaximumSize(new Dimension(1300,50));
         backButtonContainer.setOpaque(false);
         backButton.setMaximumSize(new Dimension(80,35));
-        backButton.setFont(new Font("Courier",Font.PLAIN,15));
+        backButton.setFont(Constants.commonUsed);
         backButton.addActionListener(_ ->{
             if (hasEdited){
                 MedicineDefaultPage.refreshMedicineTable();
@@ -1114,7 +1112,7 @@ class ViewMedicineInfoPage extends JPanel {
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
         description.setEditable(false);
-        description.setFont(new Font("Poppins",Font.PLAIN,15));
+        description.setFont(Constants.commonUsed);
         description.setBorder(new EmptyBorder(10,30,10,30));
         description.setOpaque(false);
         description.setMaximumSize(new Dimension(1300,300));
