@@ -263,7 +263,7 @@ class PatientDefaultPage extends JLabel {
         titleContainer.setLayout(new GridLayout(2,1));
         titleContainer.setOpaque(false);
         title.setFont(new Font(FlatRobotoFont.FAMILY,Font.BOLD,28));
-        title.setForeground(new Color(0x3497F9));
+        title.setForeground(Constants.BLUE);
         JLabel subTitle = new JLabel("<html>Show all patients whose has appointment. ");
         subTitle.setFont(new Font(FlatRobotoFont.FAMILY,Font.PLAIN,15));
         titleContainer.add(title);
@@ -394,7 +394,7 @@ class PatientDefaultPage extends JLabel {
             catch (Exception e) {
                 updateTableUI(userId);
                 searchEngine.searchInput.setText("No patient found");
-                searchEngine.searchInput.setForeground(Color.red);
+                searchEngine.searchInput.setForeground(Constants.RED);
             }
         }
         else updateTableUI(userId);

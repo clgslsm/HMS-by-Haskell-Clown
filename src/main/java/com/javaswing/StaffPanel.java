@@ -1,4 +1,7 @@
 package com.javaswing;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.inter.FlatInterFont;
+import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.javafirebasetest.dao.*;
 import com.javafirebasetest.entity.*;
 
@@ -23,7 +26,7 @@ class StaffPanel extends JPanel {
     StaffPanel() {
         CardLayout currentPage = new CardLayout();
         this.setLayout(currentPage);
-        this.setBackground(Color.white);
+        this.setBackground(Constants.LIGHT_BLUE);
 
         defaultPage = new StaffDefaultPage();
 
@@ -68,7 +71,7 @@ class StaffPanel extends JPanel {
                     "Name of Job: ", jo,
                     "Name of Department: ", dep,
                     "Name: ", nameField,
-                    "User name: ", usernameField,
+                    "Username: ", usernameField,
                     "Password: ", passField
             };
 
@@ -119,25 +122,35 @@ class StaffDefaultPage extends JLabel {
     JButton addStaffBtn = AddStaffButton();
     CustomTableModel model;
     JTable staffList;
+    JLabel title = new JLabel("List of Staffs");
     StaffDefaultPage() {
         this.setMaximumSize(new Dimension(1300,1000));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
+        this.setBackground(Constants.LIGHT_BLUE);
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 40));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Header container
         JPanel header = new JPanel();
-        JLabel title = new JLabel("Staff Information");
-        title.setFont(title.getFont().deriveFont(25F));
-        title.setForeground(new Color(0x3497F9));
-        header.setBackground(new Color(0xF1F8FF));
+        JPanel titleContainer = new JPanel();
+        titleContainer.setLayout(new GridLayout(2,1));
+        titleContainer.setOpaque(false);
+        title.setFont(new Font(FlatRobotoFont.FAMILY,Font.BOLD,28));
+        title.setForeground(Constants.BLUE);
+        JLabel subTitle = new JLabel("Show all staffs of the hospital.");
+        subTitle.setFont(Constants.commonUsed);
+        titleContainer.add(title);
+        titleContainer.add(subTitle);
+        header.setOpaque(false);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
 
-        header.add(title);
-        header.add(Box.createHorizontalGlue());
-        header.add(searchEngine);
+        header.add(titleContainer);
         header.add(Box.createHorizontalGlue());
         header.add(addStaffBtn);
 
+        JPanel pan =  new JPanel();
+        pan.setOpaque(false);
+        pan.setLayout(new BoxLayout(pan,BoxLayout.X_AXIS));
+        searchEngine.setAlignmentX(LEFT_ALIGNMENT);
         searchEngine.searchButton.addActionListener(_-> {
             try {
                 showSearchResult(searchEngine.searchInput.getText());
@@ -146,6 +159,8 @@ class StaffDefaultPage extends JLabel {
                 throw new RuntimeException(e);
             }
         });
+        pan.add(searchEngine);
+        pan.add(Box.createHorizontalGlue());
 
         //Table
         JPanel body = new JPanel();
@@ -164,24 +179,24 @@ class StaffDefaultPage extends JLabel {
             }
         }; // UI for patient list
 
-        staffList.getTableHeader().setPreferredSize(new Dimension(staffList.getTableHeader().getWidth(), 60));
-        staffList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 16));
+        staffList.getTableHeader().setPreferredSize(new Dimension(staffList.getTableHeader().getWidth(), 40));
+        staffList.getTableHeader().setFont(new Font(FlatInterFont.FAMILY, Font.BOLD, 15));
         staffList.getTableHeader().setOpaque(false);
         staffList.getTableHeader().setBackground(new Color(32, 136, 203));
-        staffList.getTableHeader().setForeground(new Color(255,255,255));
+        staffList.getTableHeader().setForeground(Color.white);
 
         staffList.setFocusable(false);
         staffList.setIntercellSpacing(new java.awt.Dimension(0, 0));
         staffList.setSelectionBackground(new Color(0x9ACEF5));
         staffList.setShowVerticalLines(false);
         staffList.getTableHeader().setReorderingAllowed(false);
-        staffList.setFont(new Font("Courier",Font.PLAIN,16));
+        staffList.setFont(Constants.commonUsed);
 
         DeleteButtonRenderer deleteButtonRenderer = new DeleteButtonRenderer();
         DeleteButtonEditor deleteButtonEditor = new DeleteButtonEditor(new JCheckBox());
         staffList.getColumn("  ").setCellRenderer(deleteButtonRenderer);
         staffList.getColumn("  ").setCellEditor(deleteButtonEditor);
-        staffList.getColumn("  ").setPreferredWidth(50);
+        staffList.getColumn("  ").setMaxWidth(50);
         staffList.setRowHeight(35);
 
         staffList.addMouseListener(new MouseAdapter() {
@@ -241,8 +256,9 @@ class StaffDefaultPage extends JLabel {
         body.add(scrollPane);
 
         this.add(header);
+        this.add(pan);
         JPanel space = new JPanel();
-        space.setBackground(new Color(0xF1F8FF));
+        space.setBackground(Constants.LIGHT_BLUE);
         space.setSize(new Dimension(100, 100));
         this.add(space);
         this.add(body);
@@ -251,7 +267,7 @@ class StaffDefaultPage extends JLabel {
         JTextField searchInput = SearchBox();
         JButton searchButton = SearchButton();
         SearchEngine(){
-            setBackground(new Color(0xF1F8FF));
+            setBackground(Constants.LIGHT_BLUE);
             setMaximumSize(new Dimension(1000, 60));
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             add(searchInput);
@@ -265,7 +281,7 @@ class StaffDefaultPage extends JLabel {
             field.setForeground(Color.GRAY);
             field.setFocusable(false);
             field.revalidate();
-            field.setFont(new Font("Courier",Font.PLAIN,16));
+            field.setFont(Constants.commonUsed);
             field.setText("Search by staff name");
             field.addMouseListener(new CustomMouseListener() {
                 @Override
@@ -293,10 +309,10 @@ class StaffDefaultPage extends JLabel {
 
         JButton SearchButton(){
             JButton button = new RoundedButton("Search");
-            button.setFont(new Font("Courier",Font.PLAIN,13));
+            button.setFont(Constants.commonUsed);
             button.setFocusable(false);
             button.setForeground(Color.WHITE);
-            button.setBackground(new Color(0x3497F9));
+            button.setBackground(Constants.BLUE);
             button.setBounds(100, 100, 125, 60);
             button.setBorder(new EmptyBorder(10,10,10,10));
             return button;
@@ -314,7 +330,7 @@ class StaffDefaultPage extends JLabel {
         model.addRow(rowData);
     }
     public void showSearchResult(String name) throws ExecutionException, InterruptedException {
-        if (!name.trim().isEmpty() && !name.trim().equals("Search by Staff name")){
+        if (!name.trim().isEmpty() && !name.trim().equals("Search by staff name")){
             try{
                 List<Staff> res = StaffDAO.getStaffByName(name);
                 model.clearData();
@@ -325,7 +341,7 @@ class StaffDefaultPage extends JLabel {
             catch (Exception e) {
                 updateTableUI();
                 searchEngine.searchInput.setText("No staff found");
-                searchEngine.searchInput.setForeground(Color.red);
+                searchEngine.searchInput.setForeground(Constants.RED);
             }
         }
         else {
@@ -338,6 +354,7 @@ class StaffDefaultPage extends JLabel {
         for (Staff p : allStaffs) {
             addStaffToTable(p);
         }
+        title.setText(STR."List of Staffs (\{allStaffs.size()})");
     }
 
     static class CustomTableModel extends AbstractTableModel {
@@ -399,11 +416,12 @@ class StaffDefaultPage extends JLabel {
     }
 
     public JButton AddStaffButton(){
-        JButton addStaffButton = new RoundedButton("  + Add Staff  ");
-        addStaffButton.setFont(new Font("Courier",Font.PLAIN,13));
+        JButton addStaffButton = new RoundedButton("Add Staff");
+        addStaffButton.setFont(Constants.commonUsed);
+        addStaffButton.setIcon(new FlatSVGIcon("add-person.svg"));
         addStaffButton.setFocusable(false);
         addStaffButton.setForeground(Color.WHITE);
-        addStaffButton.setBackground(new Color(0x3497F9));
+        addStaffButton.setBackground(Constants.BLUE);
         addStaffButton.setBounds(100, 100, 125, 60);
         addStaffButton.setBorder(new EmptyBorder(10,10,10,10));
 
@@ -418,12 +436,9 @@ class StaffDefaultPage extends JLabel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            setForeground(new Color(0xdb524b));
-            setFont(new Font("Courier",Font.BOLD,16));
+            setIcon(new FlatSVGIcon("delete.svg"));
             setBackground(Color.white);
-            setText("Delete");
-
-            setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
+            setBorder(BorderFactory.createEmptyBorder());
             setSize(25,25);
             return this;
         }
@@ -443,11 +458,9 @@ class StaffDefaultPage extends JLabel {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            button.setBackground(new Color(0xdb524b));
+            button.setIcon(new FlatSVGIcon("delete.svg"));
             button.setForeground(Color.white);
-            button.setFont(new Font("Courier",Font.PLAIN,16));
             button.setFocusable(false);
-            button.setText("Delete");
             isPushed = true;
             return button;
         }

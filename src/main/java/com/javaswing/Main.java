@@ -14,8 +14,8 @@ public class Main {
     public static void main(String[] args) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
         //SwingUtilities.invokeLater((Runnable) new MainPage("Doctor"));
         FlatLightLaf.setup();
-        UIManager.put("TextComponent.arc",999);
-        UIManager.put("Button.arc",999);
+        UIManager.put("TextComponent.arc",10);
+        UIManager.put("Button.arc",20);
         System.setProperty("flatlaf.useWindowDecorations","true");
         SwingUtilities.invokeLater(LoginPage::new);
 //        _DBPopulator.populate(true);
