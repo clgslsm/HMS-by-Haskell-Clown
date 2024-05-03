@@ -1334,7 +1334,7 @@ class AddAppointmentPopup {
 
         Object[] message = {"Name of Department:", dep};
 
-        ImageIcon icon = new ImageIcon("src/main/java/com/javaswing/img/schedule.png");
+        ImageIcon icon = new ImageIcon("schedule.png");
         Image image = icon.getImage(); // transform it
         image = image.getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
         icon = new ImageIcon(image);  // transform it back

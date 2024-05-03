@@ -244,7 +244,6 @@ class DoctorDefaultPage extends JLabel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             setBackground(Color.green);
-            setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/view-icon.png").getImage().getScaledInstance(15,15*143/256, Image.SCALE_SMOOTH)));
             setSize(25,25);
             return this;
         }
@@ -266,7 +265,6 @@ class DoctorDefaultPage extends JLabel {
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
             button.setBackground(Color.green);
-            button.setIcon(new ImageIcon(new ImageIcon("src/main/java/com/javaswing/img/view-icon.png").getImage().getScaledInstance(15,15*143/256, Image.SCALE_SMOOTH)));
             button.setSize(25,25);
             isPushed = true;
             return button;
