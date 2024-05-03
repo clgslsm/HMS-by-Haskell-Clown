@@ -1,4 +1,6 @@
 package com.javaswing;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.javafirebasetest.dao.MachineDAO;
 import com.javafirebasetest.entity.*;
 
@@ -17,7 +19,7 @@ class MachinePanel extends JPanel {
     MachinePanel() {
         CardLayout currentPage = new CardLayout();
         this.setLayout(currentPage);
-        this.setBackground(Color.white);
+        this.setBackground(Constants.LIGHT_BLUE);
 
         defaultPage = new MachineDefaultPage();
 
@@ -55,15 +57,16 @@ class MachineDefaultPage extends JLabel {
     JButton addMachineBtn = AddMachineButton();
     private static CustomTableModel model;
     private JTable machineList;
+    JLabel title = new JLabel("List of Available Machine");
     MachineDefaultPage() {
         this.setMaximumSize(new Dimension(1300,600));
-        this.setBackground(Color.WHITE);
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
+        this.setBackground(Constants.LIGHT_BLUE);
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 40));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         this.add(headerContainer());
         JPanel space = new JPanel();
-        space.setBackground(new Color(0xF1F8FF));
+        space.setBackground(Constants.LIGHT_BLUE);
         space.setSize(new Dimension(100, 100));
         this.add(space);
         this.add(bodyContainer());
@@ -71,10 +74,9 @@ class MachineDefaultPage extends JLabel {
     JPanel headerContainer(){
         // Header container
         JPanel header = new JPanel();
-        JLabel title = new JLabel("Machine Information");
-        title.setFont(title.getFont().deriveFont(25F));
-        title.setForeground(new Color(0x3497F9));
-        header.setBackground(Color.WHITE);
+        title.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,28));
+        title.setForeground(Constants.BLUE);
+        header.setOpaque(false);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
 
         header.add(title);
@@ -108,17 +110,17 @@ class MachineDefaultPage extends JLabel {
         }; // UI for patient list
 
         machineList.getTableHeader().setPreferredSize(new Dimension(machineList.getTableHeader().getWidth(), 40));
-        machineList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 16));
+        machineList.getTableHeader().setFont(new Font(FlatInterFont.FAMILY, Font.BOLD, 15));
         machineList.getTableHeader().setOpaque(false);
         machineList.getTableHeader().setBackground(new Color(32, 136, 203));
-        machineList.getTableHeader().setForeground(new Color(255,255,255));
+        machineList.getTableHeader().setForeground(Color.white);
 
         machineList.setFocusable(false);
         machineList.setIntercellSpacing(new java.awt.Dimension(0, 0));
         machineList.setSelectionBackground(new Color(0x9ACEF5));
         machineList.setShowVerticalLines(false);
         machineList.getTableHeader().setReorderingAllowed(false);
-        machineList.setFont(new Font("Courier",Font.PLAIN,16));
+        machineList.setFont(Constants.commonUsed);
 
         ButtonRenderer buttonRenderer = new ButtonRenderer();
         ButtonEditor buttonEditor = new ButtonEditor(new JCheckBox());
@@ -128,7 +130,7 @@ class MachineDefaultPage extends JLabel {
         machineList.getColumn(" ").setCellEditor(buttonEditor);
         machineList.getColumn("  ").setCellRenderer(deleteButtonRenderer);
         machineList.getColumn("  ").setCellEditor(deleteButtonEditor);
-        machineList.getColumn(" ").setPreferredWidth(50);
+        machineList.getColumn(" ").setPreferredWidth(130);
         machineList.getColumn("  ").setPreferredWidth(50);
         machineList.setRowHeight(35);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -170,7 +172,7 @@ class MachineDefaultPage extends JLabel {
         JTextField searchInput = SearchBox();
         JButton searchButton = SearchButton();
         SearchEngine(){
-            setBackground(new Color(0xF1F8FF));
+            setBackground(Constants.LIGHT_BLUE);
             setMaximumSize(new Dimension(1000, 60));
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             add(searchInput);
@@ -184,7 +186,7 @@ class MachineDefaultPage extends JLabel {
             field.setForeground(Color.GRAY);
             field.setFocusable(false);
             field.revalidate();
-            field.setFont(new Font("Courier",Font.PLAIN,16));
+            field.setFont(Constants.commonUsed);
             field.setText("Search by machine name");
             field.addMouseListener(new CustomMouseListener() {
                 @Override
@@ -212,10 +214,10 @@ class MachineDefaultPage extends JLabel {
 
         JButton SearchButton(){
             JButton button = new RoundedButton("Search");
-            button.setFont(new Font("Courier",Font.PLAIN,13));
+            button.setFont(Constants.commonUsed);
             button.setFocusable(false);
             button.setForeground(Color.WHITE);
-            button.setBackground(new Color(0x3497F9));
+            button.setBackground(Constants.BLUE);
             button.setBounds(100, 100, 125, 60);
             button.setBorder(new EmptyBorder(10,10,10,10));
             return button;
@@ -236,18 +238,19 @@ class MachineDefaultPage extends JLabel {
         System.out.println("Refresh Machine Table");
     }
     public void showSearchResult(String name) throws ExecutionException, InterruptedException {
-        if (!name.trim().isEmpty() && !name.trim().equals("Search by Machine name")){
+        if (!name.trim().isEmpty() && !name.trim().equals("Search by machine name")){
             try{
                 List<Machine> res = MachineDAO.getMachineByName(name);
                 model.clearData();
                 for (Machine p : res) {
-                    addMachineToTable(p);
+                    if (p.isUsable())
+                        addMachineToTable(p);
                 }
             }
             catch (Exception e) {
                 refreshMachineTable();
                 searchEngine.searchInput.setText("No machine found");
-                searchEngine.searchInput.setForeground(Color.red);
+                searchEngine.searchInput.setForeground(Constants.RED);
             }
         }
         else {
@@ -312,11 +315,12 @@ class MachineDefaultPage extends JLabel {
         }
     }
     public JButton AddMachineButton(){
-        JButton addMachineButton = new RoundedButton("  + Add Machine  ");
-        addMachineButton.setFont(new Font("Courier",Font.PLAIN,13));
+        JButton addMachineButton = new RoundedButton("Add New Machine");
+        addMachineButton.setFont(Constants.commonUsed);
+        addMachineButton.setIcon(new FlatSVGIcon("add.svg"));
         addMachineButton.setFocusable(false);
         addMachineButton.setForeground(Color.WHITE);
-        addMachineButton.setBackground(new Color(0x3497F9));
+        addMachineButton.setBackground(Constants.BLUE);
         addMachineButton.setBounds(100, 100, 125, 60);
         addMachineButton.setBorder(new EmptyBorder(10,10,10,10));
 
@@ -331,9 +335,9 @@ class MachineDefaultPage extends JLabel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             setBackground(Color.WHITE);
-            setFont(new Font("Courier",Font.BOLD,16));
+            setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,15));
             setText("Request Use");
-            setForeground(Color.BLUE);
+            setForeground(Constants.BLUE);
             setMaximumSize(new Dimension(70,18));
             setBorder(BorderFactory.createEmptyBorder());
             setOpaque(false);
@@ -357,8 +361,8 @@ class MachineDefaultPage extends JLabel {
                                                      boolean isSelected, int row, int column) {
             button.setBackground(Color.WHITE);
             button.setText("Request Use");
-            button.setFont(new Font("Courier",Font.BOLD,16));
-            button.setForeground(Color.BLUE);
+            button.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,15));
+            button.setForeground(Constants.BLUE);
             button.setMaximumSize(new Dimension(70,18));
             button.setBorder(BorderFactory.createEmptyBorder());
             button.setOpaque(false);
@@ -386,12 +390,9 @@ class MachineDefaultPage extends JLabel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            setForeground(new Color(0xdb524b));
-            setFont(new Font("Courier",Font.BOLD,16));
-            setBackground(Color.white);
-            setText("Delete");
 
-            setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.gray));
+            setBackground(Color.white);
+            setIcon(new FlatSVGIcon("delete.svg"));
             setSize(25,25);
             return this;
         }
@@ -411,11 +412,8 @@ class MachineDefaultPage extends JLabel {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            button.setBackground(new Color(0xdb524b));
-            button.setForeground(Color.white);
-            button.setFont(new Font("Courier",Font.PLAIN,16));
+            button.setIcon(new FlatSVGIcon("delete.svg"));
             button.setFocusable(false);
-            button.setText("Delete");
             isPushed = true;
             return button;
         }
