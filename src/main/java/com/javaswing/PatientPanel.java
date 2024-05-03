@@ -714,6 +714,7 @@ class ViewPatientInfoPage extends JPanel {
         this.add(form); // Registration form
     }
     static class ViewMode extends JPanel {
+        Patient patient;
         JTextField name;
         JTextField phone;
         JComboBox<String> gender;
@@ -741,7 +742,7 @@ class ViewPatientInfoPage extends JPanel {
             add(PatientInfoForm);
         }
         JPanel Form(String id) throws ExecutionException, InterruptedException {
-            Patient patient = PatientDAO.getPatientById(id);
+            patient = PatientDAO.getPatientById(id);
             JLabel title = new JLabel("Personal Information");
             title.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,20));
             title.setForeground(Color.gray);
@@ -992,14 +993,14 @@ class ViewPatientInfoPage extends JPanel {
                                                                                     chosenDoctor.getStaffId(),
                                                                                     userId, null, null,
                                                                                     MedicalRecord.Status.PENDING, 0L, null);
-                            MedRecDAO.addMedRec(newAppointment);
+                            String medrecID = MedRecDAO.addMedRec(newAppointment);
 
                             if (newAppointment != null) {
                                 ViewButtonRenderer buttonRenderer = new ViewButtonRenderer();
-                                Object[] rowData = new Object[]{newAppointment.getMedRecId(), DoctorDAO.getDoctorById(newAppointment.getDoctorId()).getDepartment(), DoctorDAO.getDoctorById(newAppointment.getDoctorId()).getName(), newAppointment.getCheckIn(), newAppointment.getStatus(), buttonRenderer};
+                                Object[] rowData = new Object[]{medrecID, DoctorDAO.getDoctorById(newAppointment.getDoctorId()).getDepartment(), DoctorDAO.getDoctorById(newAppointment.getDoctorId()).getName(), newAppointment.getCheckIn(), newAppointment.getStatus(), buttonRenderer};
                                 model.addRow(rowData);
-                                int lastRowIndex = model.getRowCount() - 1;
-                                model.setValueAt(newAppointment.getMedRecId(), lastRowIndex, 0); // Set ID của cuộc hẹn mới vào dòng vừa thêm
+//                                int lastRowIndex = model.getRowCount() - 1;
+//                                model.setValueAt(newAppointment.getMedRecId(), lastRowIndex, 0); // Set ID của cuộc hẹn mới vào dòng vừa thêm
                             }
                         }
                         else {
