@@ -8,14 +8,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.ExecutionException;
+
 import javax.swing.*;
 
+
 import static com.javafirebasetest.dao.UserDAO.getUserByUsernamePassword;
+
 
 class LoginPage extends JFrame {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private Home home;
     private LoginForm form;
+
 
     public LoginPage() {
         setTitle("ABC HOSPITAL _ LOGIN");

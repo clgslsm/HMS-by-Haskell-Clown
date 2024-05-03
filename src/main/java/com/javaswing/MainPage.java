@@ -1,5 +1,6 @@
 package com.javaswing;
 
+
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
@@ -7,6 +8,7 @@ import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.javafirebasetest.dao.FileManager;
 import com.javafirebasetest.dao.StaffDAO;
 import com.javafirebasetest.entity.Staff;
+
 import com.javafirebasetest.entity.User;
 
 import javax.swing.*;
@@ -48,7 +50,9 @@ class MainPageUIContainer extends JPanel {
     JPanel navContainer;
     JPanel mainPageContainer;
     MainPageUIContainer(User u, MainPage mainPage) throws ExecutionException, InterruptedException {
+
         this.user=u;
+
         this.setLayout(new BorderLayout());
         this.setSize(new Dimension(usableScreenWidth, usableScreenHeight));
 
@@ -58,6 +62,7 @@ class MainPageUIContainer extends JPanel {
         this.add(navContainer, BorderLayout.WEST);
         this.add(mainPageContainer);
     }
+
     private JPanel StaffAccountContainer(){
         JPanel panel = new JPanel();
         panel.setOpaque(false);
@@ -83,6 +88,7 @@ class MainPageUIContainer extends JPanel {
         panel.add(staffIdLabel);
         return panel;
     }
+
     private JPanel NavigationContainer(MainPage mainPage) {
         JPanel navigationContainer = new JPanel();
         navigationContainer.setPreferredSize(new Dimension(usableScreenWidth * 4275 / 27320, usableScreenHeight));
@@ -173,6 +179,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         medrecSection.addActionListener(_->{
+
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -184,6 +191,7 @@ class MainPageUIContainer extends JPanel {
         });
 
         unusableMachineSection.addActionListener(_->{
+
             patientSection.setSelected(false);
             staffSection.setSelected(false);
             medicineSection.setSelected(false);
@@ -220,7 +228,9 @@ class MainPageUIContainer extends JPanel {
             cPanel.add(Box.createVerticalStrut(10));
         }
         else if (user != null && user.getUserMode().getValue().equals("Technician")) {
+
             medrecSection.setSelected(true);
+
             cPanel.add(medrecSection);
             cPanel.add(Box.createVerticalStrut(10));
             cPanel.add(machineSection);
