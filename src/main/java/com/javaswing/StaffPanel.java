@@ -98,13 +98,13 @@ class StaffPanel extends JPanel {
                     JOptionPane.showMessageDialog(null, "Job: " + j + "\nDepartment: " + d + "\nName: " + name, "Information", JOptionPane.INFORMATION_MESSAGE);
                     if (j !=  "Doctor") {
                         Staff newStaff = new Staff(null, name, User.Mode.fromValue(j));
-                        StaffDAO.addStaff(newStaff);
-                        UserDAO.addUser(new User(null, username, pass, User.Mode.fromValue(j), newStaff.getStaffId()));
+                        String returnId = StaffDAO.addStaff(newStaff);
+                        UserDAO.addUser(new User(null, username, pass, User.Mode.fromValue(j), returnId));
                     }
                     else {
                         Doctor newDoctor = new Doctor(null, name, DeptType.fromValue(d));
-                        DoctorDAO.addDoctor(newDoctor);
-                        UserDAO.addUser(new User(null, username, pass, User.Mode.fromValue(j), newDoctor.getStaffId()));
+                        String returnId = DoctorDAO.addDoctor(newDoctor);
+                        UserDAO.addUser(new User(null, username, pass, User.Mode.fromValue(j), returnId));
                     }
                     defaultPage.updateTableUI();
                 }
