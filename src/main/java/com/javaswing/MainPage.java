@@ -110,9 +110,12 @@ class MainPageUIContainer extends JPanel {
         patientSection.setSelected(false);
         patientSection.setIcon(new FlatSVGIcon("person-group.svg"));
         staffSection.setSelected(false);
+        staffSection.setIcon(new FlatSVGIcon("person-group.svg"));
         medicineSection.setSelected(false);
+        medicineSection.setIcon(new FlatSVGIcon("medicine.svg"));
         machineSection.setSelected(false);
         exportMedicineSection.setSelected(false);
+        exportMedicineSection.setIcon(new FlatSVGIcon("shopping-cart.svg"));
 
         patientSection.addActionListener(e -> {
             patientSection.setSelected(true);

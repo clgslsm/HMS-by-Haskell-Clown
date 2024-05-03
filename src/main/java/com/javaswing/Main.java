@@ -15,7 +15,7 @@ public class Main {
         //SwingUtilities.invokeLater((Runnable) new MainPage("Doctor"));
         FlatLightLaf.setup();
         UIManager.put("TextComponent.arc",10);
-        UIManager.put("Button.arc",20);
+        UIManager.put("Button.arc",15);
         System.setProperty("flatlaf.useWindowDecorations","true");
         SwingUtilities.invokeLater(LoginPage::new);
 //        _DBPopulator.populate(true);
