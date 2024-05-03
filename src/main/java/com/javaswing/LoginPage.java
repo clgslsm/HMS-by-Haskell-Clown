@@ -74,8 +74,8 @@ class Home extends JPanel {
 class LoginForm extends JPanel implements ActionListener {
     JButton loginButton = new JButton("Login");
     JButton resetButton = new JButton("Reset");
-    JTextField userNameField = new JTextField();
-    JPasswordField userPasswordField = new JPasswordField();
+    JTextField userNameField = new JTextField("Pharmacist55");
+    JPasswordField userPasswordField = new JPasswordField("Pharmacist55");
     JLabel userNameLabel = new JLabel("Username");
     JLabel userPasswordLabel = new JLabel("Password");
     JLabel messageLabel = new JLabel();

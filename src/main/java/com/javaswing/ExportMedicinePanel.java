@@ -1,4 +1,6 @@
 package com.javaswing;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.itextpdf.text.*;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -48,7 +50,7 @@ class ExportMedicinePanel extends JPanel {
     ExportMedicinePanel(User user) {
         this.user = user;
         this.setMaximumSize(new Dimension(1000, 700));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 35));
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 35));
         this.setBackground(Color.WHITE);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -66,10 +68,10 @@ class ExportMedicinePanel extends JPanel {
         titleContainer.setLayout(new GridLayout(2,1));
         titleContainer.setBackground(Color.white);
         JLabel title = new JLabel("Export Medicine");
-        title.setFont(title.getFont().deriveFont(28F));
-        title.setForeground(new Color(0x3497F9));
+        title.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,28));
+        title.setForeground(Constants.BLUE);
         JLabel subTitle = new JLabel("Use patient's medical prescription to export medicine");
-        subTitle.setFont(new Font("Poppins",Font.PLAIN,15));
+        subTitle.setFont(Constants.commonUsed);
         titleContainer.add(title);
         titleContainer.add(subTitle);
 
@@ -102,7 +104,6 @@ class ExportMedicinePanel extends JPanel {
         container.setOpaque(false);
         container.setLayout(new BoxLayout(container,BoxLayout.Y_AXIS));
         container.setMaximumSize(new Dimension(150,800));
-        container.setBackground(Color.BLACK);
 
         model = new MedicineSearchTableModel();
         MedicineSearchTable = new JTable(model);
@@ -112,8 +113,10 @@ class ExportMedicinePanel extends JPanel {
         MedicineSearchTable.setShowHorizontalLines(false);
         MedicineSearchTable.setTableHeader(null);
         MedicineSearchTable.setOpaque(false);
-        MedicineSearchTable.setSelectionBackground(new Color(0xF1F8FF));
-        MedicineSearchTable.setMaximumSize(new Dimension(200,600));
+        MedicineSearchTable.setSelectionBackground(new Color(0x126DA6));
+        MedicineSearchTable.setSelectionForeground(Color.white);
+        MedicineSearchTable.setMaximumSize(new Dimension(100,600));
+        MedicineSearchTable.setFont(Constants.commonUsed);
         hideColumn(MedicineSearchTable);
         MedicineSearchTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -131,6 +134,7 @@ class ExportMedicinePanel extends JPanel {
             }
         });
         JScrollPane scrollPane = new JScrollPane(MedicineSearchTable);
+        scrollPane.setMaximumSize(new Dimension(225,600));
         scrollPane.getViewport().setBackground(Color.WHITE);
 
         List<Medicine> medicines = MedicineDAO.getAllMedicine();
@@ -142,7 +146,7 @@ class ExportMedicinePanel extends JPanel {
         SearchInput.setMinimumSize(new Dimension(200,35));
         SearchInput.setPreferredSize(new Dimension(200,40));
         SearchInput.setMaximumSize(new Dimension(200,40));
-        SearchInput.setFont(new Font("Courier",Font.PLAIN,15));
+        SearchInput.setFont(Constants.commonUsed);
         SearchInput.setText("Search by medicine name");
         SearchInput.setForeground(Color.gray);
         SearchInput.addMouseListener(new CustomMouseListener() {
@@ -213,10 +217,10 @@ class ExportMedicinePanel extends JPanel {
         MedicineNameBox.setMaximumSize(new Dimension(600,130));
         MedicineNameBox.setLayout(new GridLayout(2,1,0,5));
         JLabel MedicineNameLabel = new JLabel("Medicine Name");
-        MedicineNameLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        MedicineNameInput = new RoundedTextField(40,20);
+        MedicineNameLabel.setFont(Constants.commonUsed);
+        MedicineNameInput = new JTextField();
         MedicineNameInput.setPreferredSize(new Dimension(300,50));
-        MedicineNameInput.setFont(new Font("Courier",Font.PLAIN,15));
+        MedicineNameInput.setFont(Constants.commonUsed);
         MedicineNameInput.setEditable(false);
         MedicineNameBox.add(MedicineNameLabel);
         MedicineNameBox.add(MedicineNameInput);
@@ -226,11 +230,11 @@ class ExportMedicinePanel extends JPanel {
         MedicineIDBox.setOpaque(false);
         MedicineIDBox.setLayout(new GridLayout(2,1,0,5));
         JLabel MedicineIDLabel = new JLabel("Medicine ID");
-        MedicineIDLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        MedicineIDInput = new RoundedTextField(40,20);
+        MedicineIDLabel.setFont(Constants.commonUsed);
+        MedicineIDInput = new JTextField();
         MedicineIDInput.setText("");
         MedicineIDInput.setPreferredSize(new Dimension(300,50));
-        MedicineIDInput.setFont(new Font("Courier",Font.PLAIN,15));
+        MedicineIDInput.setFont(Constants.commonUsed);
         MedicineIDInput.setEditable(false);
         MedicineIDBox.add(MedicineIDLabel);
         MedicineIDBox.add(MedicineIDInput);
@@ -248,11 +252,10 @@ class ExportMedicinePanel extends JPanel {
         MedicineExpiryDateBox.setOpaque(false);
         MedicineExpiryDateBox.setLayout(new GridLayout(2,1,0,5));
         JLabel MedicineExpiryDateLabel = new JLabel("Expiry Date");
-        MedicineExpiryDateLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        MedicineExpiryDateInput = new RoundedTextField(40,20);
-        MedicineExpiryDateInput.setToolTipText("Enter a date in the format DD-MM-YYYY");
+        MedicineExpiryDateLabel.setFont(Constants.commonUsed);
+        MedicineExpiryDateInput = new JTextField();
         MedicineExpiryDateInput.setPreferredSize(new Dimension(300,50));
-        MedicineExpiryDateInput.setFont(new Font("Courier",Font.PLAIN,15));
+        MedicineExpiryDateInput.setFont(Constants.commonUsed);
         MedicineExpiryDateInput.setEditable(false);
         MedicineExpiryDateBox.add(MedicineExpiryDateLabel);
         MedicineExpiryDateBox.add(MedicineExpiryDateInput);
@@ -281,8 +284,8 @@ class ExportMedicinePanel extends JPanel {
         UnitNumberBox.setOpaque(false);
         UnitNumberBox.setLayout(new GridLayout(2,1,0,5));
         JLabel UnitNumberLabel = new JLabel("No of Units");
-        UnitNumberLabel.setFont(new Font("Poppins",Font.PLAIN,15));
-        UnitNumberInput = new RoundedTextField(40,20);
+        UnitNumberLabel.setFont(Constants.commonUsed);
+        UnitNumberInput = new JTextField();
         UnitNumberInput.setText("");
         UnitNumberInput.setDocument(doc);
         UnitNumberInput.getDocument().addDocumentListener(new DocumentListener() {
@@ -308,7 +311,7 @@ class ExportMedicinePanel extends JPanel {
             }
         });
         UnitNumberInput.setPreferredSize(new Dimension(100,50));
-        UnitNumberInput.setFont(new Font("Courier",Font.PLAIN,15));
+        UnitNumberInput.setFont(Constants.commonUsed);
         UnitNumberBox.add(UnitNumberLabel);
         UnitNumberBox.add(UnitNumberInput);
 
@@ -323,8 +326,12 @@ class ExportMedicinePanel extends JPanel {
         JPanel AddToCartBox = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         AddToCartBox.setMaximumSize(new Dimension(600,50));
         AddToCartBox.setOpaque(false);
-        JButton addToCartButton = new RoundedButton(" Add To Cart ");
-        addToCartButton.setMaximumSize(new Dimension(125,50));
+        JButton addToCartButton = new JButton("Add To Cart");
+        addToCartButton.setBackground(Constants.BLUE);
+        addToCartButton.setForeground(Color.white);
+        addToCartButton.setFont(Constants.commonUsed);
+        addToCartButton.setIcon(new FlatSVGIcon("add-shopping-cart.svg"));
+        addToCartButton.setMinimumSize(new Dimension(125,50));
         addToCartButton.addActionListener(_->{
             long noUnit = (UnitNumberInput.getText().isEmpty()) ? 0 : Long.parseLong(UnitNumberInput.getText());
             if (noUnit > 0){
@@ -341,7 +348,7 @@ class ExportMedicinePanel extends JPanel {
         StockBox.setMaximumSize(new Dimension(600,50));
         StockBox.setOpaque(false);
         StockLabel = new JLabel(STR."Stock: \{stock}");
-        StockLabel.setFont(new Font("Courier",Font.ITALIC,15));
+        StockLabel.setFont(new Font(FlatInterFont.FAMILY,Font.ITALIC,15));
         StockLabel.setForeground(Color.gray);
         StockBox.add(StockLabel);
 
@@ -364,7 +371,7 @@ class ExportMedicinePanel extends JPanel {
         cartModel = new MedicineCartTableModel();
         MedicineCartTable = new JTable(cartModel);
         MedicineCartTable.getTableHeader().setPreferredSize(new Dimension(MedicineCartTable.getTableHeader().getWidth(), 35));
-        MedicineCartTable.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
+        MedicineCartTable.getTableHeader().setFont(new Font(FlatInterFont.FAMILY, Font.BOLD, 15));
         MedicineCartTable.getTableHeader().setOpaque(false);
         MedicineCartTable.getTableHeader().setBackground(new Color(32, 136, 203));
         MedicineCartTable.getTableHeader().setForeground(new Color(255,255,255));
@@ -374,11 +381,11 @@ class ExportMedicinePanel extends JPanel {
         MedicineCartTable.setSelectionForeground(Color.white);
         MedicineCartTable.setShowVerticalLines(false);
         MedicineCartTable.getTableHeader().setReorderingAllowed(false);
-        MedicineCartTable.setFont(new Font("Courier",Font.PLAIN,13));
-        MedicineCartTable.setRowHeight(36);
+        MedicineCartTable.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,15));
+        MedicineCartTable.setRowHeight(30);
         MedicineCartTable.getColumn("").setCellRenderer(new PatientDefaultPage.DeleteButtonRenderer());
         MedicineCartTable.getColumn("").setCellEditor(new PatientDefaultPage.DeleteButtonEditor(new JCheckBox()));
-        MedicineCartTable.getColumn("").setPreferredWidth(10);
+        MedicineCartTable.getColumn("").setMaxWidth(50);
         MedicineCartTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -401,7 +408,11 @@ class ExportMedicinePanel extends JPanel {
 
         JPanel purchaseButtonBox = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         purchaseButtonBox.setOpaque(false);
-        JButton purchaseButton = new RoundedButton(" Purchase & Print ");
+        JButton purchaseButton = new JButton("Purchase & Print");
+        purchaseButton.setFont(Constants.commonUsed);
+        purchaseButton.setBackground(Constants.BLUE);
+        purchaseButton.setForeground(Color.white);
+        purchaseButton.setIcon(new FlatSVGIcon("print.svg"));
         purchaseButton.addActionListener(_->{
             int rowCount = MedicineCartTable.getRowCount();
             exportBill();
@@ -557,6 +568,11 @@ class ExportMedicinePanel extends JPanel {
             // Close the document
             doc.close();
             System.out.println(STR."PDF created successfully at: \{path}");
+            File file = new File(path);
+            if (Desktop.isDesktopSupported()) {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.open(file);
+            }
         }
         catch (Exception _){}
     }
