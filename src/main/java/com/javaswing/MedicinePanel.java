@@ -210,7 +210,7 @@ class MedicineDefaultPage extends JLabel {
         viewPage.MedicineID.setIcon(new ImageIcon(image));
         viewPage.medicineid = medicine.getMedicineId();
         viewPage.MedicineUnit.setText(medicine.getUnit());
-        viewPage.medicineSupply.setText(medicine.getAmount().toString());
+        viewPage.medicineInStock.setText(medicine.getAmount().toString());
         viewPage.description.setText(medicine.getDescription());
         viewPage.ExpDate.setText(medicine.getformattedExpiryDate());
         return viewPage;
@@ -588,7 +588,7 @@ class AddNewMedicinePage extends JPanel {
         QuantityBox.setOpaque(false);
         QuantityBox.setLayout(new GridLayout(3,1,0,5));
         JLabel QuantityLabel = new JLabel("Quantity in Number");
-        QuantityLabel.setFont(new Font("Poppins",Font.PLAIN,15));
+        QuantityLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,15));
         QuantityInput = new JTextField();
         QuantityInput.setDocument(doc);
         QuantityInput.setPreferredSize(new Dimension(100,50));
@@ -780,7 +780,7 @@ class EditDetailMedicinePage extends AddNewMedicinePage {
         medicine = MedicineDAO.getMedicineById(page.medicineid);
         System.out.println("Hello");
         this.setBackground(Color.WHITE);
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 25));
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 25));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JPanel container = new JPanel();
@@ -886,14 +886,14 @@ class ViewMedicineInfoPage extends JPanel {
     String medicineid;
     JLabel ExpDate;
     JLabel MedicineUnit;
-    JLabel medicineSupply;
+    JLabel medicineInStock;
     JTextArea description;
     JButton deleteButton = new RoundedButton(" Delete Medicine ");
     Boolean hasEdited = false;
     ViewMedicineInfoPage(MedicinePanel panel){
         this.panel = panel;
         this.setBackground(Color.WHITE);
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 25));
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 25));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         JPanel container = new JPanel();
@@ -902,8 +902,8 @@ class ViewMedicineInfoPage extends JPanel {
         container.setBorder(new EmptyBorder(10,10,10,10));
 
         deleteButton.setBackground(Color.WHITE);
-        deleteButton.setForeground(Color.RED);
-        deleteButton.setBorder(BorderFactory.createLineBorder(Color.red));
+        deleteButton.setForeground(Constants.RED);
+        deleteButton.setBorder(BorderFactory.createLineBorder(Constants.RED));
         deleteButton.setMaximumSize(new Dimension(160,50));
         deleteButton.addActionListener(_->{
             MedicineDAO.deleteMedicine(medicineid);
@@ -934,11 +934,11 @@ class ViewMedicineInfoPage extends JPanel {
         titleJoined.setOpaque(false);
 
         JLabel title = new JLabel("List of Medicines > ");
-        title.setFont(title.getFont().deriveFont(28F));
+        title.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,28));
         title.setForeground(Constants.BLUE);
 
         titleMedicine = new JLabel("");
-        titleMedicine.setFont(title.getFont().deriveFont(28F));
+        titleMedicine.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,28));
         titleMedicine.setForeground(Color.BLACK);
 
         titleJoined.add(title);
@@ -951,16 +951,16 @@ class ViewMedicineInfoPage extends JPanel {
         subTitle.setAlignmentX(LEFT_ALIGNMENT);
 
         JPanel ExpireDateBox = new JPanel(new GridLayout(2,1));
-        ExpireDateBox.setMaximumSize(new Dimension(100,80));
+        ExpireDateBox.setMaximumSize(new Dimension(85,60));
         ExpireDateBox.setOpaque(false);
-        ExpireDateBox.setBorder(BorderFactory.createLineBorder(Color.red));
+        ExpireDateBox.setBorder(BorderFactory.createLineBorder(Constants.RED));
         ExpireDateBox.setAlignmentX(LEFT_ALIGNMENT);
         JLabel ExpireDateLabel = new JLabel("Expiry date");
         ExpireDateLabel.setFont(Constants.commonUsed);
-        ExpireDateLabel.setForeground(Color.red);
+        ExpireDateLabel.setForeground(Constants.RED);
         ExpireDateLabel.setAlignmentX(CENTER_ALIGNMENT);
         ExpDate = new JLabel("");
-        ExpDate.setForeground(Color.red);
+        ExpDate.setForeground(Constants.RED);
         ExpDate.setFont(Constants.commonUsed);
         ExpDate.setAlignmentX(CENTER_ALIGNMENT);
         ExpireDateBox.add(ExpireDateLabel);
@@ -993,8 +993,9 @@ class ViewMedicineInfoPage extends JPanel {
         container01.setOpaque(false);
 
         editButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        editButton.setMaximumSize(new Dimension(125,35));
-        editButton.setFont(new Font("Courier",Font.PLAIN,15));
+        editButton.setMaximumSize(new Dimension(175,35));
+        editButton.setFont(Constants.commonUsed);
+        editButton.setIcon(new FlatSVGIcon("edit-detail.svg"));
         editButton.addActionListener(_->{
             hasEdited = true;
             EditDetailMedicinePage editPage = editDetail();
@@ -1020,7 +1021,7 @@ class ViewMedicineInfoPage extends JPanel {
         MedicineContainer01.setLayout(new BoxLayout(MedicineContainer01,BoxLayout.X_AXIS));
         TitledBorder border = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY),
                 "Medicine", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
-        border.setTitleFont(new Font("Poppins", Font.BOLD, 20));
+        border.setTitleFont(new Font(FlatInterFont.FAMILY, Font.BOLD, 20));
         MedicineContainer01.setBorder(border);
         MedicineContainer01.setOpaque(false);
 
@@ -1029,9 +1030,9 @@ class ViewMedicineInfoPage extends JPanel {
         MedicineIDBox.setBackground(Color.WHITE);
         MedicineIDBox.setLayout(new GridLayout(2,1));
         JLabel MedicineIDLabel = new JLabel("Medicine ID");
-        MedicineIDLabel.setFont(new Font("Poppins",Font.PLAIN,17));
+        MedicineIDLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,17));
         MedicineID = new JLabel();
-        MedicineID.setFont(new Font("Poppins",Font.BOLD,19));
+        MedicineID.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,19));
         MedicineIDBox.add(MedicineID);
         MedicineIDBox.add(MedicineIDLabel);
 
@@ -1040,9 +1041,9 @@ class ViewMedicineInfoPage extends JPanel {
         MedicineGroup.setBorder(new EmptyBorder(10,30,10,20));
         MedicineGroup.setLayout(new GridLayout(2,1));
         JLabel MedicineGroupLabel = new JLabel("Medicine Group");
-        MedicineGroupLabel.setFont(new Font("Poppins",Font.PLAIN,17));
+        MedicineGroupLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,17));
         MedicineUnit = new JLabel();
-        MedicineUnit.setFont(new Font("Poppins",Font.BOLD,19));
+        MedicineUnit.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,19));
         MedicineGroup.add(MedicineUnit);
         MedicineGroup.add(MedicineGroupLabel);
 
@@ -1053,7 +1054,7 @@ class ViewMedicineInfoPage extends JPanel {
         MedicineContainer02.setLayout(new GridLayout(1,3,10,10));
         TitledBorder border2 = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY),
                 "Inventory in Qty", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
-        border2.setTitleFont(new Font("Poppins", Font.BOLD, 20));
+        border2.setTitleFont(new Font(FlatInterFont.FAMILY, Font.BOLD, 20));
         MedicineContainer02.setBorder(border2);
         MedicineContainer02.setOpaque(false);
 
@@ -1061,9 +1062,9 @@ class ViewMedicineInfoPage extends JPanel {
         medicineSupplyBox.setBorder(new EmptyBorder(10,30,10,20));
         medicineSupplyBox.setBackground(Color.WHITE);
         JLabel medicineSupplyLabel = new JLabel("Lifetime Supply");
-        medicineSupplyLabel.setFont(new Font("Poppins",Font.PLAIN,17));
-        medicineSupply = new JLabel();
-        medicineSupply.setFont(new Font("Poppins",Font.BOLD,23));
+        medicineSupplyLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,17));
+        JLabel medicineSupply = new JLabel("--");
+        medicineSupply.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,23));
         medicineSupplyBox.add(medicineSupply);
         medicineSupplyBox.add(medicineSupplyLabel);
 
@@ -1071,9 +1072,9 @@ class ViewMedicineInfoPage extends JPanel {
         medicineSoldBox.setBorder(new EmptyBorder(10,30,10,20));
         medicineSoldBox.setBackground(Color.WHITE);
         JLabel medicineSoldLabel = new JLabel("Lifetime Sales");
-        medicineSoldLabel.setFont(new Font("Poppins",Font.PLAIN,17));
-        JLabel medicineSold = new JLabel("0");
-        medicineSold.setFont(new Font("Poppins",Font.BOLD,23));
+        medicineSoldLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,17));
+        JLabel medicineSold = new JLabel("--");
+        medicineSold.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,23));
         medicineSoldBox.add(medicineSold);
         medicineSoldBox.add(medicineSoldLabel);
 
@@ -1081,9 +1082,9 @@ class ViewMedicineInfoPage extends JPanel {
         medicineInStockBox.setBorder(new EmptyBorder(10,30,10,20));
         medicineInStockBox.setBackground(Color.WHITE);
         JLabel medicineInStockLabel = new JLabel("Stock Left");
-        medicineInStockLabel.setFont(new Font("Poppins",Font.PLAIN,17));
-        JLabel medicineInStock = new JLabel("0");
-        medicineInStock.setFont(new Font("Poppins",Font.BOLD,23));
+        medicineInStockLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,17));
+        medicineInStock = new JLabel();
+        medicineInStock.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,23));
         medicineInStockBox.add(medicineInStock);
         medicineInStockBox.add(medicineInStockLabel);
 
@@ -1103,11 +1104,10 @@ class ViewMedicineInfoPage extends JPanel {
         DescriptionBox.setOpaque(false);
         TitledBorder border3 = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY),
                 "Description", TitledBorder.LEFT, TitledBorder.ABOVE_TOP);
-        border3.setTitleFont(new Font("Poppins", Font.BOLD, 20));
+        border3.setTitleFont(new Font(FlatInterFont.FAMILY, Font.BOLD, 20));
         DescriptionBox.setBorder(border3);
-        String text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate";
         description = new JTextArea();
-        description.setText(text);
+        description.setText("");
         description.setEditable(false);
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
@@ -1130,7 +1130,7 @@ class ViewMedicineInfoPage extends JPanel {
     }
     public static BufferedImage generateEAN13BarcodeImage(String barcodeText) throws Exception {
         Barcode barcode = BarcodeFactory.createCode128A(barcodeText);
-        barcode.setFont(new Font("Poppins",Font.BOLD,17));
+        barcode.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,17));
         return BarcodeImageHandler.getImage(barcode);
     }
     public void updateInfo(Medicine medicine) throws Exception {
@@ -1139,7 +1139,7 @@ class ViewMedicineInfoPage extends JPanel {
         MedicineID.setIcon(new ImageIcon(image));
         medicineid = medicine.getMedicineId();
         MedicineUnit.setText(medicine.getUnit());
-        medicineSupply.setText(medicine.getAmount().toString());
+        medicineInStock.setText(medicine.getAmount().toString());
         description.setText(medicine.getDescription());
         ExpDate.setText(medicine.getformattedExpiryDate());
     }

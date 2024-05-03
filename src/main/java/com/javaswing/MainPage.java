@@ -355,7 +355,7 @@ class RoundedButton extends JButton {
         super(text);
         setContentAreaFilled(false);
         setFocusable(false);
-        setFont(new Font("Courier",Font.PLAIN,16));
+        setFont(Constants.commonUsed);
         setForeground(Color.WHITE);
         setBackground(Constants.BLUE);
         setBounds(100, 100, 125, 60);
