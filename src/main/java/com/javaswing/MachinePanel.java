@@ -57,7 +57,7 @@ class MachineDefaultPage extends JLabel {
     JButton addMachineBtn = AddMachineButton();
     private static CustomTableModel model;
     private JTable machineList;
-    JLabel title = new JLabel("List of Available Machine");
+    static JLabel title = new JLabel("List of Available Machine");
     MachineDefaultPage() {
         this.setMaximumSize(new Dimension(1300,600));
         this.setBackground(Constants.LIGHT_BLUE);
@@ -130,8 +130,8 @@ class MachineDefaultPage extends JLabel {
         machineList.getColumn(" ").setCellEditor(buttonEditor);
         machineList.getColumn("  ").setCellRenderer(deleteButtonRenderer);
         machineList.getColumn("  ").setCellEditor(deleteButtonEditor);
-        machineList.getColumn(" ").setPreferredWidth(130);
-        machineList.getColumn("  ").setPreferredWidth(50);
+        machineList.getColumn(" ").setPreferredWidth(250);
+        machineList.getColumn("  ").setMaxWidth(50);
         machineList.setRowHeight(35);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -230,11 +230,12 @@ class MachineDefaultPage extends JLabel {
         model.addRow(rowData);
     }
     static void refreshMachineTable(){
-        model.clearData();
+        if (model != null) model.clearData();
         List<Machine> availableMachines = MachineDAO.getUsableMachine();
         for (Machine p : availableMachines) {
             addMachineToTable(p);
         }
+        title.setText(STR."List of Available Machine (\{availableMachines.size()})");
         System.out.println("Refresh Machine Table");
     }
     public void showSearchResult(String name) throws ExecutionException, InterruptedException {
@@ -392,6 +393,7 @@ class MachineDefaultPage extends JLabel {
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
 
             setBackground(Color.white);
+            setBorder(BorderFactory.createEmptyBorder());
             setIcon(new FlatSVGIcon("delete.svg"));
             setSize(25,25);
             return this;
@@ -414,6 +416,7 @@ class MachineDefaultPage extends JLabel {
                                                      boolean isSelected, int row, int column) {
             button.setIcon(new FlatSVGIcon("delete.svg"));
             button.setFocusable(false);
+            button.setBorder(BorderFactory.createEmptyBorder());
             isPushed = true;
             return button;
         }
