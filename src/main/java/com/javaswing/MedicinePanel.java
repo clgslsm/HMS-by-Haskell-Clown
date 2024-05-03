@@ -411,7 +411,7 @@ class MedicineDefaultPage extends JLabel {
 }
 class AddNewMedicinePage extends JPanel {
     MedicinePanel panel;
-    JButton backButton = new RoundedButton(" Return ");
+    protected JButton backButton = new RoundedButton(" Return ");
     JTextField MedicineNameInput;
     JTextField MedicineIDInput;
     JTextField MedicineUnitInput;
@@ -779,7 +779,7 @@ class EditDetailMedicinePage extends AddNewMedicinePage {
         this.page = page;
         medicine = MedicineDAO.getMedicineById(page.medicineid);
         System.out.println("Hello");
-        this.setBackground(Color.WHITE);
+        this.setBackground(Constants.LIGHT_BLUE);
         this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 25));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -802,11 +802,18 @@ class EditDetailMedicinePage extends AddNewMedicinePage {
 
     EditDetailMedicinePage(MedicinePanel panel) {
         super(panel);
+        this.setBackground(Constants.LIGHT_BLUE);
     }
 
     @Override
     JPanel headerContainer(String medicineTitle) {
+        backButton.addActionListener(_->{
+            this.panel.currentPage.removeLayoutComponent(this);
+            System.out.println("view");
+            this.panel.currentPage.show(this.panel,"view-page");
+        });
         return super.headerContainer(medicineTitle);
+
     }
     @Override
     JPanel formContainer(){
@@ -879,7 +886,7 @@ class EditDetailMedicinePage extends AddNewMedicinePage {
 }
 class ViewMedicineInfoPage extends JPanel {
     MedicinePanel panel;
-    JButton backButton = new RoundedButton(" Return ");
+    protected JButton backButton = new RoundedButton(" Return ");
     JButton editButton = new RoundedButton(" Edit Details ");
     JLabel titleMedicine;
     JLabel MedicineID;
