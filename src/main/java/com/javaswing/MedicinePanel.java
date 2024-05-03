@@ -1,4 +1,6 @@
 package com.javaswing;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.javafirebasetest.dao.MedicineDAO;
 import com.javafirebasetest.entity.*;
 import net.sourceforge.barbecue.Barcode;
@@ -27,7 +29,7 @@ class MedicinePanel extends JPanel {
     CardLayout currentPage = new CardLayout();
     MedicinePanel() {
         this.setLayout(currentPage);
-        this.setBackground(Color.white);
+        this.setBackground(Constants.LIGHT_BLUE);
 
         defaultPage = new MedicineDefaultPage(this);
 
@@ -47,21 +49,22 @@ class MedicineDefaultPage extends JLabel {
     MedicineDefaultPage(MedicinePanel panel) {
         this.panel = panel;
         this.setMaximumSize(new Dimension(1300,600));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 35));
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 35));
+        this.setBackground(Constants.LIGHT_BLUE);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Header container
         JPanel header = new JPanel();
         JPanel titleContainer = new JPanel();
         titleContainer.setLayout(new GridLayout(2,1));
-        titleContainer.setBackground(Color.white);
-        title.setFont(title.getFont().deriveFont(28F));
-        title.setForeground(new Color(0x3497F9));
+        titleContainer.setOpaque(false);
+        title.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,28));
+        title.setForeground(Constants.BLUE);
         JLabel subTitle = new JLabel("List of medicines available for sales");
-        subTitle.setFont(new Font("Arial",Font.BOLD,15));
+        subTitle.setFont(Constants.commonUsed);
         titleContainer.add(title);
         titleContainer.add(subTitle);
-        header.setBackground(Color.white);
+        header.setOpaque(false);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
 
         addMedicineBtn.addActionListener(_->{
@@ -78,19 +81,17 @@ class MedicineDefaultPage extends JLabel {
         //Table
         JPanel body = new JPanel();
         body.setLayout(new BorderLayout());
-        body.setBackground(Color.white);
+        body.setOpaque(false);
 
         model = new CustomTableModel();
         medicineList = new JTable(model); // UI for patient list
-//        medicineTableRowSorter = new TableRowSorter(model);
         refreshMedicineTable();
 
-//        medicineList.setRowSorter(medicineTableRowSorter);
         medicineList.getTableHeader().setPreferredSize(new Dimension(medicineList.getTableHeader().getWidth(), 40));
-        medicineList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
+        medicineList.getTableHeader().setFont(new Font(FlatInterFont.FAMILY, Font.BOLD, 15));
         medicineList.getTableHeader().setOpaque(false);
         medicineList.getTableHeader().setBackground(new Color(32, 136, 203));
-        medicineList.getTableHeader().setForeground(new Color(255,255,255));
+        medicineList.getTableHeader().setForeground(Color.white);
 
         medicineList.setFocusable(false);
         medicineList.setIntercellSpacing(new java.awt.Dimension(0, 0));
@@ -98,7 +99,7 @@ class MedicineDefaultPage extends JLabel {
         medicineList.setSelectionForeground(Color.white);
         medicineList.setShowVerticalLines(false);
         medicineList.getTableHeader().setReorderingAllowed(false);
-        medicineList.setFont(new Font("Courier",Font.PLAIN,13));
+        medicineList.setFont(Constants.commonUsed);
 
         medicineList.getColumn("").setCellRenderer(new ButtonRenderer());
         medicineList.getColumn("").setCellEditor(new ButtonEditor(new JCheckBox()));
@@ -143,7 +144,7 @@ class MedicineDefaultPage extends JLabel {
         this.add(header);
         JPanel space = new JPanel();
 
-        space.setBackground(Color.white);
+        space.setOpaque(false);
         space.setSize(new Dimension(40, 40));
         this.add(space);
         this.add(SearchFilterContainer());
@@ -296,6 +297,7 @@ class MedicineDefaultPage extends JLabel {
             setBackground(Color.WHITE);
             setText("View Full Detail >>");
             setForeground(Color.gray);
+            setFont(Constants.commonUsed);
             setMaximumSize(new Dimension(70,18));
             setOpaque(false);
             setBorder(BorderFactory.createEmptyBorder());
@@ -319,6 +321,7 @@ class MedicineDefaultPage extends JLabel {
                                                      boolean isSelected, int row, int column) {
             button.setBackground(Color.white);
             button.setText("View Full Detail >>");
+            button.setFont(Constants.commonUsed);
             button.setSize(25,25);
             button.setForeground(Color.gray);
             button.addMouseListener(new MouseAdapter() {
@@ -354,11 +357,12 @@ class MedicineDefaultPage extends JLabel {
         }
     }
     public JButton AddMedicineButton(){
-        JButton addMedicinButton = new RoundedButton("  + Add medicine  ");
-        addMedicinButton.setFont(new Font("Courier",Font.PLAIN,15));
+        JButton addMedicinButton = new RoundedButton("Add medicine");
+        addMedicinButton.setIcon(new FlatSVGIcon("add.svg"));
+        addMedicinButton.setFont(Constants.commonUsed);
         addMedicinButton.setFocusable(false);
         addMedicinButton.setForeground(Color.WHITE);
-        addMedicinButton.setBackground(new Color(0x3497F9));
+        addMedicinButton.setBackground(Constants.BLUE);
         addMedicinButton.setBounds(100, 100, 145, 50);
         return addMedicinButton;
     }
@@ -383,7 +387,7 @@ class MedicineDefaultPage extends JLabel {
             catch (Exception e) {
                 refreshMedicineTable();
                 searchEngine.searchInput.setText("No medicine found");
-                searchEngine.searchInput.setForeground(Color.red);
+                searchEngine.searchInput.setForeground(Constants.RED);
             }
         }
         else refreshMedicineTable();
@@ -391,11 +395,10 @@ class MedicineDefaultPage extends JLabel {
     private JComboBox<String> filterMedicine(){
         String[] choice = {"All medicine", "Medicine near to expiry", "Out of stock"};
         JComboBox<String> filter = new JComboBox<>(choice);
-        filter.setMaximumSize(new Dimension(250,50));
+        filter.setMaximumSize(new Dimension(250,30));
         filter.setBackground(Color.WHITE);
-        filter.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         filter.setForeground(Color.gray);
-        filter.setFont(new Font("Poppins", Font.ITALIC, 14));
+        filter.setFont(Constants.commonUsed);
         filter.setSelectedItem("All medicine");
         return filter;
     }
@@ -1166,7 +1169,7 @@ class MedicineSearchEngine extends JPanel {
         field.setForeground(Color.GRAY);
         field.setFocusable(false);
         field.revalidate();
-        field.setFont(new Font("Courier",Font.PLAIN,16));
+        field.setFont(Constants.commonUsed);
         field.setText("Search by medicine name");
         field.addMouseListener(new CustomMouseListener() {
             @Override
@@ -1193,12 +1196,12 @@ class MedicineSearchEngine extends JPanel {
     }
     JButton SearchButton(){
         JButton button = new RoundedButton("Search");
-        button.setFont(new Font("Courier",Font.PLAIN,13));
+        button.setFont(Constants.commonUsed);
         button.setFocusable(false);
         button.setForeground(Color.WHITE);
-        button.setBackground(new Color(0x3497F9));
-        button.setBounds(100, 100, 125, 60);
-        button.setBorder(new EmptyBorder(10,10,10,10));
+        button.setBackground(Constants.BLUE);
+        button.setBounds(100, 100, 125, 50);
+        button.setBorder(new EmptyBorder(5,10,5,10));
         return button;
     }
 }
