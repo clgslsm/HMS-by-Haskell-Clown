@@ -91,19 +91,20 @@ class CustomDatePicker extends JPanel {
         monthComboBox = new JComboBox<>();
         yearComboBox = new JComboBox<>();
 
-        dayComboBox.setFont(new Font("Courier",Font.PLAIN,16));
+        dayComboBox.setFont(Constants.commonUsed);
+//        dayComboBox
         dayComboBox.setBackground(Color.white);
-        dayComboBox.setBorder(BorderFactory.createEmptyBorder());
+//        dayComboBox.setBorder(BorderFactory.createEmptyBorder());
         dayComboBox.setBounds(200,140,100,20);
 
-        monthComboBox.setFont(new Font("Courier",Font.PLAIN,16));
+        monthComboBox.setFont(Constants.commonUsed);
         monthComboBox.setBackground(Color.white);
-        monthComboBox.setBorder(BorderFactory.createEmptyBorder());
+//        monthComboBox.setBorder(BorderFactory.createEmptyBorder());
         monthComboBox.setBounds(200,140,100,20);
 
-        yearComboBox.setFont(new Font("Courier",Font.PLAIN,16));
+        yearComboBox.setFont(Constants.commonUsed);
         yearComboBox.setBackground(Color.white);
-        yearComboBox.setBorder(BorderFactory.createEmptyBorder());
+//        yearComboBox.setBorder(BorderFactory.createEmptyBorder());
         yearComboBox.setBounds(200,140,100,20);
 
         // Thêm các lựa chọn cho ngày và tháng

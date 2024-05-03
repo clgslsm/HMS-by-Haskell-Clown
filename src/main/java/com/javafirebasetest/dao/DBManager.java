@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 public class DBManager {
     private static DBManager instance;
     final public Firestore db;
+    public static int idHashLength = 10;
     public enum CollectionPath {
         PATIENT("Patients"), STAFF("Staffs"), MEDICAL_RECORD("MedicalRecords"), MACHINE("Machines"), MEDICINE("Medicines"), USER("Users");
         private final String value;
@@ -38,7 +39,7 @@ public class DBManager {
     private DBManager() {
         FileInputStream serviceAccount;
         try {
-            serviceAccount = new FileInputStream("./serviceAccountKey.json");
+            serviceAccount = new FileInputStream("./serviceAccountKeyNew.json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -132,16 +133,23 @@ public class DBManager {
     public void updateDocument(CollectionPath collectionPath, String documentId, Map<String, Object> newData){
         getInstance();
         try {
+            ApiFuture<WriteResult> result;
             //TO ADD DOCUMENT WITH CUSTOM ID
             if (!db.collection(collectionPath.getValue()).document(documentId).get().get().exists()){
                 //SET new document with given id and blank data
-                db.collection(collectionPath.getValue()).document(documentId).set(newData);
+                result = db.collection(collectionPath.getValue()).document(documentId).set(newData);
             }
             //SIMPLE UPDATE TO EXISTING DOCUMENT
             else{
                 DocumentReference docRef = db.collection(collectionPath.getValue()).document(documentId);
-                docRef.update(newData);
+                result = docRef.update(newData);
             }
+            try {
+                WriteResult writeResult = result.get();
+            } catch (InterruptedException | ExecutionException e) {
+                System.out.println("DBManager updateDocument - cannot get updated document" + e);
+            }
+
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("DBManager updateDocument - cannot get document (ID does not exist?)" + e);
             return;
@@ -158,7 +166,14 @@ public class DBManager {
             System.out.println("DBManager deleteDocument - cannot delete document (ID does not exist?)");
             return;
         }
-        docRef.delete();
+
+        try {
+            WriteResult writeResult = docRef.delete().get();
+        }
+        catch (ExecutionException | InterruptedException e) {
+            System.out.println("DBManager deleteDocument - cannot delete document (Async problem?)");
+            return;
+        }
     }
 
     public static Filter makeFilter(Filter ... filters){

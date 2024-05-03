@@ -34,7 +34,7 @@ public class FileManager {
 
         FileInputStream serviceAccount;
         try {
-            serviceAccount = new FileInputStream("./serviceAccountKey.json");
+            serviceAccount = new FileInputStream("./serviceAccountKeyNew.json");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -94,6 +94,7 @@ public class FileManager {
     // Downloads a file from Firebase Storage
     public static String downloadFile(String storagePath){
         getInstance();
+        System.out.println(storagePath);
         BlobId blobId = BlobId.of(defaultBucket.getName(), storagePath);
         Blob newBlob = storage.get(blobId);
 
