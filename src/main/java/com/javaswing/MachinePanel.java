@@ -318,7 +318,7 @@ class MachineDefaultPage extends JLabel {
     public JButton AddMachineButton(){
         JButton addMachineButton = new RoundedButton("Add New Machine");
         addMachineButton.setFont(Constants.commonUsed);
-        addMachineButton.setIcon(new FlatSVGIcon("add.svg"));
+        addMachineButton.setIcon(new FlatSVGIcon("img/add.svg"));
         addMachineButton.setFocusable(false);
         addMachineButton.setForeground(Color.WHITE);
         addMachineButton.setBackground(Constants.BLUE);
@@ -394,7 +394,7 @@ class MachineDefaultPage extends JLabel {
 
             setBackground(Color.white);
             setBorder(BorderFactory.createEmptyBorder());
-            setIcon(new FlatSVGIcon("delete.svg"));
+            setIcon(new FlatSVGIcon("img/delete.svg"));
             setSize(25,25);
             return this;
         }
@@ -414,7 +414,7 @@ class MachineDefaultPage extends JLabel {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            button.setIcon(new FlatSVGIcon("delete.svg"));
+            button.setIcon(new FlatSVGIcon("img/delete.svg"));
             button.setFocusable(false);
             button.setBorder(BorderFactory.createEmptyBorder());
             isPushed = true;

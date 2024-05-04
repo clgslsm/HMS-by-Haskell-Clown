@@ -323,7 +323,7 @@ class ExportMedicinePanel extends JPanel {
         addToCartButton.setBackground(Constants.BLUE);
         addToCartButton.setForeground(Color.white);
         addToCartButton.setFont(Constants.commonUsed);
-        addToCartButton.setIcon(new FlatSVGIcon("add-shopping-cart.svg"));
+        addToCartButton.setIcon(new FlatSVGIcon("img/add-shopping-cart.svg"));
         addToCartButton.setMinimumSize(new Dimension(125,50));
         addToCartButton.addActionListener(_->{
             long noUnit = (UnitNumberInput.getText().isEmpty()) ? 0 : Long.parseLong(UnitNumberInput.getText());
@@ -415,7 +415,7 @@ class ExportMedicinePanel extends JPanel {
         purchaseButton.setFont(Constants.commonUsed);
         purchaseButton.setBackground(Constants.BLUE);
         purchaseButton.setForeground(Color.white);
-        purchaseButton.setIcon(new FlatSVGIcon("print.svg"));
+        purchaseButton.setIcon(new FlatSVGIcon("img/print.svg"));
         purchaseButton.addActionListener(_->{
             int rowCount = MedicineCartTable.getRowCount();
             exportBill();

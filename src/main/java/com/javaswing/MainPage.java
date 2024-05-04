@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
 public class MainPage extends JFrame {
     MainPage(User user) throws ExecutionException, InterruptedException {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setIconImage(new FlatSVGIcon("logo.svg").getImage());
+        setIconImage(new FlatSVGIcon("img/logo.svg").getImage());
         getRootPane().putClientProperty("JRootPane.titleBarBackground",Constants.DARK_MODE_2);
         getRootPane().putClientProperty("JRootPane.titleBarForeground",Color.white);
         this.setExtendedState(MAXIMIZED_BOTH);
@@ -73,7 +73,7 @@ class MainPageUIContainer extends JPanel {
         JLabel userLabel = new JLabel(st.getName());
         userLabel.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,20));
         userLabel.setForeground(Color.WHITE);
-        userLabel.setIcon(new FlatSVGIcon("user.svg",25,25));
+        userLabel.setIcon(new FlatSVGIcon("img/user.svg",25,25));
 
         JLabel staffIdLabel = new JLabel(STR."Staff ID: \{st.getStaffId()}");
         staffIdLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,13));
@@ -96,7 +96,7 @@ class MainPageUIContainer extends JPanel {
         navigationContainer.setBackground(Constants.DARK_MODE_1);
         // Thêm nội dung vào control panel
         JLabel label = new JLabel("ABC HOSPITAL");
-        label.setIcon(new FlatSVGIcon("logo.svg",50,50));
+        label.setIcon(new FlatSVGIcon("img/logo.svg",50,50));
         label.setFont(new Font(FlatRobotoFont.FAMILY, Font.BOLD, 25));
         label.setHorizontalTextPosition(JLabel.CENTER);
         label.setVerticalTextPosition(JLabel.BOTTOM);
@@ -114,20 +114,20 @@ class MainPageUIContainer extends JPanel {
         NavButton medrecSection = new NavButton("Medical Records");
 
         patientSection.setSelected(false);
-        patientSection.setIcon(new FlatSVGIcon("person-group.svg"));
+        patientSection.setIcon(new FlatSVGIcon("img/person-group.svg"));
         staffSection.setSelected(false);
-        staffSection.setIcon(new FlatSVGIcon("person-group.svg"));
+        staffSection.setIcon(new FlatSVGIcon("img/person-group.svg"));
         medicineSection.setSelected(false);
-        medicineSection.setIcon(new FlatSVGIcon("medicine.svg"));
+        medicineSection.setIcon(new FlatSVGIcon("img/medicine.svg"));
         machineSection.setSelected(false);
         exportMedicineSection.setSelected(false);
-        exportMedicineSection.setIcon(new FlatSVGIcon("shopping-cart.svg"));
+        exportMedicineSection.setIcon(new FlatSVGIcon("img/shopping-cart.svg"));
         medrecSection.setSelected(false);
-        medrecSection.setIcon(new FlatSVGIcon("medrec.svg"));
+        medrecSection.setIcon(new FlatSVGIcon("img/medrec.svg"));
         machineSection.setSelected(false);
-        machineSection.setIcon(new FlatSVGIcon("machine.svg"));
+        machineSection.setIcon(new FlatSVGIcon("img/machine.svg"));
         unusableMachineSection.setSelected(false);
-        unusableMachineSection.setIcon(new FlatSVGIcon("unused-machine.svg"));
+        unusableMachineSection.setIcon(new FlatSVGIcon("img/unused-machine.svg"));
 
         patientSection.addActionListener(e -> {
             patientSection.setSelected(true);

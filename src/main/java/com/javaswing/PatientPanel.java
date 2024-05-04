@@ -508,7 +508,7 @@ class PatientDefaultPage extends JLabel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             setBackground(Color.white);
-            setIcon(new FlatSVGIcon("edit.svg"));
+            setIcon(new FlatSVGIcon("img/edit.svg"));
             setBorder(BorderFactory.createEmptyBorder());
             setSize(15,15);
             return this;
@@ -531,7 +531,7 @@ class PatientDefaultPage extends JLabel {
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
             button.setBackground(Color.white);
-            button.setIcon(new FlatSVGIcon("edit.svg"));
+            button.setIcon(new FlatSVGIcon("img/edit.svg"));
             button.setFocusable(false);
             button.setSize(15,15);
             isPushed = true;
@@ -559,7 +559,7 @@ class PatientDefaultPage extends JLabel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             setBackground(Color.white);
-            setIcon(new FlatSVGIcon("delete.svg"));
+            setIcon(new FlatSVGIcon("img/delete.svg"));
             setBorder(BorderFactory.createEmptyBorder());
             setSize(25,25);
             return this;
@@ -581,7 +581,7 @@ class PatientDefaultPage extends JLabel {
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
             button.setBackground(Color.white);
-            button.setIcon(new FlatSVGIcon("delete.svg"));
+            button.setIcon(new FlatSVGIcon("img/delete.svg"));
             button.setBorder(BorderFactory.createEmptyBorder());
             button.setFocusable(false);
             isPushed = true;
@@ -656,7 +656,7 @@ class PatientDefaultPage extends JLabel {
     }
     public JButton AddPatientButton(){
         JButton addPatientButton = new JButton("Add New Patient");
-        addPatientButton.setIcon(new FlatSVGIcon("add-person.svg",20,20));
+        addPatientButton.setIcon(new FlatSVGIcon("img/add-person.svg",20,20));
         addPatientButton.setFont(Constants.commonUsed);
         addPatientButton.setFocusable(false);
         addPatientButton.setForeground(Color.WHITE);
@@ -1188,7 +1188,7 @@ class ViewPatientInfoPage extends JPanel {
         }
         public JButton AddAppointmentButton(){
             JButton addAppointmentButton = new JButton("Add appointment");
-            addAppointmentButton.setIcon(new FlatSVGIcon("add.svg",15,15));
+            addAppointmentButton.setIcon(new FlatSVGIcon("img/add.svg",15,15));
             addAppointmentButton.setForeground(Color.white);
             addAppointmentButton.setBackground(Constants.BLUE);
             addAppointmentButton.setMinimumSize(new Dimension(125,40));
@@ -1253,7 +1253,7 @@ class ViewPatientInfoPage extends JPanel {
                 setBackground(Color.white);
                 setContentAreaFilled(true);
                 setBorder(BorderFactory.createEmptyBorder());
-                setIcon(new FlatSVGIcon("edit.svg"));
+                setIcon(new FlatSVGIcon("img/edit.svg"));
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
                 setSize(25,25);
                 return this;
@@ -1276,7 +1276,7 @@ class ViewPatientInfoPage extends JPanel {
                                                          boolean isSelected, int row, int column) {
                 button.setBackground(Constants.BLUE);
                 button.setForeground(Color.WHITE);
-                button.setIcon(new FlatSVGIcon("edit.svg"));
+                button.setIcon(new FlatSVGIcon("img/edit.svg"));
                 button.setFont(Constants.commonUsed);
                 button.setContentAreaFilled(true);
                 button.setFocusable(false);
@@ -1335,7 +1335,7 @@ class AddAppointmentPopup {
 
         Object[] message = {"Name of Department:", dep};
 
-        ImageIcon icon = new ImageIcon("schedule.png");
+        ImageIcon icon = new ImageIcon("img/schedule.png");
         Image image = icon.getImage(); // transform it
         image = image.getScaledInstance(32, 32,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
         icon = new ImageIcon(image);  // transform it back

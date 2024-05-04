@@ -418,7 +418,7 @@ class StaffDefaultPage extends JLabel {
     public JButton AddStaffButton(){
         JButton addStaffButton = new RoundedButton("Add Staff");
         addStaffButton.setFont(Constants.commonUsed);
-        addStaffButton.setIcon(new FlatSVGIcon("add-person.svg"));
+        addStaffButton.setIcon(new FlatSVGIcon("img/add-person.svg"));
         addStaffButton.setFocusable(false);
         addStaffButton.setForeground(Color.WHITE);
         addStaffButton.setBackground(Constants.BLUE);
@@ -436,7 +436,7 @@ class StaffDefaultPage extends JLabel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            setIcon(new FlatSVGIcon("delete.svg"));
+            setIcon(new FlatSVGIcon("img/delete.svg"));
             setBackground(Color.white);
             setBorder(BorderFactory.createEmptyBorder());
             setSize(25,25);
@@ -458,7 +458,7 @@ class StaffDefaultPage extends JLabel {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            button.setIcon(new FlatSVGIcon("delete.svg"));
+            button.setIcon(new FlatSVGIcon("img/delete.svg"));
             button.setForeground(Color.white);
             button.setFocusable(false);
             isPushed = true;

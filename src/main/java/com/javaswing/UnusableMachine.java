@@ -66,7 +66,7 @@ class UnusableMachineDefaultPage extends JLabel {
 
         refreshButton = new RoundedButton("Refresh");
         refreshButton.setFont(Constants.commonUsed);
-        refreshButton.setIcon(new FlatSVGIcon("refresh.svg"));
+        refreshButton.setIcon(new FlatSVGIcon("img/refresh.svg"));
         refreshButton.addActionListener(_->refreshMachineTable());
 
         header.add(refreshButton);
@@ -366,7 +366,7 @@ class UnusableMachineDefaultPage extends JLabel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
-            setIcon(new FlatSVGIcon("delete.svg"));
+            setIcon(new FlatSVGIcon("img/delete.svg"));
             setBorder(BorderFactory.createEmptyBorder());
             setSize(25,25);
             return this;
@@ -387,7 +387,7 @@ class UnusableMachineDefaultPage extends JLabel {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
-            button.setIcon(new FlatSVGIcon("delete.svg"));
+            button.setIcon(new FlatSVGIcon("img/delete.svg"));
             button.setBorder(BorderFactory.createEmptyBorder());
             button.setFocusable(false);
             isPushed = true;

@@ -7,8 +7,12 @@ import com.javafirebasetest.entity.User;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
@@ -23,7 +27,7 @@ class LoginPage extends JFrame {
 
     public LoginPage() {
         setTitle("ABC HOSPITAL _ LOGIN");
-        setIconImage(new FlatSVGIcon("logo.svg").getImage());
+        setIconImage(new FlatSVGIcon("img/logo.svg").getImage());
         setSize(screenSize.width,screenSize.height);
         getRootPane().putClientProperty("JRootPane.titleBarBackground",new Color(0x1E1E1E));
         getRootPane().putClientProperty("JRootPane.titleBarForeground",Color.white);
@@ -33,7 +37,14 @@ class LoginPage extends JFrame {
         setVisible(true);
 
         // Create a custom JPanel with the background image
-        home = new Home(new ImageIcon("src/main/java/com/javaswing/img/home.jpg").getImage());
+        try {
+            InputStream ISTR = getClass().getClassLoader().getResourceAsStream("img/home.jpg");
+            assert ISTR != null;
+            BufferedImage image = ImageIO.read(ISTR);
+            home = new Home(new ImageIcon(image).getImage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         form = new LoginForm(this);
 
         JPanel container1 = new JPanel();
@@ -88,7 +99,7 @@ class LoginForm extends JPanel implements ActionListener {
         setBounds(0, 0, 400, 400);
 
         JLabel hospitalName = new JLabel("ABC HOSPITAL");
-        hospitalName.setIcon(new FlatSVGIcon("logo.svg",50,50));
+        hospitalName.setIcon(new FlatSVGIcon("img/logo.svg",50,50));
         hospitalName.setHorizontalTextPosition(SwingConstants.CENTER);
         hospitalName.setVerticalTextPosition(SwingConstants.BOTTOM);
         hospitalName.setFont(new Font("Tahoma",Font.BOLD,30));
@@ -113,7 +124,7 @@ class LoginForm extends JPanel implements ActionListener {
 
         userNameField.setBounds(100, 185, 225, 40);
         userNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,"Username");
-        userNameField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON,new FlatSVGIcon("user.svg"));
+        userNameField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON,new FlatSVGIcon("img/user.svg"));
         userNameField.setFont(Constants.commonUsed);
         userNameField.setBorder(BorderFactory.createCompoundBorder(
                 userNameField.getBorder(),
@@ -121,7 +132,7 @@ class LoginForm extends JPanel implements ActionListener {
         ));
         userPasswordField.setBounds(100, 265, 225, 40);
         userPasswordField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,"Password");
-        userPasswordField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON,new FlatSVGIcon("pass.svg"));
+        userPasswordField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON,new FlatSVGIcon("img/pass.svg"));
         userPasswordField.setFont(Constants.commonUsed);
         userPasswordField.setBorder(BorderFactory.createCompoundBorder(
                 userPasswordField.getBorder(),
@@ -133,7 +144,7 @@ class LoginForm extends JPanel implements ActionListener {
         loginButton.setForeground(Color.white);
         loginButton.setFont(new Font(FlatInterFont.FAMILY, Font.BOLD, 15));
         loginButton.setFocusable(false);
-        loginButton.setIcon(new FlatSVGIcon("login.svg"));
+        loginButton.setIcon(new FlatSVGIcon("img/login.svg"));
         loginButton.addActionListener(this);
 
         resetButton.setBounds(250, 380, 75, 40);

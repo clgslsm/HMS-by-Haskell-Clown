@@ -364,7 +364,7 @@ class MedicineDefaultPage extends JLabel {
     }
     public JButton AddMedicineButton(){
         JButton addMedicinButton = new RoundedButton("Add medicine");
-        addMedicinButton.setIcon(new FlatSVGIcon("add.svg"));
+        addMedicinButton.setIcon(new FlatSVGIcon("img/add.svg"));
         addMedicinButton.setFont(Constants.commonUsed);
         addMedicinButton.setFocusable(false);
         addMedicinButton.setForeground(Color.WHITE);
@@ -1009,7 +1009,7 @@ class ViewMedicineInfoPage extends JPanel {
         editButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
         editButton.setMaximumSize(new Dimension(175,35));
         editButton.setFont(Constants.commonUsed);
-        editButton.setIcon(new FlatSVGIcon("edit-detail.svg"));
+        editButton.setIcon(new FlatSVGIcon("img/edit-detail.svg"));
         editButton.addActionListener(_->{
             hasEdited = true;
             EditDetailMedicinePage editPage = editDetail();

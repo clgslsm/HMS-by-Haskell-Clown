@@ -260,7 +260,7 @@ public class ViewMedicalRecordPanel extends JPanel {
         scrollPane.setBounds(100, 150, 400, 200);
 
         JButton addMedicineToPrecription = new JButton("Add");
-        addMedicineToPrecription.setIcon(new FlatSVGIcon("add.svg"));
+        addMedicineToPrecription.setIcon(new FlatSVGIcon("img/add.svg"));
         addMedicineToPrecription.setBackground(Constants.BLUE);
         addMedicineToPrecription.setForeground(Color.white);
         addMedicineToPrecription.setFont(Constants.commonUsed);

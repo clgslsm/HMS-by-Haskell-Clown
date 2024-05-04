@@ -289,7 +289,7 @@ class MedicalRecordDefaultPage extends JPanel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             setBackground(Color.WHITE);
-            setIcon(new FlatSVGIcon("edit.svg"));
+            setIcon(new FlatSVGIcon("img/edit.svg"));
             setFont(Constants.commonUsed);
             setMaximumSize(new Dimension(70,18));
             setOpaque(false);
@@ -314,7 +314,7 @@ class MedicalRecordDefaultPage extends JPanel {
                                                      boolean isSelected, int row, int column) {
             button.setBackground(Color.white);
             button.setFont(Constants.commonUsed);
-            button.setIcon(new FlatSVGIcon("edit.svg"));
+            button.setIcon(new FlatSVGIcon("img/edit.svg"));
             button.setSize(25,25);
             button.addMouseListener(new MouseAdapter() {
                 @Override
