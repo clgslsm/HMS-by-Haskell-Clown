@@ -32,6 +32,7 @@ import java.util.List;
 
 
 import static com.javaswing.MedicineDefaultPage.refreshMedicineTable;
+import static com.javaswing.MedicineDefaultPage.search_model;
 
 class ExportMedicinePanel extends JPanel {
     private final User user;
@@ -41,10 +42,9 @@ class ExportMedicinePanel extends JPanel {
     private JTextField UnitNumberInput;
     private JLabel StockLabel;
     private long stock = 0;
-    private JTextField SearchInput;
+    private static JTextField SearchInput;
     private JTable MedicineSearchTable;
     private JTable MedicineCartTable;
-    private MedicineSearchTableModel model;
     private MedicineCartTableModel cartModel;
     private Medicine localMedicine;
     ExportMedicinePanel(User user) {
@@ -105,9 +105,8 @@ class ExportMedicinePanel extends JPanel {
         container.setLayout(new BoxLayout(container,BoxLayout.Y_AXIS));
         container.setMaximumSize(new Dimension(150,800));
 
-        model = new MedicineSearchTableModel();
-        MedicineSearchTable = new JTable(model);
-        TableRowSorter sorter = new TableRowSorter(model);
+        MedicineSearchTable = new JTable(search_model);
+        TableRowSorter sorter = new TableRowSorter(search_model);
         MedicineSearchTable.setRowSorter(sorter);
         MedicineSearchTable.setRowHeight(35);
         MedicineSearchTable.setShowHorizontalLines(false);
@@ -136,11 +135,6 @@ class ExportMedicinePanel extends JPanel {
         JScrollPane scrollPane = new JScrollPane(MedicineSearchTable);
         scrollPane.setMaximumSize(new Dimension(225,600));
         scrollPane.getViewport().setBackground(Color.WHITE);
-
-        List<Medicine> medicines = MedicineDAO.getAllMedicine();
-        for(Medicine medicine : medicines){
-            AddMedicineToTable(medicine);
-        }
 
         SearchInput = new RoundedTextField(40,20);
         SearchInput.setMinimumSize(new Dimension(200,35));
@@ -173,17 +167,17 @@ class ExportMedicinePanel extends JPanel {
         SearchInput.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                model.fireTableDataChanged();
+                search_model.fireTableDataChanged();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                model.fireTableDataChanged();
+                search_model.fireTableDataChanged();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                model.fireTableDataChanged();
+                search_model.fireTableDataChanged();
             }
         });
 
@@ -423,7 +417,7 @@ class ExportMedicinePanel extends JPanel {
                         "amount",medicine.getAmount()-Long.parseLong(cartModel.getValueAt(row,2).toString()));
             }
             resetExport();
-            refreshSearch();
+//            refreshSearch();
             refreshMedicineTable();
         });
         purchaseButtonBox.add(purchaseButton);
@@ -434,10 +428,10 @@ class ExportMedicinePanel extends JPanel {
 
         return panel;
     }
-    void AddMedicineToTable(Medicine medicine){
+    static void AddMedicineToSearchTable(Medicine medicine){
         String format = STR."\{medicine.getMedicineName()}-\{medicine.getAmount()}-\{medicine.getformattedExpiryDate()}";
         Object[] data = new Object[]{format,medicine.getMedicineId()};
-        model.addRow(data);
+        search_model.addRow(data);
     }
     void AddMedicineToCart(){
         PatientDefaultPage.DeleteButtonRenderer deleteButtonRenderer = new PatientDefaultPage.DeleteButtonRenderer();
@@ -463,14 +457,14 @@ class ExportMedicinePanel extends JPanel {
         stock = 0;
         StockLabel.setText(STR."Stock: \{stock}");
     }
-    private void refreshSearch(){
-        SearchInput.setText("");
-        model.clearData();
+    static void refreshSearch(){
+//        SearchInput.setText("");
+        search_model.clearData();
         List<Medicine> medicines = MedicineDAO.getAllMedicine();
         for(Medicine medicine : medicines){
-            AddMedicineToTable(medicine);
+            AddMedicineToSearchTable(medicine);
         }
-        model.fireTableDataChanged();
+        search_model.fireTableDataChanged();
         System.out.println("Refresh Search");
     }
     private void resetExport(){
@@ -587,59 +581,6 @@ class ExportMedicinePanel extends JPanel {
         // Format the current date and time
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         return currentDateTime.format(formatter);
-    }
-}
-class MedicineSearchTableModel extends AbstractTableModel {
-    // Data for each column
-    private Object[][] data = {};
-    // Column names
-    private final String[] columnNames = {"Medicine","Medicine ID"};
-    // Data types for each column
-    @SuppressWarnings("rawtypes")
-    private final Class[] columnTypes = {String.class,String.class};
-    @Override
-    public int getRowCount() {
-        return data.length;
-    }
-
-    @Override
-    public int getColumnCount() {
-        return columnNames.length;
-    }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        return data[rowIndex][columnIndex];
-    }
-
-    @Override
-    public String getColumnName(int column) {
-        return columnNames[column];
-    }
-
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        return columnTypes[columnIndex];
-    }
-
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        // Make all cells non-editable
-        return false;
-    }
-    // Method to add a new row to the table
-    public void addRow(Object[] rowData) {
-        Object[][] newData = new Object[data.length + 1][getColumnCount()];
-        System.arraycopy(data, 0, newData, 0, data.length);
-        newData[data.length] = rowData;
-        data = newData;
-        fireTableRowsInserted(data.length - 1, data.length - 1); // Notify the table that rows have been inserted
-    }
-    // Method to clear all data from the table
-    public void clearData() {
-        int rowCount = getRowCount();
-        data = new Object[0][0];
-        if (rowCount > 0) fireTableRowsDeleted(0, rowCount - 1); // Notify the table that rows have been deleted
     }
 }
 class MedicineCartTableModel extends AbstractTableModel {
