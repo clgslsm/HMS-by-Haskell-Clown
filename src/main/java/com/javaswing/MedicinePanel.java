@@ -24,6 +24,8 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static com.javaswing.ExportMedicinePanel.refreshSearch;
+
 class MedicinePanel extends JPanel {
     MedicineDefaultPage defaultPage;
     CardLayout currentPage = new CardLayout();
@@ -46,12 +48,16 @@ class MedicineDefaultPage extends JLabel {
     JTable medicineList;
     static JLabel title = new JLabel("List of Medicines");
     MedicinePanel panel;
+    static MedicineSearchTableModel search_model;
     MedicineDefaultPage(MedicinePanel panel) {
         this.panel = panel;
         this.setMaximumSize(new Dimension(1300,600));
         this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 35));
         this.setBackground(Constants.LIGHT_BLUE);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        search_model = new MedicineSearchTableModel();
+//        refreshSearch();
 
         // Header container
         JPanel header = new JPanel();
@@ -374,6 +380,7 @@ class MedicineDefaultPage extends JLabel {
         }
         title.setText("List of Medicines (%d)".formatted(allMedicins.size()));
         System.out.println("Refresh Medicine Table");
+        refreshSearch();
     }
     private void showSearchResult(String name) throws ExecutionException, InterruptedException {
         if (!name.trim().isEmpty() && !name.trim().equals("Search by medicine name")){
@@ -1068,9 +1075,9 @@ class ViewMedicineInfoPage extends JPanel {
         JPanel medicineSupplyBox = new JPanel(new GridLayout(2,1));
         medicineSupplyBox.setBorder(new EmptyBorder(10,30,10,20));
         medicineSupplyBox.setBackground(Color.WHITE);
-        JLabel medicineSupplyLabel = new JLabel("Lifetime Supply");
+        JLabel medicineSupplyLabel = new JLabel("");
         medicineSupplyLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,17));
-        JLabel medicineSupply = new JLabel("--");
+        JLabel medicineSupply = new JLabel("");
         medicineSupply.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,23));
         medicineSupplyBox.add(medicineSupply);
         medicineSupplyBox.add(medicineSupplyLabel);
@@ -1078,9 +1085,9 @@ class ViewMedicineInfoPage extends JPanel {
         JPanel medicineSoldBox = new JPanel(new GridLayout(2,1));
         medicineSoldBox.setBorder(new EmptyBorder(10,30,10,20));
         medicineSoldBox.setBackground(Color.WHITE);
-        JLabel medicineSoldLabel = new JLabel("Lifetime Sales");
+        JLabel medicineSoldLabel = new JLabel("");
         medicineSoldLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,17));
-        JLabel medicineSold = new JLabel("--");
+        JLabel medicineSold = new JLabel("");
         medicineSold.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,23));
         medicineSoldBox.add(medicineSold);
         medicineSoldBox.add(medicineSoldLabel);
@@ -1095,9 +1102,9 @@ class ViewMedicineInfoPage extends JPanel {
         medicineInStockBox.add(medicineInStock);
         medicineInStockBox.add(medicineInStockLabel);
 
+        MedicineContainer02.add(medicineInStockBox);
         MedicineContainer02.add(medicineSupplyBox);
         MedicineContainer02.add(medicineSoldBox);
-        MedicineContainer02.add(medicineInStockBox);
 
         JPanel MedicineContainer = new JPanel();
         MedicineContainer.setLayout(new BoxLayout(MedicineContainer,BoxLayout.X_AXIS));
@@ -1208,5 +1215,58 @@ class MedicineSearchEngine extends JPanel {
         button.setBounds(100, 100, 125, 50);
         button.setBorder(new EmptyBorder(5,10,5,10));
         return button;
+    }
+}
+class MedicineSearchTableModel extends AbstractTableModel {
+    // Data for each column
+    private Object[][] data = {};
+    // Column names
+    private final String[] columnNames = {"Medicine","Medicine ID"};
+    // Data types for each column
+    @SuppressWarnings("rawtypes")
+    private final Class[] columnTypes = {String.class,String.class};
+    @Override
+    public int getRowCount() {
+        return data.length;
+    }
+
+    @Override
+    public int getColumnCount() {
+        return columnNames.length;
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        return data[rowIndex][columnIndex];
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        return columnNames[column];
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return columnTypes[columnIndex];
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        // Make all cells non-editable
+        return false;
+    }
+    // Method to add a new row to the table
+    public void addRow(Object[] rowData) {
+        Object[][] newData = new Object[data.length + 1][getColumnCount()];
+        System.arraycopy(data, 0, newData, 0, data.length);
+        newData[data.length] = rowData;
+        data = newData;
+        fireTableRowsInserted(data.length - 1, data.length - 1); // Notify the table that rows have been inserted
+    }
+    // Method to clear all data from the table
+    public void clearData() {
+        int rowCount = getRowCount();
+        data = new Object[0][0];
+        if (rowCount > 0) fireTableRowsDeleted(0, rowCount - 1); // Notify the table that rows have been deleted
     }
 }

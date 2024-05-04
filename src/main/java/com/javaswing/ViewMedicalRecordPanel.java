@@ -288,7 +288,7 @@ public class ViewMedicalRecordPanel extends JPanel {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (SwingUtilities.isRightMouseButton(e)) { // Only proceed for right mouse button clicks
+                if (SwingUtilities.isRightMouseButton(e) && Prescriptions.isSelected()) { // Only proceed for right mouse button clicks
                     int row = table.rowAtPoint(e.getPoint());
                     if (row >= 0 && row < table.getRowCount()) {
                         int response = JOptionPane.showConfirmDialog(null, "Do you want to delete this row?",
@@ -346,9 +346,11 @@ public class ViewMedicalRecordPanel extends JPanel {
                     // Khi chọn "Prescriptions", cho phép chỉnh sửa Medicine và Quantity
                     medicineButton.setEnabled(true);
                     quantity.setEditable(true);
+                    table.setEnabled(true);
                     // Vô hiệu hóa các trường liên quan đến Test
                     testDecription.setEnabled(false);
                     testResult.setEnabled(false);
+
                     addMedicineToPrecription.setEnabled(true);
                 }
             }
@@ -386,6 +388,7 @@ public class ViewMedicalRecordPanel extends JPanel {
         testDecription.setEnabled(false);
         testResult.setEnabled(false);
         addMedicineToPrecription.setEnabled(false);
+        table.setEnabled(false);
 
         saveButton.setEnabled(false);
         
@@ -518,10 +521,10 @@ public class ViewMedicalRecordPanel extends JPanel {
 
         for (int i = 0; i < rows.length; i++) {
             String row = rows[i].trim();
-            int firstSpaceIndex = row.indexOf(" ");
+            int firstSpaceIndex = row.indexOf("\t");
             if (firstSpaceIndex != -1) { // Check if a space is found in the row
-                result[i][0] = row.substring(0, firstSpaceIndex - 1); // First column
-                result[i][1] = row.substring(firstSpaceIndex - 1); // Second column
+                result[i][0] = row.substring(0, firstSpaceIndex); // First column
+                result[i][1] = row.substring(firstSpaceIndex); // Second column
             } else {
                 // If no space is found, handle the situation as needed
                 System.err.println("No space found in input at row " + (i + 1));

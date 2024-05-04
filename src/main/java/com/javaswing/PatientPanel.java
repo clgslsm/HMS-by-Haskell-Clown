@@ -775,7 +775,8 @@ class ViewPatientInfoPage extends JPanel {
             gender.setFont(Constants.commonUsed);
             gender.setBackground(Color.white);
             gender.setBounds(200,140,100,25);
-            gender.setSelectedItem(patient.getGender());
+            gender.setSelectedItem(patient.getGender().getValue());
+            System.out.println(patient.getGender().getValue());
 
             // Date of birth (DOB)
             JLabel DOBLabel = new JLabel("Date of birth");
@@ -808,7 +809,7 @@ class ViewPatientInfoPage extends JPanel {
             bloodGroup.setFont(Constants.commonUsed);
             bloodGroup.setBackground(Color.WHITE);
             bloodGroup.setBounds(200,340,100,25);
-            bloodGroup.setSelectedItem(patient.getBloodGroup());
+            bloodGroup.setSelectedItem(patient.getBloodGroup().getValue());
 
             message.setFont(Constants.commonUsed);
             message.setForeground(Constants.RED);
