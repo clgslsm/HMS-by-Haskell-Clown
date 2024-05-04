@@ -187,10 +187,10 @@ class MedicalRecordDefaultPage extends JPanel {
         for (MedicalRecord medrec : allMedrecTesting) {
             addMedicineRecordToTable(medrec);
         }
-        List<MedicalRecord> allMedrecTested = MedRecDAO.getMedRecByCondition("status","TESTED");
-        for (MedicalRecord medrec : allMedrecTested) {
-            addMedicineRecordToTable(medrec);
-        }
+//        List<MedicalRecord> allMedrecTested = MedRecDAO.getMedRecByCondition("status","TESTED");
+//        for (MedicalRecord medrec : allMedrecTested) {
+//            addMedicineRecordToTable(medrec);
+//        }
         title.setText("List of Medical Records (%d)".formatted(allMedrecTesting.size()));
         System.out.println("Refresh Medical Record Table");
     }
