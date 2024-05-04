@@ -1,4 +1,5 @@
 package com.javaswing;
+import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.itextpdf.text.*;
@@ -30,9 +31,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-
-import static com.javaswing.MedicineDefaultPage.refreshMedicineTable;
-import static com.javaswing.MedicineDefaultPage.search_model;
+import static com.javaswing.MedicineDefaultPage.*;
 
 class ExportMedicinePanel extends JPanel {
     private final User user;
@@ -329,9 +328,19 @@ class ExportMedicinePanel extends JPanel {
         addToCartButton.addActionListener(_->{
             long noUnit = (UnitNumberInput.getText().isEmpty()) ? 0 : Long.parseLong(UnitNumberInput.getText());
             if (noUnit > 0){
-                AddMedicineToCart();
-                resetForm();
-                JOptionPane.showOptionDialog(this,"Successfully added to cart",null,JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE,null,null,null);
+                if (noUnit <= stock ){
+                    int row = cartModel.getRowCount();
+                    for(int i = 0; i < row; i++){
+                        if (MedicineIDInput.getText().equals(cartModel.getValueAt(i,1).toString())){
+                            cartModel.deleteRow(i);
+                            break;
+                        }
+                    }
+                    AddMedicineToCart();
+                    resetForm();
+                    JOptionPane.showOptionDialog(this,"Successfully added to cart",null,JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE,null,null,null);
+                }
+                else JOptionPane.showOptionDialog(this,"Not enough medicine",null,JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE,null,null,null);
             }
             else
                 JOptionPane.showOptionDialog(this,"No of Units must be greater than 0",null,JOptionPane.DEFAULT_OPTION,JOptionPane.ERROR_MESSAGE,null,null,null);
