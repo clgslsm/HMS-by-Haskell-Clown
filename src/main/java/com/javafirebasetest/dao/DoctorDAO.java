@@ -174,6 +174,7 @@ public class DoctorDAO {
 
     public static void updatePatientCount(String doctorId, int incr) {
         Doctor doc = getDoctorById(doctorId);
+        if (doc == null) return;
         Long newCount = doc.getPatientCount() + incr;
 
         if (newCount < 0) newCount = 0L;

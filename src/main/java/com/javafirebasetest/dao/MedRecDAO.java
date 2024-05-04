@@ -156,7 +156,8 @@ public class MedRecDAO {
 
         dbManager.deleteDocument(DBManager.CollectionPath.MEDICAL_RECORD, medRecId);
 
-        DoctorDAO.updatePatientCount(relatedDocId, -1);
+        if (medrec.getStatus() != MedicalRecord.Status.CHECKED_OUT)
+            DoctorDAO.updatePatientCount(relatedDocId, -1);
     }
 
     //FRONTEND HELPER FUNCTIONS
