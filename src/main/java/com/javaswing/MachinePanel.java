@@ -9,6 +9,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -22,30 +25,6 @@ class MachinePanel extends JPanel {
         this.setBackground(Constants.LIGHT_BLUE);
 
         defaultPage = new MachineDefaultPage();
-
-        // When we click "Add Doctor" => change to Doctor Registration Page
-        defaultPage.addMachineBtn.addActionListener(_ -> {
-            JTextField nameField = new JTextField(30);
-
-            Object[] message = {
-                    "Name of machine:", nameField,
-            };
-
-            int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.OK_CANCEL_OPTION);
-
-            if (option == JOptionPane.OK_OPTION) {
-                String name = nameField.getText();
-
-                // Kiểm tra xem có ô nào bị bỏ trống không
-                if (name.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "The input box cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(null, STR."Name: \{name}", "Information", JOptionPane.INFORMATION_MESSAGE);
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "Cancel", "Notification", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
 
         // Always show default page
         this.add(defaultPage, "default-page");
@@ -78,6 +57,56 @@ class MachineDefaultPage extends JLabel {
         title.setForeground(Constants.BLUE);
         header.setOpaque(false);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
+
+        addMachineBtn.addActionListener(_ -> {
+            JTextField nameField = new JTextField(30);
+            // Number of Units
+            PlainDocument doc = new PlainDocument() {
+                @Override
+                public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+                    if (str == null) {
+                        return;
+                    }
+                    char[] chars = str.toCharArray();
+                    boolean isNumeric = true;
+                    for (char c : chars) {
+                        if (!Character.isDigit(c)) {
+                            isNumeric = false;
+                            break;
+                        }
+                    }
+                    if (isNumeric) {
+                        super.insertString(offs, new String(chars), a);
+                    }
+                }
+            };
+            JTextField availUse = new JTextField(30);
+            availUse.setDocument(doc);
+
+            Object[] message = {
+                    "Name of machine:", nameField,
+                    "Available use:", availUse
+            };
+
+            int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.OK_CANCEL_OPTION);
+
+            if (option == JOptionPane.OK_OPTION) {
+                String name = nameField.getText().trim();
+                String use = availUse.getText();
+
+                // Kiểm tra xem có ô nào bị bỏ trống không
+                if (name.isEmpty() || use.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "The input box cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, STR."Name: \{name}\nAvalable use: \{use}", "Information", JOptionPane.INFORMATION_MESSAGE);
+                    Machine machine = new Machine(null,name,Long.parseLong(use),0L);
+                    MachineDAO.addMachine(machine);
+                    refreshMachineTable();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Cancel", "Notification", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
 
         header.add(title);
         header.add(Box.createHorizontalGlue());
