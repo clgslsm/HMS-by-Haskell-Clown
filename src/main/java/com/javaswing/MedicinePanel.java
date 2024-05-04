@@ -1075,9 +1075,9 @@ class ViewMedicineInfoPage extends JPanel {
         JPanel medicineSupplyBox = new JPanel(new GridLayout(2,1));
         medicineSupplyBox.setBorder(new EmptyBorder(10,30,10,20));
         medicineSupplyBox.setBackground(Color.WHITE);
-        JLabel medicineSupplyLabel = new JLabel("Lifetime Supply");
+        JLabel medicineSupplyLabel = new JLabel("");
         medicineSupplyLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,17));
-        JLabel medicineSupply = new JLabel("--");
+        JLabel medicineSupply = new JLabel("");
         medicineSupply.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,23));
         medicineSupplyBox.add(medicineSupply);
         medicineSupplyBox.add(medicineSupplyLabel);
@@ -1085,9 +1085,9 @@ class ViewMedicineInfoPage extends JPanel {
         JPanel medicineSoldBox = new JPanel(new GridLayout(2,1));
         medicineSoldBox.setBorder(new EmptyBorder(10,30,10,20));
         medicineSoldBox.setBackground(Color.WHITE);
-        JLabel medicineSoldLabel = new JLabel("Lifetime Sales");
+        JLabel medicineSoldLabel = new JLabel("");
         medicineSoldLabel.setFont(new Font(FlatInterFont.FAMILY,Font.PLAIN,17));
-        JLabel medicineSold = new JLabel("--");
+        JLabel medicineSold = new JLabel("");
         medicineSold.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,23));
         medicineSoldBox.add(medicineSold);
         medicineSoldBox.add(medicineSoldLabel);
@@ -1102,9 +1102,9 @@ class ViewMedicineInfoPage extends JPanel {
         medicineInStockBox.add(medicineInStock);
         medicineInStockBox.add(medicineInStockLabel);
 
+        MedicineContainer02.add(medicineInStockBox);
         MedicineContainer02.add(medicineSupplyBox);
         MedicineContainer02.add(medicineSoldBox);
-        MedicineContainer02.add(medicineInStockBox);
 
         JPanel MedicineContainer = new JPanel();
         MedicineContainer.setLayout(new BoxLayout(MedicineContainer,BoxLayout.X_AXIS));
