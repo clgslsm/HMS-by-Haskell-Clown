@@ -8,15 +8,6 @@
     <url>http://barcode4j.cvs.sourceforge.net/barcode4j</url>
   </scm>
   <build>
-    <resources>
-      <resource>
-        <directory>./</directory>
-        <includes>
-          <include>src/main/java/com/javaswing/img/*.*</include>
-          <include>serviceAccountKeyNew.json</include>
-        </includes>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -40,7 +31,6 @@
                 <transformer>
                   <mainClass>com.javaswing.Main</mainClass>
                 </transformer>
-                <transformer />
               </transformers>
               <filters>
                 <filter>
