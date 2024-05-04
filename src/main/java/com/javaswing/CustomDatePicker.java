@@ -142,8 +142,8 @@ class CustomDatePicker extends JPanel {
             }
         });
 
-        dayComboBox.setSelectedItem(l[2]);
         monthComboBox.setSelectedItem(l[1]);
+        dayComboBox.setSelectedItem(l[2]);
         yearComboBox.setSelectedItem(l[0]);
 
         add(dayComboBox);
