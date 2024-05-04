@@ -1,7 +1,8 @@
 package com.javaswing;
-import com.javafirebasetest.dao.DoctorDAO;
-import com.javafirebasetest.dao.PatientDAO;
-import com.javafirebasetest.dao.UserDAO;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.inter.FlatInterFont;
+import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+import com.javafirebasetest.dao.*;
 import com.javafirebasetest.entity.*;
 
 import javax.print.Doc;
@@ -12,20 +13,20 @@ import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import com.javafirebasetest.dao.StaffDAO;
 
 class StaffPanel extends JPanel {
     public StaffDefaultPage defaultPage;
     StaffPanel() {
         CardLayout currentPage = new CardLayout();
         this.setLayout(currentPage);
-        this.setBackground(Color.white);
+        this.setBackground(Constants.LIGHT_BLUE);
 
         defaultPage = new StaffDefaultPage();
 
@@ -70,7 +71,7 @@ class StaffPanel extends JPanel {
                     "Name of Job: ", jo,
                     "Name of Department: ", dep,
                     "Name: ", nameField,
-                    "User name: ", usernameField,
+                    "Username: ", usernameField,
                     "Password: ", passField
             };
 
@@ -84,20 +85,26 @@ class StaffPanel extends JPanel {
                 String username = usernameField.getText();
                 String pass = passField.getText();
 
+                User test = UserDAO.getUserByUsernamePassword(username, pass);
+
                 // Kiểm tra xem có ô nào bị bỏ trống không
                 if (j.isEmpty() || d.isEmpty() || name.isEmpty() || username.isEmpty() || pass.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "The information box cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
+                }
+                else if (test != null) {
+                    JOptionPane.showMessageDialog(null, "Username and pass is unavailable", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else {
                     JOptionPane.showMessageDialog(null, "Job: " + j + "\nDepartment: " + d + "\nName: " + name, "Information", JOptionPane.INFORMATION_MESSAGE);
                     if (j !=  "Doctor") {
                         Staff newStaff = new Staff(null, name, User.Mode.fromValue(j));
-                        StaffDAO.addStaff(newStaff);
-                        UserDAO.addUser(new User(null, username, pass, User.Mode.fromValue(j), newStaff.getStaffId()));
+                        String returnId = StaffDAO.addStaff(newStaff);
+                        UserDAO.addUser(new User(null, username, pass, User.Mode.fromValue(j), returnId));
                     }
                     else {
                         Doctor newDoctor = new Doctor(null, name, DeptType.fromValue(d));
-                        DoctorDAO.addDoctor(newDoctor);
-                        UserDAO.addUser(new User(null, username, pass, User.Mode.fromValue(j), newDoctor.getStaffId()));
+                        String returnId = DoctorDAO.addDoctor(newDoctor);
+                        UserDAO.addUser(new User(null, username, pass, User.Mode.fromValue(j), returnId));
                     }
                     defaultPage.updateTableUI();
                 }
@@ -115,33 +122,45 @@ class StaffDefaultPage extends JLabel {
     JButton addStaffBtn = AddStaffButton();
     CustomTableModel model;
     JTable staffList;
+    JLabel title = new JLabel("List of Staffs");
     StaffDefaultPage() {
         this.setMaximumSize(new Dimension(1300,1000));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
+        this.setBackground(Constants.LIGHT_BLUE);
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 40));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Header container
         JPanel header = new JPanel();
-        JLabel title = new JLabel("Staff Information");
-        title.setFont(title.getFont().deriveFont(25F));
-        title.setForeground(new Color(0x3497F9));
-        header.setBackground(new Color(0xF1F8FF));
+        JPanel titleContainer = new JPanel();
+        titleContainer.setLayout(new GridLayout(2,1));
+        titleContainer.setOpaque(false);
+        title.setFont(new Font(FlatRobotoFont.FAMILY,Font.BOLD,28));
+        title.setForeground(Constants.BLUE);
+        JLabel subTitle = new JLabel("Show all staffs of the hospital.");
+        subTitle.setFont(Constants.commonUsed);
+        titleContainer.add(title);
+        titleContainer.add(subTitle);
+        header.setOpaque(false);
         header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
 
-
-        header.add(title);
-        header.add(Box.createHorizontalGlue());
-        header.add(searchEngine);
+        header.add(titleContainer);
         header.add(Box.createHorizontalGlue());
         header.add(addStaffBtn);
 
+        JPanel pan =  new JPanel();
+        pan.setOpaque(false);
+        pan.setLayout(new BoxLayout(pan,BoxLayout.X_AXIS));
+        searchEngine.setAlignmentX(LEFT_ALIGNMENT);
         searchEngine.searchButton.addActionListener(_-> {
             try {
                 showSearchResult(searchEngine.searchInput.getText());
             } catch (ExecutionException | InterruptedException e) {
+                updateTableUI();
                 throw new RuntimeException(e);
             }
         });
+        pan.add(searchEngine);
+        pan.add(Box.createHorizontalGlue());
 
         //Table
         JPanel body = new JPanel();
@@ -160,30 +179,76 @@ class StaffDefaultPage extends JLabel {
             }
         }; // UI for patient list
 
-        staffList.getTableHeader().setPreferredSize(new Dimension(staffList.getTableHeader().getWidth(), 60));
-        staffList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 16));
+        staffList.getTableHeader().setPreferredSize(new Dimension(staffList.getTableHeader().getWidth(), 40));
+        staffList.getTableHeader().setFont(new Font(FlatInterFont.FAMILY, Font.BOLD, 15));
         staffList.getTableHeader().setOpaque(false);
         staffList.getTableHeader().setBackground(new Color(32, 136, 203));
-        staffList.getTableHeader().setForeground(new Color(255,255,255));
+        staffList.getTableHeader().setForeground(Color.white);
 
         staffList.setFocusable(false);
         staffList.setIntercellSpacing(new java.awt.Dimension(0, 0));
         staffList.setSelectionBackground(new Color(0x9ACEF5));
         staffList.setShowVerticalLines(false);
         staffList.getTableHeader().setReorderingAllowed(false);
-        staffList.setFont(new Font("Courier",Font.PLAIN,16));
+        staffList.setFont(Constants.commonUsed);
 
-        ButtonRenderer buttonRenderer = new ButtonRenderer();
-        ButtonEditor buttonEditor = new ButtonEditor();
-        staffList.getColumn("Action").setCellRenderer(buttonRenderer);
-        staffList.getColumn("Action").setCellEditor(buttonEditor);
-        staffList.setRowHeight(60);
+        DeleteButtonRenderer deleteButtonRenderer = new DeleteButtonRenderer();
+        DeleteButtonEditor deleteButtonEditor = new DeleteButtonEditor(new JCheckBox());
+        staffList.getColumn("  ").setCellRenderer(deleteButtonRenderer);
+        staffList.getColumn("  ").setCellEditor(deleteButtonEditor);
+        staffList.getColumn("  ").setMaxWidth(50);
+        staffList.setRowHeight(35);
 
-        staffList.getSelectionModel().addListSelectionListener(e -> {
-            int selectedRow = staffList.getSelectedRow();
-            buttonRenderer.setSelectedRow(selectedRow);
-            //buttonEditor.setID(staffList.getValueAt(selectedRow, 0).toString());
-            staffList.repaint();
+        staffList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int column = staffList.getColumnModel().getColumnIndexAtX(e.getX());
+                int row = e.getY()/staffList.getRowHeight();
+                Object value = staffList.getValueAt(row,column);
+                if (column == 4 && value instanceof JButton){
+                    System.out.println(STR."Button clicked for row: \{row} \{staffList.getValueAt(row, 0).toString()}");
+                    if (staffList.getValueAt(row, 2).equals("Doctor")) {
+                        List<MedicalRecord> mr = MedRecDAO.getMedRecByDoctorId(staffList.getValueAt(row, 0).toString());
+                        boolean can = true;
+                        for (MedicalRecord m : mr) {
+                            if (!m.getStatus().getValue().equals("Checked_out")) {
+                                can = false;
+                                break;
+                            }
+                        }
+                        if (!can) {
+                            Object[] message = {
+                                    STR."<html><b style='color:#3497F9; font-size:15px;'>Name: \{staffList.getValueAt(row, 1)}<b><html>",
+                                    STR."<html><b style='font-size:10px;'>Job: \{staffList.getValueAt(row, 2)}<b><html>",
+                                    STR."<html><br><br><p>This doctor has patient, can not delete.</p><html>"
+                            };
+                            int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.DEFAULT_OPTION);
+                        }
+                        else {
+                            StaffDAO.deleteStaffById(staffList.getValueAt(row, 0).toString());
+                            Object[] message = {
+                                    STR."<html><br><br><p>Delete complete.</p><html>"
+                            };
+                            int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.DEFAULT_OPTION);
+                            updateTableUI();
+                        }
+                    }
+                    else if (staffList.getValueAt(row, 2).equals("Admin")) {
+                        Object[] message = {
+                                STR."<html><br><br><p>You can not delete an Admin</p><html>"
+                        };
+                        int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.DEFAULT_OPTION);
+                    }
+                    else {
+                        StaffDAO.deleteStaffById(staffList.getValueAt(row, 0).toString());
+                        Object[] message = {
+                                STR."<html><br><br><p>Delete complete.</p><html>"
+                        };
+                        int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.DEFAULT_OPTION);
+                        updateTableUI();
+                    }
+                }
+            }
         });
 
         JScrollPane scrollPane = new JScrollPane();
@@ -191,8 +256,9 @@ class StaffDefaultPage extends JLabel {
         body.add(scrollPane);
 
         this.add(header);
+        this.add(pan);
         JPanel space = new JPanel();
-        space.setBackground(new Color(0xF1F8FF));
+        space.setBackground(Constants.LIGHT_BLUE);
         space.setSize(new Dimension(100, 100));
         this.add(space);
         this.add(body);
@@ -201,7 +267,7 @@ class StaffDefaultPage extends JLabel {
         JTextField searchInput = SearchBox();
         JButton searchButton = SearchButton();
         SearchEngine(){
-            setBackground(new Color(0xF1F8FF));
+            setBackground(Constants.LIGHT_BLUE);
             setMaximumSize(new Dimension(1000, 60));
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             add(searchInput);
@@ -215,12 +281,12 @@ class StaffDefaultPage extends JLabel {
             field.setForeground(Color.GRAY);
             field.setFocusable(false);
             field.revalidate();
-            field.setFont(new Font("Courier",Font.PLAIN,16));
-            field.setText("Search by staff ID");
+            field.setFont(Constants.commonUsed);
+            field.setText("Search by staff name");
             field.addMouseListener(new CustomMouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (field.getText().equals("Search by staff ID") || field.getText().equals("No staff found")) {
+                    if (field.getText().equals("Search by staff name") || field.getText().equals("No staff found")) {
                         field.setText("");
                         field.setForeground(Color.BLACK);
                     }
@@ -234,7 +300,7 @@ class StaffDefaultPage extends JLabel {
                     field.setFocusable(false);
                     if (field.getText().isEmpty()) {
                         field.setForeground(Color.GRAY);
-                        field.setText("Search by staff ID");
+                        field.setText("Search by staff name");
                     }
                 }
             });
@@ -243,10 +309,10 @@ class StaffDefaultPage extends JLabel {
 
         JButton SearchButton(){
             JButton button = new RoundedButton("Search");
-            button.setFont(new Font("Courier",Font.PLAIN,13));
+            button.setFont(Constants.commonUsed);
             button.setFocusable(false);
             button.setForeground(Color.WHITE);
-            button.setBackground(new Color(0x3497F9));
+            button.setBackground(Constants.BLUE);
             button.setBounds(100, 100, 125, 60);
             button.setBorder(new EmptyBorder(10,10,10,10));
             return button;
@@ -255,24 +321,27 @@ class StaffDefaultPage extends JLabel {
     void addStaffToTable (Staff staff){
         String job = staff.getUserMode().getValue();
         String department = "";
-        ButtonRenderer buttonRenderer = new ButtonRenderer();
+        DeleteButtonRenderer deleteButtonRenderer = new DeleteButtonRenderer();
         if (staff.getUserMode().getValue() == "Doctor") {
             department = (DoctorDAO.getDoctorById(staff.getStaffId())).getDepartment().getValue();
         }
 
-        Object[] rowData = new Object[]{staff.getStaffId(), staff.getName(),job, department, buttonRenderer};
+        Object[] rowData = new Object[]{staff.getStaffId(), staff.getName(),job, department, deleteButtonRenderer};
         model.addRow(rowData);
     }
-    public void showSearchResult(String ID) throws ExecutionException, InterruptedException {
-        if (!ID.trim().isEmpty() && !ID.trim().equals("Search by Staff ID")){
+    public void showSearchResult(String name) throws ExecutionException, InterruptedException {
+        if (!name.trim().isEmpty() && !name.trim().equals("Search by staff name")){
             try{
-                Staff res = StaffDAO.getStaffById(ID);
+                List<Staff> res = StaffDAO.getStaffByName(name);
                 model.clearData();
-                addStaffToTable(res);}
+                for (Staff t : res) {
+                    addStaffToTable(t);
+                }
+            }
             catch (Exception e) {
                 updateTableUI();
                 searchEngine.searchInput.setText("No staff found");
-                searchEngine.searchInput.setForeground(Color.red);
+                searchEngine.searchInput.setForeground(Constants.RED);
             }
         }
         else {
@@ -285,6 +354,7 @@ class StaffDefaultPage extends JLabel {
         for (Staff p : allStaffs) {
             addStaffToTable(p);
         }
+        title.setText(STR."List of Staffs (\{allStaffs.size()})");
     }
 
     static class CustomTableModel extends AbstractTableModel {
@@ -292,7 +362,7 @@ class StaffDefaultPage extends JLabel {
         private Object[][] data = {};
 
         // Column names
-        private final String[] columnNames = {"ID","Name", "Job", "Department", "Action"};
+        private final String[] columnNames = {"ID","Name", "Job", "Department", "  "};
 
         // Data types for each column
         @SuppressWarnings("rawtypes")
@@ -346,182 +416,65 @@ class StaffDefaultPage extends JLabel {
     }
 
     public JButton AddStaffButton(){
-        JButton addStaffButton = new RoundedButton("  + Add Staff  ");
-        addStaffButton.setFont(new Font("Courier",Font.PLAIN,13));
+        JButton addStaffButton = new RoundedButton("Add Staff");
+        addStaffButton.setFont(Constants.commonUsed);
+        addStaffButton.setIcon(new FlatSVGIcon("add-person.svg"));
         addStaffButton.setFocusable(false);
         addStaffButton.setForeground(Color.WHITE);
-        addStaffButton.setBackground(new Color(0x3497F9));
+        addStaffButton.setBackground(Constants.BLUE);
         addStaffButton.setBounds(100, 100, 125, 60);
         addStaffButton.setBorder(new EmptyBorder(10,10,10,10));
 
         return addStaffButton;
     }
 
-    static class ButtonRenderer extends DefaultTableCellRenderer {
-        private JPanel panel;
-        private RoundedButton viewButton;
-        private RoundedButton deleteButton;
-        private int selectedRow = -1;
-
-
-        public ButtonRenderer() {
-            panel = new JPanel();
-            viewButton = new RoundedButton("View");
-            viewButton.setBackground(new Color(0xB5ED57));
-            deleteButton = new RoundedButton("Delete");
-            deleteButton.setBackground(new Color(0xFF9AA2));
-            panel.setBackground(new Color(0, 0, 0, 0));
-
-            panel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
-
-            panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-            panel.add(Box.createHorizontalStrut(40));
-            panel.add(viewButton);
-            panel.add(Box.createHorizontalStrut(20));
-            panel.add(deleteButton);
-            panel.add(Box.createHorizontalStrut(20));
+    static class DeleteButtonRenderer extends JButton implements TableCellRenderer {
+        public DeleteButtonRenderer() {
+            setOpaque(true);
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                       boolean hasFocus, int row, int column) {
-            if (isSelected && row == selectedRow) {
-                panel.setBackground(table.getSelectionBackground());
-            } else {
-                panel.setBackground(table.getBackground());
-            }
-            return panel;
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
+            setIcon(new FlatSVGIcon("delete.svg"));
+            setBackground(Color.white);
+            setBorder(BorderFactory.createEmptyBorder());
+            setSize(25,25);
+            return this;
         }
-
-        public void setSelectedRow(int selectedRow) {
-            this.selectedRow = selectedRow;
-        }
-
     }
+    static class DeleteButtonEditor extends DefaultCellEditor {
+        protected JButton button;
+        private String label;
+        private boolean isPushed;
 
-    static class ButtonEditor extends DefaultCellEditor {
-        private JPanel panel;
-        private RoundedButton viewButton;
-        private RoundedButton deleteButton;
-        private String id;
-
-        public void setID(String id) {
-            this.id = id;
-        }
-
-        public ButtonEditor() {
-            super(new JCheckBox());
-
-            panel = new JPanel();
-            viewButton = new RoundedButton("View");
-            viewButton.setBackground(new Color(0xB5ED57));
-            deleteButton = new RoundedButton("Delete");
-            deleteButton.setBackground(new Color(0xFF9AA2));
-            panel.setBackground(new Color(0x9ACEF5));
-
-            panel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.BLACK));
-
-            //viewButton.addActionListener(e -> fireEditingStopped());
-            //deleteButton.addActionListener(e -> fireEditingStopped());
-            viewButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String[] job = new  String[User.Mode.values().length];
-                    String[] department = new String[DeptType.values().length];
-                    int i = 0, k = 0;
-                    for (DeptType dt : DeptType.values()) {
-                        department[i] = dt.getValue();
-                        i++;
-                    }
-                    for (User.Mode m : User.Mode.values()) {
-                        job[k] = m.getValue();
-                        k++;
-                    }
-                    JComboBox<String> jo = new JComboBox<>(job);
-                    JComboBox<String> dep = new JComboBox<>(department);
-                    jo.setBackground(Color.white);
-                    dep.setBackground(Color.white);
-                    jo.setBorder(BorderFactory.createEmptyBorder());
-                    dep.setBorder(BorderFactory.createEmptyBorder());
-                    jo.setBounds(385 - 250, 100, 70, 20);
-                    dep.setBounds(385-250,130,70,20);
-                    JTextField nameField = new JTextField(30);
-
-                    dep.setEnabled(false);
-                    jo.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            if (jo.getSelectedItem().equals("Doctor")) {
-                                dep.setEnabled(true);
-                            } else {
-                                dep.setEnabled(false);
-                            }
-                        }
-                    });
-                    // Xử lý sự kiện khi nhấn nút "View"
-                    System.out.println("View button clicked in row " + id);
-                    Staff st = StaffDAO.getStaffById(id);
-
-                    jo.setSelectedItem(st.getUserMode().getValue());
-                    jo.setEnabled(false);
-                    if (st.getUserMode().getValue() == "Doctor") {
-                        dep.setSelectedItem(DoctorDAO.getDoctorById(st.getStaffId()).getDepartment().getValue());
-                    }
-                    nameField.setText(st.getName());
-
-                    Object[] message = {
-                            "Name of Job: ", jo,
-                            "Name of Department: ", dep,
-                            "Name: ", nameField
-                    };
-
-                    int option = JOptionPane.showConfirmDialog(null, message, "", JOptionPane.OK_CANCEL_OPTION);
-
-                    if (option == JOptionPane.OK_OPTION) {
-                        String j = Objects.requireNonNull(jo.getSelectedItem()).toString();
-                        String d = Objects.requireNonNull(dep.getSelectedItem()).toString();
-
-                        String name = nameField.getText();
-
-                        // Kiểm tra xem có ô nào bị bỏ trống không
-                        if (j.isEmpty() || d.isEmpty() || name.isEmpty()) {
-                            JOptionPane.showMessageDialog(null, "The information cannot be left blank!", "Error", JOptionPane.ERROR_MESSAGE);
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Job: " + j + "\nDepartment: " + d + "\nName: " + name, "Information", JOptionPane.INFORMATION_MESSAGE);
-                            if (j !=  "Doctor") {
-                                StaffDAO.updateStaff(st.getStaffId(),
-                                        "name", name,
-                                        "userMode", User.Mode.fromValue(j));
-                            }
-                            else {
-                                DoctorDAO.updateDoctor(st.getStaffId(),
-                                        "name", name,
-                                        "department", DeptType.fromValue(d));
-                                StaffDAO.updateStaff(st.getStaffId(),
-                                        "name", name);
-                            }
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Cancel", "Notification", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-            });
-
-            panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-            panel.add(Box.createHorizontalStrut(40));
-            panel.add(viewButton);
-            panel.add(Box.createHorizontalStrut(20));
-            panel.add(deleteButton);
-            panel.add(Box.createHorizontalStrut(20));
+        public DeleteButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(_ -> fireEditingStopped());
         }
 
         @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            return panel;
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                                                     boolean isSelected, int row, int column) {
+            button.setIcon(new FlatSVGIcon("delete.svg"));
+            button.setForeground(Color.white);
+            button.setFocusable(false);
+            isPushed = true;
+            return button;
         }
 
         @Override
         public Object getCellEditorValue() {
-            return "View/Delete";
+            isPushed = false;
+            return label;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            isPushed = false;
+            return super.stopCellEditing();
         }
     }
 

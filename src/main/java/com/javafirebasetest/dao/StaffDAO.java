@@ -41,7 +41,6 @@ public class StaffDAO {
 
             newId = idPrefixMap.get(staff.getUserMode()) + hexId.substring(hexId.length() - (DBManager.idHashLength));
         }
-
         dbManager.updateDocument(DBManager.CollectionPath.STAFF, newId, staff.toMap());
 
         return newId;

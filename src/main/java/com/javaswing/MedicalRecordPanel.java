@@ -1,5 +1,7 @@
 package com.javaswing;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.inter.FlatInterFont;
 import com.javafirebasetest.dao.*;
 import com.javafirebasetest.entity.*;
 
@@ -38,12 +40,12 @@ class MedicalRecordDefaultPage extends JPanel {
     public MedicalRecordDefaultPage(MedicalRecordPanel parentPanel) throws ExecutionException, InterruptedException {
         this.parentPanel = parentPanel;
         this.setMaximumSize(new Dimension(1300, 600));
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 35));
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 35));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setBackground(Color.WHITE);
+        this.setBackground(Constants.LIGHT_BLUE);
         this.add(headerPanel());
         JPanel space = new JPanel();
-        space.setBackground(Color.white);
+        space.setOpaque(false);
         space.setSize(new Dimension(40, 40));
         this.add(space);
         this.add(bodyContainer());
@@ -54,14 +56,14 @@ class MedicalRecordDefaultPage extends JPanel {
 
         JPanel titleContainer = new JPanel();
         titleContainer.setLayout(new GridLayout(2,1));
-        titleContainer.setBackground(Color.white);
-        title.setFont(title.getFont().deriveFont(28F));
-        title.setForeground(new Color(0x3497F9));
+        titleContainer.setBackground(Constants.LIGHT_BLUE);
+        title.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,28));
+        title.setForeground(Constants.BLUE);
         JLabel subTitle = new JLabel("Use appropriate machine to test patients");
-        subTitle.setFont(new Font("Arial",Font.BOLD,15));
+        subTitle.setFont(Constants.commonUsed);
         titleContainer.add(title);
         titleContainer.add(subTitle);
-        header.setBackground(Color.white);
+        header.setOpaque(false);
         header.add(titleContainer);
         header.add(Box.createHorizontalGlue());
         return header;
@@ -69,15 +71,15 @@ class MedicalRecordDefaultPage extends JPanel {
     JPanel bodyContainer() throws ExecutionException, InterruptedException {
         JPanel body = new JPanel();
         body.setLayout(new BorderLayout());
-        body.setBackground(Color.white);
+        body.setOpaque(false);
 
         model = new CustomTableModel();
         medicalRecordList = new JTable(model);
         medicalRecordList.getTableHeader().setPreferredSize(new Dimension(medicalRecordList.getTableHeader().getWidth(), 40));
-        medicalRecordList.getTableHeader().setFont(new Font("Courier", Font.BOLD, 13));
+        medicalRecordList.getTableHeader().setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,15));
         medicalRecordList.getTableHeader().setOpaque(false);
         medicalRecordList.getTableHeader().setBackground(new Color(32, 136, 203));
-        medicalRecordList.getTableHeader().setForeground(new Color(255,255,255));
+        medicalRecordList.getTableHeader().setForeground(Color.white);
         hideColumn(medicalRecordList);
         medicalRecordList.setFocusable(false);
         medicalRecordList.setIntercellSpacing(new java.awt.Dimension(0, 0));
@@ -85,9 +87,10 @@ class MedicalRecordDefaultPage extends JPanel {
         medicalRecordList.setSelectionForeground(Color.white);
         medicalRecordList.setShowVerticalLines(false);
         medicalRecordList.getTableHeader().setReorderingAllowed(false);
-        medicalRecordList.setFont(new Font("Courier",Font.PLAIN,13));
+        medicalRecordList.setFont(Constants.commonUsed);
         medicalRecordList.getColumn("").setCellRenderer(new ViewButtonRenderer());
         medicalRecordList.getColumn("").setCellEditor(new ViewButtonEditor(new JCheckBox()));
+        medicalRecordList.getColumn("").setMaxWidth(50);
 
         // Create a custom cell renderer
         TableCellRenderer renderer = new DefaultTableCellRenderer() {
@@ -98,9 +101,9 @@ class MedicalRecordDefaultPage extends JPanel {
                 // Set the font color for the specific cell
                 if (column == 4) {
                     String cellText = value.toString();
-                    label.setFont(new Font("Courier",Font.BOLD,13));
+                    label.setFont(new Font(FlatInterFont.FAMILY,Font.BOLD,14));
                     if (cellText.equals("TESTING")) {
-                        label.setForeground(new Color(0x3497F9));
+                        label.setForeground(Constants.BLUE);
                     } else if (cellText.equals("TESTED")) {
                         label.setForeground(new Color(0x87A922));
                     }
@@ -113,6 +116,7 @@ class MedicalRecordDefaultPage extends JPanel {
             }
         };
         medicalRecordList.getColumnModel().getColumn(4).setCellRenderer(renderer);
+
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -183,10 +187,10 @@ class MedicalRecordDefaultPage extends JPanel {
         for (MedicalRecord medrec : allMedrecTesting) {
             addMedicineRecordToTable(medrec);
         }
-        List<MedicalRecord> allMedrecTested = MedRecDAO.getMedRecByCondition("status","TESTED");
-        for (MedicalRecord medrec : allMedrecTested) {
-            addMedicineRecordToTable(medrec);
-        }
+//        List<MedicalRecord> allMedrecTested = MedRecDAO.getMedRecByCondition("status","TESTED");
+//        for (MedicalRecord medrec : allMedrecTested) {
+//            addMedicineRecordToTable(medrec);
+//        }
         title.setText("List of Medical Records (%d)".formatted(allMedrecTesting.size()));
         System.out.println("Refresh Medical Record Table");
     }
@@ -285,8 +289,8 @@ class MedicalRecordDefaultPage extends JPanel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             setBackground(Color.WHITE);
-            setText("View Info");
-            setForeground(Color.DARK_GRAY);
+            setIcon(new FlatSVGIcon("edit.svg"));
+            setFont(Constants.commonUsed);
             setMaximumSize(new Dimension(70,18));
             setOpaque(false);
             setBorder(BorderFactory.createEmptyBorder());
@@ -309,9 +313,9 @@ class MedicalRecordDefaultPage extends JPanel {
         public Component getTableCellEditorComponent(JTable table, Object value,
                                                      boolean isSelected, int row, int column) {
             button.setBackground(Color.white);
-            button.setText("View Info");
+            button.setFont(Constants.commonUsed);
+            button.setIcon(new FlatSVGIcon("edit.svg"));
             button.setSize(25,25);
-            button.setForeground(Color.DARK_GRAY);
             button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -359,7 +363,7 @@ class ViewMedicalRecordPage extends JPanel {
     ViewMedicalRecordPage(MedicalRecordPanel parentPanel,String id, String userId) throws ExecutionException, InterruptedException {
         this.parentPanel = parentPanel;
         this.setBackground(Color.WHITE);
-        this.setBorder(BorderFactory.createLineBorder(new Color(0xF1F8FF), 40));
+        this.setBorder(BorderFactory.createLineBorder(Constants.LIGHT_BLUE, 40));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         mr = MedRecDAO.getMedRecById(id);

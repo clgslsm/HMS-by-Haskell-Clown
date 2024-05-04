@@ -85,7 +85,6 @@ public class MedicineDAO {
 
             newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
         }
-
         dbManager.updateDocument(DBManager.CollectionPath.MEDICINE, newId, medicine.toMap());
 
         return newId;

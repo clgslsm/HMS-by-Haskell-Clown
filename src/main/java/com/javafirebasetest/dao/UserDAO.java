@@ -39,7 +39,6 @@ public class UserDAO {
 
             newUserId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
         }
-
         dbManager.updateDocument(DBManager.CollectionPath.USER, newUserId, user.toMap());
 
         return newUserId;

@@ -31,7 +31,6 @@ public class DoctorDAO {
 
             newId = idPrefix + hexId.substring(hexId.length() - (DBManager.idHashLength));
         }
-
         dbManager.updateDocument(DBManager.CollectionPath.STAFF, newId, doctor.toMap());
 
         return newId;
