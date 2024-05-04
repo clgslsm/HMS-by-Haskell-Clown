@@ -8,10 +8,13 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.firebase.cloud.StorageClient;
+import io.grpc.LoadBalancerRegistry;
+import io.grpc.internal.PickFirstLoadBalancerProvider;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -37,12 +40,9 @@ public class DBManager {
     }
 
     private DBManager() {
-        FileInputStream serviceAccount;
-        try {
-            serviceAccount = new FileInputStream("./serviceAccountKeyNew.json");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        LoadBalancerRegistry.getDefaultRegistry().register(new PickFirstLoadBalancerProvider());
+        InputStream serviceAccount;
+        serviceAccount = this.getClass().getClassLoader().getResourceAsStream("serviceAccountKeyNew.json");
 
         FirebaseOptions options;
         try {

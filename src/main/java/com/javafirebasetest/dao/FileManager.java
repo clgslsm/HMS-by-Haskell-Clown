@@ -6,10 +6,7 @@ import com.google.cloud.storage.*;
 import com.google.firebase.cloud.StorageClient;
 
 import java.awt.Desktop;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,12 +29,8 @@ public class FileManager {
         if (!localPath.exists()) localPath.mkdir();
         localPath.deleteOnExit();
 
-        FileInputStream serviceAccount;
-        try {
-            serviceAccount = new FileInputStream("./serviceAccountKeyNew.json");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        InputStream serviceAccount;
+        serviceAccount = this.getClass().getClassLoader().getResourceAsStream("serviceAccountKeyNew.json");
 
         try {
             storage = StorageOptions.newBuilder()

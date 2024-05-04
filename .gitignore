@@ -39,5 +39,5 @@ build/
 
 ### Custom ###
 serviceAccountKey.json
-serviceAccountKeyNew.json
+src/main/resources/serviceAccountKeyNew.json
 LocalData
